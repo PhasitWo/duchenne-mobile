@@ -8,7 +8,6 @@ export default function Calendar({ markedDateKey }: { markedDateKey : Array<numb
     for (let i = 0; i < 7; i++) {
         days.push(dayjs().add(i, "day"));
     }
-
     return (
         <View style={style.container}>
             {days.map((v, k) => (
@@ -17,6 +16,7 @@ export default function Calendar({ markedDateKey }: { markedDateKey : Array<numb
                     dayText={v.format("ddd")}
                     dayNumber={v.format("D")}
                     now={k === 0 ? true : false}
+                    marked={markedDateKey.includes(k)}
                 />
             ))}
             <View style={style.stroke}></View>

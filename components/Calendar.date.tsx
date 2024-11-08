@@ -4,16 +4,18 @@ export default function CalendarDate({
     dayText,
     dayNumber,
     now,
+    marked,
 }: {
     dayText: string;
     dayNumber: number | string;
     now?: boolean;
+    marked: boolean;
 }) {
     return (
         <View style={style.container}>
             <Text>{dayText}</Text>
-            <View style={style.date}>
-                <Text style={{ color: now ? "red" : "" }}>{dayNumber}</Text>
+            <View style={[{ backgroundColor: marked ? "#f85c5c" : "white" }, style.date]}>
+                <Text style={{ color: (now && !marked) ? "red" : "black" }}>{dayNumber}</Text>
             </View>
         </View>
     );
@@ -25,7 +27,6 @@ const style = StyleSheet.create({
         zIndex: 1,
     },
     date: {
-        backgroundColor: "white",
         height: 35,
         width: 35,
         borderRadius: 100,

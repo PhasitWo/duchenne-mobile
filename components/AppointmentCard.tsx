@@ -1,31 +1,41 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable, PressableProps } from "react-native";
 import { grey, darkGrey } from "@/constants/Colors";
+import { Dayjs } from "dayjs";
 
 export interface appointment {
-    date: string;
-    time: string;
+    id: number
+    dateTime: Dayjs;
     doctor: string;
-    status: "incoming" | "history";
 }
 
-export default function AppointmentCard({ appointment }: { appointment: appointment }) {
+export default function AppointmentCard({
+    appointment,
+    ...rest
+}: { appointment: appointment } & PressableProps) {
     return (
-        <View style={style.container}>
-            <Text style={style.date}>{appointment.date}</Text>
-            <Text style={style.time}>{appointment.time}</Text>
+        <Pressable
+            style={({ pressed }) => [
+                { backgroundColor: pressed ? darkGrey : "white" },
+                style.container,
+            ]}
+            {...rest}
+        >
+            <Text style={style.date}>{appointment.dateTime.format("D MMMM YYYY")}</Text>
+            <Text style={style.time}>{appointment.dateTime.format("HH:mm")}</Text>
             <Text style={style.time}>{appointment.doctor}</Text>
-        </View>
+        </Pressable>
     );
 }
 
 const style = StyleSheet.create({
     container: {
-        height: "20%",
-        padding: "5%",
-        paddingLeft: "10%",
+        height: 100,
         borderBottomWidth: 1,
         borderColor: darkGrey,
         width: "100%",
+        padding: "5%",
+
+        borderRadius: 40,
     },
     date: {
         fontWeight: "bold",

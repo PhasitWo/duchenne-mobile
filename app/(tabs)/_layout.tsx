@@ -1,10 +1,11 @@
-import { Tabs } from "expo-router";
+import { Tabs, Link } from "expo-router";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useSegments } from "expo-router";
-import { Button, Text } from "react-native";
 import HeaderRight from "@/components/HeaderRight";
+import HeaderLeft from "@/components/HeaderLeft";
+import { Text } from "react-native";
 
 export default function TabLayout() {
     const colorScheme = useColorScheme();
@@ -20,7 +21,7 @@ export default function TabLayout() {
                 tabBarLabelPosition: "below-icon",
                 tabBarLabelStyle: { fontSize: 13, paddingBottom: 10 },
                 headerStyle: {
-                    backgroundColor: "",
+                    backgroundColor: "white",
                 },
 
                 headerTitleStyle: {
@@ -40,8 +41,9 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="appointment"
+                name="(appointment)"
                 options={{
+                    headerShown: false,
                     title: "Appointment",
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon
@@ -49,19 +51,24 @@ export default function TabLayout() {
                             color={color}
                         />
                     ),
+                    unmountOnBlur: true, // Reset to initial state
                 }}
             />
             <Tabs.Screen
-                name="button"
+                name="addAppointment"
                 options={{
+                    title: "Add Appointment",
                     tabBarButton: () => (
-                        <TabBarIcon
-                            name="add-circle-sharp"
-                            size={80}
-                            color={"#26fbd4"}
+                        <Link
+                            href="/(tabs)/addAppointment"
                             style={{ transform: "translateY(-20px)" }}
-                        />
+                        >
+                            <TabBarIcon name="add-circle-sharp" size={80} color={"#26fbd4"} />
+                        </Link>
                     ),
+                    unmountOnBlur: true, // Reset to initial state
+                    headerLeft: () => <HeaderLeft/>,
+                    headerLeftContainerStyle: {paddingLeft:"5%"}
                 }}
             />
             <Tabs.Screen
