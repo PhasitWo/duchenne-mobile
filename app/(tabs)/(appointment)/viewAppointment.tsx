@@ -4,28 +4,31 @@ import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { darkGrey, tint, darkTint } from "@/constants/Colors";
-import { SelectList } from "react-native-dropdown-select-list";
+import { Dropdown } from "react-native-element-dropdown";
 import CustomButton from "@/components/CustomButton";
 import { useAppointmentContext } from "@/hooks/appointmentContext";
 import { useLocalSearchParams } from "expo-router";
 type mode = "date" | "time";
 
 const mockup = [
-    { key: "1", value: "Dr.Earth Bindai" },
-    { key: "2", value: "Dr.Ploy Jinjai" },
+    { label: "Dr.Earth Bindai", value: "Dr.Earth Bindai" },
+    { label: "Dr.Ploy Jinjai", value: "Dr.Ploy Jinjai" },
+    { label: "Dr.Spiderman", value: "Dr.Spiderman" },
 ];
 
 export default function ViewAppointment() {
     const [date, setDate]: [date: Date, setDate: Function] = useState(dayjs().toDate());
     const [mode, setMode]: [mode: mode, setMode: Function] = useState("date");
+    const [selected, setSelected]: [selected: string, setSelected: Function] = useState("");
+    const [onEdit, setOnEdit]: [onEdit: boolean, setOnEdit: Function] = useState(false);
     const [show, setShow] = useState(false);
-    const [selectedDoctor, setSelectedDoctor] = useState("");
     const { apmntList, setApmtList } = useAppointmentContext();
     const { id } = useLocalSearchParams();
 
     useEffect(() => {
-        const current = apmntList.find(v => v.id === parseInt(id as string));
-        setDate(current?.dateTime.toDate())
+        const current = apmntList.find((v) => v.id === parseInt(id as string));
+        setDate(current?.dateTime.toDate());
+        setSelected(current?.doctor);
     }, []);
 
     const onChange = (event: DateTimePickerEvent, selectedDate: Date | undefined) => {
@@ -51,19 +54,21 @@ export default function ViewAppointment() {
         <View style={style.container}>
             <Pressable
                 style={({ pressed }) => [
-                    { backgroundColor: pressed ? darkGrey : "white" },
+                    { backgroundColor: pressed ? darkGrey : onEdit ? "white" : "whitesmoke" },
                     style.dateTime,
                 ]}
                 onPress={showDatepicker}
+                disabled={!onEdit}
             >
                 <Text>{dayjs(date).format("D MMMM YYYY")}</Text>
             </Pressable>
             <Pressable
                 style={({ pressed }) => [
-                    { backgroundColor: pressed ? darkGrey : "white" },
+                    { backgroundColor: pressed ? darkGrey : onEdit ? "white" : "whitesmoke" },
                     style.dateTime,
                 ]}
                 onPress={showTimepicker}
+                disabled={!onEdit}
             >
                 <Text>{dayjs(date).format("HH:mm")}</Text>
             </Pressable>
@@ -77,15 +82,27 @@ export default function ViewAppointment() {
                     minimumDate={dayjs().toDate()}
                 />
             )}
-            <SelectList
-                setSelected={(val: string) => setSelectedDoctor(val)}
+            <Dropdown
+                style={[{ backgroundColor: onEdit ? "white" : "whitesmoke" }, style.dropDown]}
                 data={mockup}
-                boxStyles={style.box}
-                dropdownStyles={style.dropDown}
-                defaultOption={{ key: "1", value: "Dr.Earth Bindai" }}
+                labelField="label"
+                valueField="value"
+                onChange={(item) => setSelected(item.value)}
+                value={selected}
+                search
+                disable={!onEdit}
             />
-            <CustomButton title="Edit" normalColor={tint} pressedColor={darkTint} />
-            <Text>selected: {date.toLocaleString()}</Text>
+            {onEdit ? (
+                <CustomButton title="Save" normalColor={tint} pressedColor={darkTint} />
+            ) : (
+                <CustomButton
+                    title="Edit"
+                    normalColor="lightsalmon"
+                    pressedColor={darkTint}
+                    onPress={() => setOnEdit(true)}
+                />
+            )}
+            <Text>selected: {date.toString()}</Text>
             <Text>{apmntList.length}</Text>
         </View>
     );
@@ -99,7 +116,7 @@ const style = StyleSheet.create({
     },
     dateTime: {
         width: "100%",
-        height: 0.1 * screenHeight,
+        height: "15%",
         paddingLeft: "5%",
         justifyContent: "center",
         borderBottomColor: darkGrey,
@@ -108,12 +125,16 @@ const style = StyleSheet.create({
     box: {
         backgroundColor: "white",
         width: "100%",
-        height: 0.1 * screenHeight,
+        height: "15%",
         alignItems: "center",
         borderColor: darkGrey,
         borderRadius: 0,
     },
     dropDown: {
-        backgroundColor: "white",
+        width: "100%",
+        height: "15%",
+        paddingLeft: "5%",
+        borderBottomColor: darkGrey,
+        borderBottomWidth: 1,
     },
 });

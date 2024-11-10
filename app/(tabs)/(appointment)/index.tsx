@@ -23,7 +23,7 @@ const mockup: Array<appointment> = [
     {
         id: 3,
         dateTime: dayjs("2024-11-13 00:30"),
-        doctor: "Dr.Earth Bindai",
+        doctor: "Dr.Spiderman",
     },
 ];
 
@@ -87,7 +87,7 @@ export default function Appointment() {
                                 onPress={() =>
                                     incomingSelected &&
                                     router.navigate({
-                                        pathname: "viewAppointment",
+                                        pathname: "/(appointment)/viewAppointment",
                                         params: {
                                             id: v.id,
                                         },

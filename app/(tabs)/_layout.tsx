@@ -1,8 +1,7 @@
-import { Tabs, Link } from "expo-router";
+import { Tabs, Link, useSegments } from "expo-router";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { useSegments } from "expo-router";
 import HeaderRight from "@/components/HeaderRight";
 import HeaderLeft from "@/components/HeaderLeft";
 import { Text } from "react-native";
@@ -10,7 +9,6 @@ import { Text } from "react-native";
 export default function TabLayout() {
     const colorScheme = useColorScheme();
     const segment = useSegments();
-    const page = segment[segment.length - 1]
 
     return (
         <Tabs
@@ -32,6 +30,7 @@ export default function TabLayout() {
             }}
         >
             <Tabs.Screen
+                
                 name="index"
                 options={{
                     title: "Learn",
@@ -43,7 +42,6 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="(appointment)"
                 options={{
-                    headerShown: false,
                     title: "Appointment",
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon
@@ -52,6 +50,7 @@ export default function TabLayout() {
                         />
                     ),
                     unmountOnBlur: true, // Reset to initial state
+                    headerLeft: () => <HeaderLeft />,
                 }}
             />
             <Tabs.Screen
@@ -67,8 +66,8 @@ export default function TabLayout() {
                         </Link>
                     ),
                     unmountOnBlur: true, // Reset to initial state
-                    headerLeft: () => <HeaderLeft/>,
-                    headerLeftContainerStyle: {paddingLeft:"5%"}
+                    headerLeft: () => <HeaderLeft />,
+                    headerLeftContainerStyle: { paddingLeft: "5%" },
                 }}
             />
             <Tabs.Screen

@@ -9,7 +9,7 @@ export default function HeaderLeft() {
         <Pressable
             onPress={router.back}
             style={({ pressed }) => [
-                { backgroundColor: pressed ? darkGrey : "white", borderRadius: 100 },
+                { backgroundColor: pressed ? darkGrey : "white", borderRadius: 100, marginLeft: 15 },
             ]}
         >
             <AntDesign name="arrowleft" size={24} color="black" />

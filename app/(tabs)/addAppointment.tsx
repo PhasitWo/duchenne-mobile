@@ -3,14 +3,14 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { useState } from "react";
 import dayjs from "dayjs";
-import {  darkGrey, tint, darkTint } from "@/constants/Colors";
-import { SelectList } from "react-native-dropdown-select-list";
+import { darkGrey, tint, darkTint } from "@/constants/Colors";
 import CustomButton from "@/components/CustomButton";
+import { Dropdown } from "react-native-element-dropdown";
 type mode = "date" | "time";
 
 const mockup = [
-    { key: "1", value: "Dr.Earth Bindai" },
-    { key: "2", value: "Dr.Ploy Jinjai" },
+    { label: "Dr.Earth Bindai", value: "Dr.Earth Bindai" },
+    { label: "Dr.Ploy Jinjai", value: "Dr.Ploy Jinjai" },
 ];
 
 export default function AddAppointment() {
@@ -68,13 +68,21 @@ export default function AddAppointment() {
                     minimumDate={dayjs().toDate()}
                 />
             )}
-            <SelectList
-                setSelected={(val: string) => setSelected(val)}
+            <Dropdown
+                style={{
+                    width: "100%",
+                    height: "15%",
+                    backgroundColor: "white",
+                    paddingLeft: "5%",
+                }}
                 data={mockup}
-                boxStyles={style.box}
-                dropdownStyles={style.dropDown}
+                labelField="label"
+                valueField="value"
+                onChange={(item) => setSelected(item.value)}
+                value={selected}
+                search
             />
-            <CustomButton title="Save" normalColor={tint} pressedColor={darkTint}/>
+            <CustomButton title="Save" normalColor={tint} pressedColor={darkTint} />
             <Text>selected: {date.toLocaleString()}</Text>
         </View>
     );
@@ -88,7 +96,7 @@ const style = StyleSheet.create({
     },
     dateTime: {
         width: "100%",
-        height: 0.1 * screenHeight,
+        height: "15%",
         paddingLeft: "5%",
         justifyContent: "center",
         borderBottomColor: darkGrey,
@@ -97,7 +105,7 @@ const style = StyleSheet.create({
     box: {
         backgroundColor: "white",
         width: "100%",
-        height: 0.1 * screenHeight,
+        height: "15%",
         alignItems: "center",
         borderColor: darkGrey,
         borderRadius: 0,
