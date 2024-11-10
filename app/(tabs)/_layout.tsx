@@ -1,4 +1,4 @@
-import { Tabs, Link, useSegments } from "expo-router";
+import { Tabs, Link } from "expo-router";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -8,7 +8,6 @@ import { Text } from "react-native";
 
 export default function TabLayout() {
     const colorScheme = useColorScheme();
-    const segment = useSegments();
 
     return (
         <Tabs
@@ -17,7 +16,7 @@ export default function TabLayout() {
                 headerShown: true,
                 tabBarStyle: { height: "10%" },
                 tabBarLabelPosition: "below-icon",
-                tabBarLabelStyle: { fontSize: 13, paddingBottom: 10 },
+                tabBarLabelStyle: { fontSize: 12, paddingBottom: 10 },
                 headerStyle: {
                     backgroundColor: "white",
                 },
@@ -30,7 +29,6 @@ export default function TabLayout() {
             }}
         >
             <Tabs.Screen
-                
                 name="index"
                 options={{
                     title: "Learn",
