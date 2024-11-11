@@ -1,11 +1,13 @@
 import { View, Text, Button, Pressable, StyleSheet, Dimensions } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { darkGrey, tint, darkTint } from "@/constants/Colors";
 import CustomButton from "@/components/CustomButton";
 import { Dropdown } from "react-native-element-dropdown";
+import * as Calendar from "expo-calendar";
+import * as Notifications from "expo-notifications";
 type mode = "date" | "time";
 
 const mockup = [
@@ -18,6 +20,52 @@ export default function AddAppointment() {
     const [mode, setMode]: [mode: mode, setMode: Function] = useState("date");
     const [show, setShow] = useState(false);
     const [selected, setSelected] = useState("");
+
+    // useEffect(() => {
+    //     calendarEvent();
+    // }, []);
+
+    async function handleSave() {
+        const { status } = await Calendar.requestCalendarPermissionsAsync();
+        if (status === "granted") {
+            // create calendar
+            // const res = await Calendar.createCalendarAsync({
+            //     title: "EXPO CALENDAR",
+            //     name: "EXPO CALENDAR",
+            //     color:"red",
+            //     accessLevel: Calendar.CalendarAccessLevel.EDITOR,
+            //     ownerAccount: "My calendar",
+            //     source: { isLocalAccount: true, name: "EXPO CALENDAR", type: "LOCAL" },
+            // });
+            // console.log(res);
+            // get all calendars
+            // const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+            // console.log("Here are all your calendars:");
+            // for (let c of calendars) {
+            //     console.log(c.name, c.id)
+            // };
+            // get events
+            // const events = await Calendar.getEventsAsync(["1"], dayjs().toDate(), dayjs("2024-11-30").toDate())
+            // create event
+            // let res = await Calendar.createEventAsync("1", {
+            //     title: selected,
+            //     startDate: date,
+            //     endDate: dayjs(date).add(1, "hour").toDate(),
+            // });
+            // console.log(res + " created")
+        }
+    }
+
+    async function testNotification() {
+        const prior = await Notifications.getAllScheduledNotificationsAsync();
+        console.log(prior)
+        const id = await Notifications.scheduleNotificationAsync({
+            content: { title: "Time's up!!", body: "FROM EXPO" },
+            trigger: { seconds: 10 },
+            
+        });
+        console.log("notification id => " + id);
+    }
 
     const onChange = (event: DateTimePickerEvent, selectedDate: Date | undefined) => {
         const currentDate = selectedDate;
@@ -82,7 +130,12 @@ export default function AddAppointment() {
                 value={selected}
                 search
             />
-            <CustomButton title="Save" normalColor={tint} pressedColor={darkTint} />
+            <CustomButton
+                title="Save"
+                normalColor={tint}
+                pressedColor={darkTint}
+                onPress={() => testNotification()}
+            />
             <Text>selected: {date.toLocaleString()}</Text>
         </View>
     );
