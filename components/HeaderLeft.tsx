@@ -1,15 +1,19 @@
-import { useRouter } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Pressable } from "react-native";
 import { darkGrey } from "@/constants/Colors";
+import { useNavigation } from "@react-navigation/native";
 
 export default function HeaderLeft() {
-    const router = useRouter();
+    const navigation = useNavigation();
     return (
         <Pressable
-            onPress={router.back}
+            onPress={navigation.goBack}
             style={({ pressed }) => [
-                { backgroundColor: pressed ? darkGrey : "white", borderRadius: 100, marginLeft: 15 },
+                {
+                    backgroundColor: pressed ? darkGrey : "white",
+                    borderRadius: 100,
+                    marginLeft: 15,
+                },
             ]}
         >
             <AntDesign name="arrowleft" size={24} color="black" />

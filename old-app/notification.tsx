@@ -9,29 +9,29 @@ interface notification {
     href?: string;
 }
 
-// let DATA = [
-//     {
-//         id: 1,
-//         message: "hello world",
-//         href: "/(appointment)/"
-//     },
-//     {
-//         id: 2,
-//         message: "hello world",
-//     },
-//     {
-//         id: 3,
-//         message: "hello world",
-//     },
-//     {
-//         id: 4,
-//         message: "hello world",
-//     },
-// ];
+let DATA = [
+    {
+        id: 1,
+        message: "hello world",
+        href: "/(appointment)/"
+    },
+    {
+        id: 2,
+        message: "hello world",
+    },
+    {
+        id: 3,
+        message: "hello world",
+    },
+    {
+        id: 4,
+        message: "hello world",
+    },
+];
 
-// for (let i = 5; i < 15; i++) {
-//     DATA.push({ id: i, message: "interate" });
-// }
+for (let i = 5; i < 15; i++) {
+    DATA.push({ id: i, message: "interate" });
+}
 
 import * as Notifications from "expo-notifications";
 

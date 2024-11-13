@@ -3,20 +3,18 @@ import { View, Text, StyleSheet, Alert, Pressable } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { darkGrey } from "@/constants/Colors";
 import { useRouter } from "expo-router";
-
+import { useNavigation } from "@react-navigation/native";
 export default function HeaderRight() {
     const router = useRouter()
+    const navigation = useNavigation()
     const test = () => Alert.alert("test alert", "haha xdxd")
     return (
         <View style={style.container}>
-            <Pressable
-                onPress={() => router.push("/notification")}
-            >
+            <Pressable onPress={() => navigation.navigate("notification" as never)}>
                 <FontAwesome style={style.bell} name="bell" size={30} color="black" />
                 <Text style={style.notification}>2</Text>
             </Pressable>
-            <Pressable
-            >
+            <Pressable>
                 <Ionicons
                     style={style.profile}
                     name="person-circle"
