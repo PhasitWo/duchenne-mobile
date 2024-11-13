@@ -2,6 +2,7 @@ import { Text, FlatList, View, StyleSheet, Dimensions, Pressable } from "react-n
 import { router, useRouter, type Href } from "expo-router";
 import { darkGrey } from "@/constants/Colors";
 import { useState, useEffect } from "react";
+import type { NotificationRequest } from "expo-notifications";
 
 interface notification {
     id: string | number;
@@ -42,7 +43,7 @@ const Item = ({ notification }: { notification: notification }) => {
                 { backgroundColor: pressed ? darkGrey : undefined },
                 style.item,
             ]}
-            onPress={notification.href ? () => router.navigate(notification.href as Href) : null}
+            // onPress={notification.href ? () => router.navigate(notification.href as Href) : null}
         >
             <Text>{notification.message}</Text>
         </Pressable>
@@ -54,10 +55,10 @@ export default function Notification() {
     const [data, setData]: [data: notification[], setData: Function] = useState([]);
 
     async function getLocalNotifications() {
-        const res = await Notifications.getAllScheduledNotificationsAsync();
+        const res: any[] = await Notifications.getAllScheduledNotificationsAsync();
         if (res.length === 0) return;
         const i: notification[] = res.map((v) => {
-            return { id: v.identifier, message: v.content.title as string };
+            return { id: v.identifier, message: new Date(v.trigger.value).toLocaleString() as string };
         });
         setData(i);
     }

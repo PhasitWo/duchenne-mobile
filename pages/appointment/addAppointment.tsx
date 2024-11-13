@@ -8,9 +8,19 @@ import CustomButton from "@/components/CustomButton";
 import { Dropdown } from "react-native-element-dropdown";
 import * as Calendar from "expo-calendar";
 import * as Notifications from "expo-notifications";
-import {type TimeIntervalTriggerInput} from "expo-notifications";
-
+import { type DateTriggerInput } from "expo-notifications";
+import { Alert } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { NotificationRequestInput } from "expo-notifications";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 type mode = "date" | "time";
+type localNotification = { identifier: string } & NotificationRequestInput;
+type localAppointment = {
+    identifier: string;
+    date: Date;
+    doctor: string;
+    notifications: localNotification[];
+};
 
 const mockup = [
     { label: "Dr.Earth Bindai", value: "Dr.Earth Bindai" },
@@ -22,50 +32,68 @@ export default function AddAppointment() {
     const [mode, setMode]: [mode: mode, setMode: Function] = useState("date");
     const [show, setShow] = useState(false);
     const [selected, setSelected] = useState("");
-
-    // useEffect(() => {
-    //     calendarEvent();
-    // }, []);
+    const navigation = useNavigation();
 
     async function handleSave() {
-        const { status } = await Calendar.requestCalendarPermissionsAsync();
-        if (status === "granted") {
-            // create calendar
-            // const res = await Calendar.createCalendarAsync({
-            //     title: "EXPO CALENDAR",
-            //     name: "EXPO CALENDAR",
-            //     color:"red",
-            //     accessLevel: Calendar.CalendarAccessLevel.EDITOR,
-            //     ownerAccount: "My calendar",
-            //     source: { isLocalAccount: true, name: "EXPO CALENDAR", type: "LOCAL" },
-            // });
-            // console.log(res);
-            // get all calendars
-            // const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-            // console.log("Here are all your calendars:");
-            // for (let c of calendars) {
-            //     console.log(c.name, c.id)
-            // };
-            // get events
-            // const events = await Calendar.getEventsAsync(["1"], dayjs().toDate(), dayjs("2024-11-30").toDate())
-            // create event
-            // let res = await Calendar.createEventAsync("1", {
-            //     title: selected,
-            //     startDate: date,
-            //     endDate: dayjs(date).add(1, "hour").toDate(),
-            // });
-            // console.log(res + " created")
+        // validate input
+        let localNoti = []
+        if (selected === "") {
+            Alert.alert("Error", "Please select a doctor from the list");
+            return;
         }
+        if (dayjs(date).isBefore(dayjs())) {
+            Alert.alert("Error", "Invalid Date");
+            return;
+        }
+        try {
+            localNoti = await scheduleLocalNotification();
+            localStoreAppointment(localNoti)
+        } catch (err) {
+            Alert.alert("Error", err as string);
+            return;
+        }
+        Alert.alert("Appointment Saved!", `${date.toLocaleString()}\n${selected}`, [
+            {
+                text: "Ok",
+                onPress: () => {
+                    navigation.navigate("appointment" as never);
+                },
+            },
+        ]);
     }
 
-    async function testNotification() {
-        const prior = await Notifications.getAllScheduledNotificationsAsync();
-        console.log(prior)
-        const id = await Notifications.scheduleNotificationAsync({
-            content: { title: "Time's up!!", body: "FROM EXPO" },
-            trigger: { seconds: 60 * 15 } as TimeIntervalTriggerInput,
-        });
-        console.log("notification id => " + id);
+    async function scheduleLocalNotification() : Promise<localNotification[]> {
+        const OFFSET = [0, 5, 10];
+        const now = dayjs();
+        let toStoreNoti: localNotification[] = [];
+        for (let offset of OFFSET) {
+            let d = dayjs(date).subtract(offset, "minute");
+            if (d.isBefore(now)) continue;
+            let notiInput: NotificationRequestInput = {
+                content: { title: "Doctor Appointment", body: selected },
+                trigger: { date: d.toDate() },
+            };
+            let id = await Notifications.scheduleNotificationAsync(notiInput);
+            console.log("notification id => " + id);
+            let noti: localNotification = {
+                ...notiInput,
+                identifier: id,
+            };
+            // **JSON.stringfy will convert date to ISO string**
+            toStoreNoti.push(noti);
+        }
+        return toStoreNoti
+    }
+
+    async function localStoreAppointment(localNotifications: localNotification[]) {
+        let apmnt: localAppointment = {
+            identifier: "A" + new Date().getTime(),
+            date: date,
+            doctor: selected,
+            notifications: localNotifications,
+        };
+        // store
+        console.log(JSON.stringify(apmnt))
     }
 
     const onChange = (event: DateTimePickerEvent, selectedDate: Date | undefined) => {
@@ -135,7 +163,7 @@ export default function AddAppointment() {
                 title="Save"
                 normalColor={tint}
                 pressedColor={darkTint}
-                onPress={() => testNotification()}
+                onPress={handleSave}
             />
             <Text>selected: {date.toLocaleString()}</Text>
         </View>
@@ -168,3 +196,35 @@ const style = StyleSheet.create({
         backgroundColor: "white",
     },
 });
+
+// manipulate device calendar
+// async function handleSave() {
+//     const { status } = await Calendar.requestCalendarPermissionsAsync();
+//     if (status === "granted") {
+//         // create calendar
+//         // const res = await Calendar.createCalendarAsync({
+//         //     title: "EXPO CALENDAR",
+//         //     name: "EXPO CALENDAR",
+//         //     color:"red",
+//         //     accessLevel: Calendar.CalendarAccessLevel.EDITOR,
+//         //     ownerAccount: "My calendar",
+//         //     source: { isLocalAccount: true, name: "EXPO CALENDAR", type: "LOCAL" },
+//         // });
+//         // console.log(res);
+//         // get all calendars
+//         // const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+//         // console.log("Here are all your calendars:");
+//         // for (let c of calendars) {
+//         //     console.log(c.name, c.id)
+//         // };
+//         // get events
+//         // const events = await Calendar.getEventsAsync(["1"], dayjs().toDate(), dayjs("2024-11-30").toDate())
+//         // create event
+//         // let res = await Calendar.createEventAsync("1", {
+//         //     title: selected,
+//         //     startDate: date,
+//         //     endDate: dayjs(date).add(1, "hour").toDate(),
+//         // });
+//         // console.log(res + " created")
+//     }
+// }

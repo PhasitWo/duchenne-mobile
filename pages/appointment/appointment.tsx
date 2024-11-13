@@ -34,7 +34,7 @@ type props = NativeStackScreenProps<StackParamList, "index">;
 export default function Appointment({ navigation }: props) {
     const [incomingSelected, setIncomingSelected] = useState(true);
     const { apmntList, setApmtList } = useAppointmentContext();
-
+  
     let markedDateKey = [];
     // normalize to dayOfMonth:00:00:00
     const now = dayjs();
