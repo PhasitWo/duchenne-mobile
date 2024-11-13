@@ -7,7 +7,9 @@ import { grey, darkGrey } from "@/constants/Colors";
 import dayjs from "dayjs";
 import { useAppointmentContext } from "@/hooks/appointmentContext";
 import { useNavigation } from "@react-navigation/native";
-
+// import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
+import { StackParamList } from "./_stack";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 // mockup fetching data
 const mockup: Array<appointment> = [
     {
@@ -27,14 +29,15 @@ const mockup: Array<appointment> = [
     },
 ];
 
-export default function Appointment() {
+type props = NativeStackScreenProps<StackParamList, "index">;
+
+export default function Appointment({ navigation }: props) {
     const [incomingSelected, setIncomingSelected] = useState(true);
-    const navigation = useNavigation();
     const { apmntList, setApmtList } = useAppointmentContext();
 
     let markedDateKey = [];
     // normalize to dayOfMonth:00:00:00
-    const now = dayjs()
+    const now = dayjs();
     const normalizedNow = dayjs().hour(0).minute(0).second(0);
     for (let apmt of mockup) {
         if (apmt.dateTime.isBefore(normalizedNow)) continue;
@@ -87,7 +90,7 @@ export default function Appointment() {
                                 appointment={v}
                                 onPress={() =>
                                     incomingSelected &&
-                                    navigation.navigate("viewAppointment" as never, {id: v.id} as never)
+                                    navigation.navigate("viewAppointment", { id: String(v.id) })
                                 }
                             />
                         ))}

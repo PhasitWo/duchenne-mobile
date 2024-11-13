@@ -9,7 +9,7 @@ import Appointment from "@/pages/appointment/appointment";
 import AddAppointment from "@/pages/appointment/addAppointment";
 import Assessment from "@/pages/assessment";
 import Ask from "@/pages/ask";
-import AppointmentStack from "@/pages/appointment/stack";
+import AppointmentStack from "@/pages/appointment/_stack";
 
 const Tab = createBottomTabNavigator();
 
@@ -19,7 +19,7 @@ export default function Tabs() {
         <Tab.Navigator
             screenOptions={{
                 tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-               
+
                 tabBarStyle: { height: "10%" },
                 tabBarLabelPosition: "below-icon",
                 tabBarLabelStyle: { fontSize: 12, paddingBottom: 10 },
@@ -57,7 +57,6 @@ export default function Tabs() {
                     ),
                     unmountOnBlur: true, // Reset to initial state
                     headerLeft: () => <HeaderLeft />,
-
                 }}
             />
             <Tab.Screen

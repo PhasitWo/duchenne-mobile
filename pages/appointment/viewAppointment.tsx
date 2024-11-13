@@ -8,10 +8,7 @@ import { Dropdown } from "react-native-element-dropdown";
 import CustomButton from "@/components/CustomButton";
 import { useAppointmentContext } from "@/hooks/appointmentContext";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { type StackParamList } from "./stack";
-import AntDesign from "@expo/vector-icons/AntDesign";
-
-type Props = NativeStackScreenProps<StackParamList, "viewAppointment">;
+import { type StackParamList } from "./_stack";
 
 type mode = "date" | "time";
 
@@ -20,6 +17,8 @@ const mockup = [
     { label: "Dr.Ploy Jinjai", value: "Dr.Ploy Jinjai" },
     { label: "Dr.Spiderman", value: "Dr.Spiderman" },
 ];
+
+type Props = NativeStackScreenProps<StackParamList, "viewAppointment">;
 
 export default function ViewAppointment({ route }: Props) {
     const [date, setDate]: [date: Date, setDate: Function] = useState(dayjs().toDate());
@@ -58,7 +57,6 @@ export default function ViewAppointment({ route }: Props) {
     //TODO validate that selected time is after today date and time
     return (
         <View style={style.container}>
-            <AntDesign name="close" size={24} color="black" />
             <Pressable
                 style={({ pressed }) => [
                     { backgroundColor: pressed ? darkGrey : onEdit ? "white" : "whitesmoke" },
