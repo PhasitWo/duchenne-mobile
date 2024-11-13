@@ -8,6 +8,8 @@ import CustomButton from "@/components/CustomButton";
 import { Dropdown } from "react-native-element-dropdown";
 import * as Calendar from "expo-calendar";
 import * as Notifications from "expo-notifications";
+import {type TimeIntervalTriggerInput} from "expo-notifications";
+
 type mode = "date" | "time";
 
 const mockup = [
@@ -61,8 +63,7 @@ export default function AddAppointment() {
         console.log(prior)
         const id = await Notifications.scheduleNotificationAsync({
             content: { title: "Time's up!!", body: "FROM EXPO" },
-            trigger: { seconds: 10 },
-            
+            trigger: { seconds: 60 * 15 } as TimeIntervalTriggerInput,
         });
         console.log("notification id => " + id);
     }

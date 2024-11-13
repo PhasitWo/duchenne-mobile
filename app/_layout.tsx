@@ -29,7 +29,7 @@ export default function RootLayout() {
         return () => subscription.remove()
     }, [])
     return (
-        <Stack screenOptions={{ headerShown: false }} initialRouteName="/(learn)">
+        <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen
                 name="notification"

@@ -34,10 +34,11 @@ export default function Appointment() {
 
     let markedDateKey = [];
     // normalize to dayOfMonth:00:00:00
-    const now = dayjs().hour(0).minute(0).second(0);
+    const now = dayjs()
+    const normalizedNow = dayjs().hour(0).minute(0).second(0);
     for (let apmt of mockup) {
-        if (apmt.dateTime.isBefore(now)) continue;
-        let diff = apmt.dateTime.hour(0).minute(0).second(0).diff(now, "day", true);
+        if (apmt.dateTime.isBefore(normalizedNow)) continue;
+        let diff = apmt.dateTime.hour(0).minute(0).second(0).diff(normalizedNow, "day", true);
         // if apmt is less than 24 hour -> check if it's today
         markedDateKey.push(Math.ceil(diff));
     }
