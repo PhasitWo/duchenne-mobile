@@ -1,10 +1,12 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { Pressable } from "react-native";
+import { Pressable, ViewStyle } from "react-native";
 import { darkGrey } from "@/constants/Colors";
-import { useNavigation } from "@react-navigation/native";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 
-export default function HeaderLeft() {
-    const navigation = useNavigation();
+type props = { navigation: NativeStackNavigationProp<ParamListBase>; style: ViewStyle };
+export default function HeaderLeft({ navigation, style }: props) {
+    // const navigationHook = useNavigation();
     return (
         <Pressable
             onPress={navigation.goBack}
@@ -12,8 +14,13 @@ export default function HeaderLeft() {
                 {
                     backgroundColor: pressed ? darkGrey : "white",
                     borderRadius: 100,
-                    marginLeft: 15,
+                    marginLeft: 20,
+                    width: 35,
+                    height: 35,
+                    justifyContent: "center",
+                    alignItems: "center",
                 },
+                style,
             ]}
         >
             <AntDesign name="arrowleft" size={24} color="black" />

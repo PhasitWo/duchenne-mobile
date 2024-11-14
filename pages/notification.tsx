@@ -1,8 +1,7 @@
 import { Text, FlatList, View, StyleSheet, Dimensions, Pressable } from "react-native";
-import { router, useRouter, type Href } from "expo-router";
 import { darkGrey } from "@/constants/Colors";
 import { useState, useEffect } from "react";
-import type { NotificationRequest } from "expo-notifications";
+
 
 interface notification {
     id: string | number;
@@ -11,23 +10,10 @@ interface notification {
 }
 
 let DATA = [
-    {
-        id: 1,
-        message: "hello world",
-        href: "/(appointment)/"
-    },
-    {
-        id: 2,
-        message: "hello world",
-    },
-    {
-        id: 3,
-        message: "hello world",
-    },
-    {
-        id: 4,
-        message: "hello world",
-    },
+    { id: 1, message: "hello world", href: "/(appointment)/" },
+    { id: 2, message: "hello world" },
+    { id: 3, message: "hello world" },
+    { id: 4, message: "hello world" },
 ];
 
 for (let i = 5; i < 15; i++) {
@@ -39,10 +25,7 @@ import * as Notifications from "expo-notifications";
 const Item = ({ notification }: { notification: notification }) => {
     return (
         <Pressable
-            style={({ pressed }) => [
-                { backgroundColor: pressed ? darkGrey : undefined },
-                style.item,
-            ]}
+            style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : undefined }, style.item]}
             // onPress={notification.href ? () => router.navigate(notification.href as Href) : null}
         >
             <Text>{notification.message}</Text>
@@ -51,7 +34,6 @@ const Item = ({ notification }: { notification: notification }) => {
 };
 
 export default function Notification() {
-    const router = useRouter();
     const [data, setData]: [data: notification[], setData: Function] = useState([]);
 
     async function getLocalNotifications() {
@@ -69,10 +51,7 @@ export default function Notification() {
 
     return (
         <View style={style.container}>
-            <FlatList
-                data={data}
-                renderItem={({ item }) => <Item notification={item} />}
-            ></FlatList>
+            <FlatList data={data} renderItem={({ item }) => <Item notification={item} />}></FlatList>
         </View>
     );
 }

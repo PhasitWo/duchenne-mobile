@@ -4,10 +4,10 @@ import { Colors } from "@/constants/Colors";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import HeaderRight from "@/components/HeaderRight";
 import HeaderLeft from "@/components/HeaderLeft";
+import Header from "@/components/navigation/Header";
 import Learn from "@/pages/learn";
-import Appointment from "@/pages/appointment/appointment";
 import AddAppointment from "@/pages/appointment/addAppointment";
-import Assessment from "@/pages/assessment";
+import AccountStack from "@/pages/account/_stack";
 import Ask from "@/pages/ask";
 import AppointmentStack from "@/pages/appointment/_stack";
 
@@ -19,19 +19,19 @@ export default function Tabs() {
         <Tab.Navigator
             screenOptions={{
                 tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-
                 tabBarStyle: { height: "10%" },
                 tabBarLabelPosition: "below-icon",
                 tabBarLabelStyle: { fontSize: 12, paddingBottom: 10 },
-                headerStyle: {
-                    backgroundColor: "white",
-                },
+                // headerStyle: {
+                //     backgroundColor: "white",
+                // },
 
-                headerTitleStyle: {
-                    fontWeight: "bold",
-                },
-                headerTitleAlign: "center",
+                // headerTitleStyle: {
+                //     fontWeight: "bold",
+                // },
+                // headerTitleAlign: "center",
                 headerRight: () => <HeaderRight />,
+                header: (props) => <Header {...props} showBackButton={false}/>,
             }}
         >
             <Tab.Screen
@@ -39,9 +39,8 @@ export default function Tabs() {
                 component={Learn}
                 options={{
                     title: "Learn",
-                    tabBarIcon: ({ color, focused }) => (
-                        <TabBarIcon name={focused ? "bulb" : "bulb-outline"} color={color} />
-                    ),
+                    headerShown: true,
+                    tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "bulb" : "bulb-outline"} color={color} />,
                 }}
             />
             <Tab.Screen
@@ -49,14 +48,11 @@ export default function Tabs() {
                 component={AppointmentStack}
                 options={{
                     title: "Appointment",
+                    headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
-                        <TabBarIcon
-                            name={focused ? "calendar" : "calendar-outline"}
-                            color={color}
-                        />
+                        <TabBarIcon name={focused ? "calendar" : "calendar-outline"} color={color} />
                     ),
-                    unmountOnBlur: true, // Reset to initial state
-                    headerLeft: () => <HeaderLeft />,
+                    // lazy: false, // render the screen on initial render
                 }}
             />
             <Tab.Screen
@@ -64,6 +60,7 @@ export default function Tabs() {
                 component={AddAppointment}
                 options={{
                     title: "Add Appointment",
+                    headerShown: true,
                     tabBarIcon: () => (
                         // <Link
                         //     href="/(tabs)/addAppointment"
@@ -78,21 +75,8 @@ export default function Tabs() {
                         /* </Link> */
                     ),
                     unmountOnBlur: true, // Reset to initial state
-                    headerLeft: () => <HeaderLeft />,
+
                     tabBarLabelStyle: { display: "none" },
-                }}
-            />
-            <Tab.Screen
-                name="assessment"
-                component={Assessment}
-                options={{
-                    title: "Assessment",
-                    tabBarIcon: ({ color, focused }) => (
-                        <TabBarIcon
-                            name={focused ? "document-text" : "document-text-outline"}
-                            color={color}
-                        />
-                    ),
                 }}
             />
             <Tab.Screen
@@ -100,12 +84,19 @@ export default function Tabs() {
                 component={Ask}
                 options={{
                     title: "Ask",
+                    headerShown: true,
                     tabBarIcon: ({ color, focused }) => (
-                        <TabBarIcon
-                            name={focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"}
-                            color={color}
-                        />
+                        <TabBarIcon name={focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"} color={color} />
                     ),
+                }}
+            />
+            <Tab.Screen
+                name="Account"
+                component={AccountStack}
+                options={{
+                    title: "Account",
+                    headerShown: false,
+                    tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "person" : "person-outline"} color={color} />,
                 }}
             />
         </Tab.Navigator>

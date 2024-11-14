@@ -1,20 +1,19 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { View, Text, StyleSheet, Alert, Pressable } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { darkGrey } from "@/constants/Colors";
-import { useRouter } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
-export default function HeaderRight() {
-    const router = useRouter()
-    const navigation = useNavigation()
-    const test = () => Alert.alert("test alert", "haha xdxd")
+import type { ViewProps, ViewStyle } from "react-native";
+
+export default function HeaderRight({style, ...rest }: ViewProps & { style?: ViewStyle }) {
+    const navigation = useNavigation();
+    const test = () => Alert.alert("test alert", "haha xdxd");
     return (
-        <View style={style.container}>
+        <View style={[stylesheet.container, style]} {...rest}>
             <Pressable onPress={() => navigation.navigate("notification" as never)}>
-                <FontAwesome style={style.bell} name="bell" size={30} color="black" />
-                <Text style={style.notification}>2</Text>
+                <FontAwesome style={stylesheet.bell} name="bell" size={30} color="black" />
+                <Text style={stylesheet.notification}>2</Text>
             </Pressable>
-            <Pressable>
+            {/* <Pressable>
                 <Ionicons
                     style={style.profile}
                     name="person-circle"
@@ -22,12 +21,12 @@ export default function HeaderRight() {
                     size={40}
                     color="black"
                 />
-            </Pressable>
+            </Pressable> */}
         </View>
     );
 }
 
-const style = StyleSheet.create({
+const stylesheet = StyleSheet.create({
     container: {
         flexDirection: "row",
         alignItems: "center",
