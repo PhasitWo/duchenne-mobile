@@ -3,7 +3,7 @@ import { grey, darkGrey } from "@/constants/Colors";
 import { Dayjs } from "dayjs";
 
 export interface appointment {
-    id: number
+    id: number | string
     dateTime: Dayjs;
     doctor: string;
 }

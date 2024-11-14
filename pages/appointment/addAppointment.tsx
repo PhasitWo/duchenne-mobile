@@ -1,26 +1,16 @@
-import { View, Text, Button, Pressable, StyleSheet, Dimensions } from "react-native";
+import { View, Text, Pressable, StyleSheet, Dimensions } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import dayjs from "dayjs";
 import { darkGrey, tint, darkTint } from "@/constants/Colors";
 import CustomButton from "@/components/CustomButton";
 import { Dropdown } from "react-native-element-dropdown";
-import * as Calendar from "expo-calendar";
-import * as Notifications from "expo-notifications";
-import { type DateTriggerInput } from "expo-notifications";
 import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { NotificationRequestInput } from "expo-notifications";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
 type mode = "date" | "time";
-type localNotification = { identifier: string } & NotificationRequestInput;
-type localAppointment = {
-    identifier: string;
-    date: Date;
-    doctor: string;
-    notifications: localNotification[];
-};
 
 const mockup = [
     { label: "Dr.Earth Bindai", value: "Dr.Earth Bindai" },
@@ -36,7 +26,6 @@ export default function AddAppointment() {
 
     async function handleSave() {
         // validate input
-        let localNoti = []
         if (selected === "") {
             Alert.alert("Error", "Please select a doctor from the list");
             return;
@@ -45,13 +34,8 @@ export default function AddAppointment() {
             Alert.alert("Error", "Invalid Date");
             return;
         }
-        try {
-            localNoti = await scheduleLocalNotification();
-            localStoreAppointment(localNoti)
-        } catch (err) {
-            Alert.alert("Error", err as string);
-            return;
-        }
+        // TODO send POST to server
+        console.log("POST to server")
         Alert.alert("Appointment Saved!", `${date.toLocaleString()}\n${selected}`, [
             {
                 text: "Ok",
@@ -60,40 +44,6 @@ export default function AddAppointment() {
                 },
             },
         ]);
-    }
-
-    async function scheduleLocalNotification() : Promise<localNotification[]> {
-        const OFFSET = [0, 5, 10];
-        const now = dayjs();
-        let toStoreNoti: localNotification[] = [];
-        for (let offset of OFFSET) {
-            let d = dayjs(date).subtract(offset, "minute");
-            if (d.isBefore(now)) continue;
-            let notiInput: NotificationRequestInput = {
-                content: { title: "Doctor Appointment", body: selected },
-                trigger: { date: d.toDate() },
-            };
-            let id = await Notifications.scheduleNotificationAsync(notiInput);
-            console.log("notification id => " + id);
-            let noti: localNotification = {
-                ...notiInput,
-                identifier: id,
-            };
-            // **JSON.stringfy will convert date to ISO string**
-            toStoreNoti.push(noti);
-        }
-        return toStoreNoti
-    }
-
-    async function localStoreAppointment(localNotifications: localNotification[]) {
-        let apmnt: localAppointment = {
-            identifier: "A" + new Date().getTime(),
-            date: date,
-            doctor: selected,
-            notifications: localNotifications,
-        };
-        // store
-        console.log(JSON.stringify(apmnt))
     }
 
     const onChange = (event: DateTimePickerEvent, selectedDate: Date | undefined) => {

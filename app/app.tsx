@@ -6,9 +6,19 @@ import Notification from "@/pages/notification"
 import * as Notifications from "expo-notifications";
 import type { NotificationTrigger } from "expo-notifications";
 import Tabs from "@/app/tab";
+import { AndroidNotificationPriority } from "expo-notifications";
+
+registerRootComponent(App);
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+        priority: AndroidNotificationPriority.MAX
+    }),
+});
 
 const Stack = createNativeStackNavigator();
-
 type notificationReceiveTrigger = NotificationTrigger & {value:number}
 
 export default function App() {
@@ -35,14 +45,6 @@ export default function App() {
     );
 }
 
-registerRootComponent(App);
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
-    }),
-});
 
 async function registerForPushNotificationsAsync() {
     await Notifications.setNotificationChannelAsync("default", {
