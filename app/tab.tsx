@@ -10,11 +10,13 @@ import AddAppointment from "@/pages/appointment/addAppointment";
 import AccountStack from "@/pages/account/_stack";
 import Ask from "@/pages/ask";
 import AppointmentStack from "@/pages/appointment/_stack";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const Tab = createBottomTabNavigator();
 
 export default function Tabs() {
     const colorScheme = useColorScheme();
+    const { lang } = useLanguage();
     return (
         <Tab.Navigator
             screenOptions={{
@@ -31,14 +33,14 @@ export default function Tabs() {
                 // },
                 // headerTitleAlign: "center",
                 headerRight: () => <HeaderRight />,
-                header: (props) => <Header {...props} showBackButton={false}/>,
+                header: (props) => <Header {...props} showBackButton={false} />,
             }}
         >
             <Tab.Screen
                 name="learn"
                 component={Learn}
                 options={{
-                    title: "Learn",
+                    title: lang("ศูนย์เรียนรู้", "Learn"),
                     headerShown: true,
                     tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "bulb" : "bulb-outline"} color={color} />,
                 }}
@@ -47,7 +49,7 @@ export default function Tabs() {
                 name="appointment"
                 component={AppointmentStack}
                 options={{
-                    title: "Appointment",
+                    title: lang("การนัดหมาย", "Appointment"),
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon name={focused ? "calendar" : "calendar-outline"} color={color} />
@@ -59,7 +61,7 @@ export default function Tabs() {
                 name="addAppointment"
                 component={AddAppointment}
                 options={{
-                    title: "Add Appointment",
+                    title: lang("เพิ่มนัดหมาย", "Add Appointment"),
                     headerShown: true,
                     tabBarIcon: () => (
                         // <Link
@@ -83,7 +85,7 @@ export default function Tabs() {
                 name="ask"
                 component={Ask}
                 options={{
-                    title: "Ask",
+                    title: lang("ถามคุณหมอ", "Ask"),
                     headerShown: true,
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon name={focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"} color={color} />
@@ -94,9 +96,10 @@ export default function Tabs() {
                 name="Account"
                 component={AccountStack}
                 options={{
-                    title: "Account",
+                    title: lang("บัญชี", "Account"),
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "person" : "person-outline"} color={color} />,
+                    unmountOnBlur: true, // Reset to initial route of account stack
                 }}
             />
         </Tab.Navigator>

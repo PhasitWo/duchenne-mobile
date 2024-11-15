@@ -10,6 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 // import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 import { StackParamList } from "./_stack";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useLanguage } from "@/hooks/useLanguage";
 // mockup fetching data
 const mockup: Array<appointment> = [
     {
@@ -34,7 +35,7 @@ type props = NativeStackScreenProps<StackParamList, "index">;
 export default function Appointment({ navigation }: props) {
     const [incomingSelected, setIncomingSelected] = useState(true);
     const { apmntList, setApmtList } = useAppointmentContext();
-  
+    const { lang } = useLanguage();
     let markedDateKey = [];
     // normalize to dayOfMonth:00:00:00
     const now = dayjs();
@@ -42,7 +43,6 @@ export default function Appointment({ navigation }: props) {
     for (let apmt of mockup) {
         if (apmt.dateTime.isBefore(normalizedNow)) continue;
         let diff = apmt.dateTime.hour(0).minute(0).second(0).diff(normalizedNow, "day", true);
-        // if apmt is less than 24 hour -> check if it's today
         markedDateKey.push(Math.ceil(diff));
     }
 
@@ -63,7 +63,7 @@ export default function Appointment({ navigation }: props) {
                     onPress={() => setIncomingSelected(true)}
                 >
                     <View>
-                        <Text>Incoming</Text>
+                        <Text>{lang("กำลังมาถึง", "Incoming")}</Text>
                     </View>
                 </Pressable>
                 <Pressable
@@ -71,27 +71,19 @@ export default function Appointment({ navigation }: props) {
                     onPress={() => setIncomingSelected(false)}
                 >
                     <View>
-                        <Text>History</Text>
+                        <Text>{lang("ประวัติ", "History")}</Text>
                     </View>
                 </Pressable>
             </View>
             <View style={style.bodyBackground}>
-                <ScrollView
-                    style={style.bodyContainer}
-                    contentContainerStyle={style.bodyContentContainer}
-                >
+                <ScrollView style={style.bodyContainer} contentContainerStyle={style.bodyContentContainer}>
                     {mockup
-                        .filter((v) =>
-                            incomingSelected ? v.dateTime.isAfter(now) : v.dateTime.isBefore(now)
-                        )
+                        .filter((v) => (incomingSelected ? v.dateTime.isAfter(now) : v.dateTime.isBefore(now)))
                         .map((v, k) => (
                             <AppointmentCard
                                 key={k}
                                 appointment={v}
-                                onPress={() =>
-                                    incomingSelected &&
-                                    navigation.navigate("viewAppointment", { id: String(v.id) })
-                                }
+                                onPress={() => incomingSelected && navigation.navigate("viewAppointment", { id: String(v.id) })}
                             />
                         ))}
                 </ScrollView>

@@ -7,6 +7,7 @@ import * as Notifications from "expo-notifications";
 import type { NotificationTrigger } from "expo-notifications";
 import Tabs from "@/app/tab";
 import { AndroidNotificationPriority } from "expo-notifications";
+import { LanguageProvider } from "@/hooks/useLanguage";
 
 registerRootComponent(App);
 Notifications.setNotificationHandler({
@@ -32,16 +33,18 @@ export default function App() {
         return () => subscription.remove();
     }, []);
     return (
-        <NavigationContainer>
-            <Stack.Navigator>
-                <Stack.Screen name="tab" component={Tabs} options={{ headerShown: false }} />
-                <Stack.Screen
-                    name="notification"
-                    component={Notification}
-                    options={{ headerShown: true, title: "Notifications" }}
-                />
-            </Stack.Navigator>
-        </NavigationContainer>
+        <LanguageProvider>
+            <NavigationContainer>
+                <Stack.Navigator>
+                    <Stack.Screen name="tab" component={Tabs} options={{ headerShown: false }} />
+                    <Stack.Screen
+                        name="notification"
+                        component={Notification}
+                        options={{ headerShown: true, title: "Notifications" }}
+                    />
+                </Stack.Navigator>
+            </NavigationContainer>
+        </LanguageProvider>
     );
 }
 

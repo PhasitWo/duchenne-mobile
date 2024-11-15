@@ -8,7 +8,7 @@ import CustomButton from "@/components/CustomButton";
 import { Dropdown } from "react-native-element-dropdown";
 import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
+import { useLanguage } from "@/hooks/useLanguage";
 
 type mode = "date" | "time";
 
@@ -23,6 +23,7 @@ export default function AddAppointment() {
     const [show, setShow] = useState(false);
     const [selected, setSelected] = useState("");
     const navigation = useNavigation();
+    const { lang } = useLanguage();
 
     async function handleSave() {
         // validate input
@@ -35,7 +36,7 @@ export default function AddAppointment() {
             return;
         }
         // TODO send POST to server
-        console.log("POST to server")
+        console.log("POST to server");
         Alert.alert("Appointment Saved!", `${date.toLocaleString()}\n${selected}`, [
             {
                 text: "Ok",
@@ -68,19 +69,13 @@ export default function AddAppointment() {
     return (
         <View style={style.container}>
             <Pressable
-                style={({ pressed }) => [
-                    { backgroundColor: pressed ? darkGrey : "white" },
-                    style.dateTime,
-                ]}
+                style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.dateTime]}
                 onPress={showDatepicker}
             >
                 <Text>{dayjs(date).format("D MMMM YYYY")}</Text>
             </Pressable>
             <Pressable
-                style={({ pressed }) => [
-                    { backgroundColor: pressed ? darkGrey : "white" },
-                    style.dateTime,
-                ]}
+                style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.dateTime]}
                 onPress={showTimepicker}
             >
                 <Text>{dayjs(date).format("HH:mm")}</Text>
@@ -108,13 +103,9 @@ export default function AddAppointment() {
                 onChange={(item) => setSelected(item.value)}
                 value={selected}
                 search
+                placeholder={lang("เลือกคุณหมอ", "Select Doctor")}
             />
-            <CustomButton
-                title="Save"
-                normalColor={tint}
-                pressedColor={darkTint}
-                onPress={handleSave}
-            />
+            <CustomButton title={lang("บันทึก", "Save")} normalColor={tint} pressedColor={darkTint} onPress={handleSave} />
             <Text>selected: {date.toLocaleString()}</Text>
         </View>
     );

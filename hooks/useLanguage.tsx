@@ -1,0 +1,57 @@
+import { useContext, createContext, useEffect, type PropsWithChildren, useState } from "react";
+import type { appointment } from "@/components/AppointmentCard";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AsyncStorageKey } from "@/constants/AsyncStorageKey";
+
+export type language = "th" | "en";
+type LangFunc = (thaiString: string, engString: string) => string;
+type ChangeLangFunc = (language: language) => void;
+
+const LanguageContext = createContext<{ lang: LangFunc; currentLang: language; changeLang: ChangeLangFunc }>({
+    lang: (thaiString, engString) => thaiString,
+    currentLang: "th",
+    changeLang: () => null,
+});
+
+export function useLanguage() {
+    const val = useContext(LanguageContext);
+    return val;
+}
+export function LanguageProvider({ children }: PropsWithChildren) {
+    const [currentLang, setCurrentLang] = useState<language>("th");
+    // get current lang setting
+    useEffect(() => {
+        getLangSetting();
+    }, []);
+
+    const getLangSetting = async () => {
+        try {
+            let res = await AsyncStorage.getItem(AsyncStorageKey.language);
+            if (res === null) {
+                await AsyncStorage.setItem(AsyncStorageKey.language, "th");
+                return;
+            }
+            setCurrentLang(res as language);
+        } catch (err) {
+            console.log("Can't get lang from AsyncStorage");
+        }
+    };
+    // hook function
+    const lang: LangFunc = (thaiString, engString) => {
+        return currentLang === "th" ? thaiString : engString;
+    };
+
+    const changeLang: ChangeLangFunc = async (language) => {
+        try {
+            await AsyncStorage.setItem(AsyncStorageKey.language, language);
+            setCurrentLang(language);
+        } catch (err) {
+            console.log("Can't save lang to AsyncStorage");
+        }
+    };
+    return (
+        <LanguageContext.Provider value={{ lang: lang, currentLang: currentLang, changeLang: changeLang }}>
+            {children}
+        </LanguageContext.Provider>
+    );
+}

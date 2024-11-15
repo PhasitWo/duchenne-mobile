@@ -2,7 +2,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Account from "./account";
 import Header from "@/components/navigation/Header";
 import Profile from "./profile";
-import Setting from "./setting";
+import SettingStack from "./setting/_stack";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export type StackParamList = {
     index: undefined;
@@ -13,23 +14,23 @@ export type StackParamList = {
 const Stack = createNativeStackNavigator<StackParamList>();
 
 export default function AccountStack() {
+    const { lang } = useLanguage();
     return (
         <Stack.Navigator screenOptions={{}}>
             <Stack.Screen
                 name="index"
                 component={Account}
-                options={{ title: "Account", header: (props) => <Header {...props} showBackButton={false} /> }}
+                options={{
+                    title: lang("บัญชี", "Account"),
+                    header: (props) => <Header {...props} showBackButton={false} />,
+                }}
             />
             <Stack.Screen
                 name="profile"
                 component={Profile}
-                options={{ title: "Profile", header: (props) => <Header {...props}/> }}
+                options={{ title: lang("โปรไฟล์", "Profile"), header: (props) => <Header {...props} /> }}
             />
-            <Stack.Screen
-                name="setting"
-                component={Setting}
-                options={{ title: "Setting", header: (props) => <Header {...props}/> }}
-            />
+            <Stack.Screen name="setting" component={SettingStack} options={{ headerShown: false }} />
         </Stack.Navigator>
     );
 }

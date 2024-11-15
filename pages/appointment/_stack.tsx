@@ -4,6 +4,7 @@ import Appointment from "@/pages/appointment/appointment";
 import ViewAppointment from "@/pages/appointment/viewAppointment";
 import HeaderRight from "@/components/HeaderRight";
 import Header from "@/components/navigation/Header";
+import { useLanguage } from "@/hooks/useLanguage";
 export type StackParamList = {
     index: undefined;
     viewAppointment: { id: string };
@@ -12,6 +13,7 @@ export type StackParamList = {
 const Stack = createNativeStackNavigator<StackParamList>();
 
 export default function AppointmentStack() {
+    const { lang } = useLanguage();
     return (
         <AppointmentProvider>
             <Stack.Navigator>
@@ -19,7 +21,7 @@ export default function AppointmentStack() {
                     name="index"
                     component={Appointment}
                     options={{
-                        title: "Appointment",
+                        title: lang("การนัดหมาย","Appointment"),
                         header: (props) => <Header {...props} showBackButton={false} />,
                     }}
                 />
