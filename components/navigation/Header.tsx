@@ -1,10 +1,8 @@
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import HeaderRight from "@/components/HeaderRight";
 import HeaderLeft from "../HeaderLeft";
-import type { NativeStackHeaderProps } from "@react-navigation/native-stack";
 
-const screenHeight = Dimensions.get("screen").height;
-const headerHeight = screenHeight * 0.1;
+const headerHeight = 90;
 type props = { title?: string, navigation: any, options: any, showBackButton? : boolean, route:any };
 
 export default function Header({ navigation, options, route, showBackButton = true }: props) {

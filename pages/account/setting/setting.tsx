@@ -1,14 +1,14 @@
 import { Text, View, FlatList, StyleSheet, Dimensions, Pressable } from "react-native";
-
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { darkGrey } from "@/constants/Colors";
-import type { ReactElement } from "react";
+import { type ReactElement } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useMemo } from "react";
 
-type setting = { title: string; icon: ReactElement; href: string | undefined };
+type Setting = { title: string; icon: ReactElement; href: string | undefined };
 
-const Item = ({ setting }: { setting: setting }) => {
+const Item = ({ setting }: { setting: Setting }) => {
     const navigation = useNavigation();
     return (
         <Pressable
@@ -24,14 +24,16 @@ const Item = ({ setting }: { setting: setting }) => {
 };
 
 export default function Setting() {
-    const { lang } = useLanguage();
-    const data: setting[] = [
-        {
-            title: lang("เลือกภาษา", "Select Language"),
-            href: "language",
-            icon: <MaterialIcons name="language" size={24} color="black" />,
-        },
-    ];
+    const { lang, currentLang } = useLanguage();
+    const data = useMemo<Setting[]>(() => {
+        return [
+            {
+                title: lang("เลือกภาษา", "Select Language"),
+                href: "language",
+                icon: <MaterialIcons name="language" size={24} color="black" />,
+            },
+        ];
+    }, [currentLang]);
     return (
         <View
             style={{
@@ -45,7 +47,7 @@ export default function Setting() {
 const screenHeight = Dimensions.get("screen").height;
 const style = StyleSheet.create({
     itemContainer: {
-        height: 0.08 * screenHeight,
+        height: 75,
         justifyContent: "space-between",
         borderTopColor: darkGrey,
         borderTopWidth: 1,

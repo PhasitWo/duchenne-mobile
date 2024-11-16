@@ -2,12 +2,13 @@ import { useContext, createContext, useEffect, type PropsWithChildren, useState 
 import type { appointment } from "@/components/AppointmentCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AsyncStorageKey } from "@/constants/AsyncStorageKey";
+import "dayjs/locale/th.js";
 
-export type language = "th" | "en";
+export type Language = "th" | "en";
 type LangFunc = (thaiString: string, engString: string) => string;
-type ChangeLangFunc = (language: language) => void;
+type ChangeLangFunc = (language: Language) => void;
 
-const LanguageContext = createContext<{ lang: LangFunc; currentLang: language; changeLang: ChangeLangFunc }>({
+const LanguageContext = createContext<{ lang: LangFunc; currentLang: Language; changeLang: ChangeLangFunc }>({
     lang: (thaiString, engString) => thaiString,
     currentLang: "th",
     changeLang: () => null,
@@ -18,7 +19,7 @@ export function useLanguage() {
     return val;
 }
 export function LanguageProvider({ children }: PropsWithChildren) {
-    const [currentLang, setCurrentLang] = useState<language>("th");
+    const [currentLang, setCurrentLang] = useState<Language>("th");
     // get current lang setting
     useEffect(() => {
         getLangSetting();
@@ -31,7 +32,7 @@ export function LanguageProvider({ children }: PropsWithChildren) {
                 await AsyncStorage.setItem(AsyncStorageKey.language, "th");
                 return;
             }
-            setCurrentLang(res as language);
+            setCurrentLang(res as Language);
         } catch (err) {
             console.log("Can't get lang from AsyncStorage");
         }

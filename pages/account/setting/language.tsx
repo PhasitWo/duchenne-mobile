@@ -1,19 +1,19 @@
 import { useMemo, useState, useEffect, ReactElement } from "react";
 import RadioGroup, { RadioButtonProps } from "react-native-radio-buttons-group";
-import { useLanguage, type language } from "@/hooks/useLanguage";
+import { useLanguage, type Language } from "@/hooks/useLanguage";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { darkGrey } from "@/constants/Colors";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { Pressable, View, Text, StyleSheet, Dimensions, FlatList } from "react-native";
 
-type langItemProps = { title: string; value: string; icon: ReactElement };
+type LangItemProps = { title: string; value: Language; icon: ReactElement };
 
-const data: langItemProps[] = [
+const data: LangItemProps[] = [
     { title: "ไทย", value: "th", icon: <MaterialIcons name="language" size={24} color="black" /> },
     { title: "English", value: "en", icon: <MaterialIcons name="language" size={24} color="black" /> },
 ];
 
-const Item = ({ lang, selected, pressFunc }: { lang: langItemProps; selected: boolean; pressFunc: Function }) => {
+const Item = ({ lang, selected, pressFunc }: { lang: LangItemProps; selected: boolean; pressFunc: Function }) => {
     return (
         <Pressable
             style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.itemContainer]}
@@ -29,16 +29,16 @@ const Item = ({ lang, selected, pressFunc }: { lang: langItemProps; selected: bo
 };
 
 export default function Language() {
-    const [selectedId, setSelectedId] = useState<string | undefined>();
+    const [selectedId, setSelectedId] = useState<Language | undefined>();
     const { currentLang, changeLang } = useLanguage();
 
     useEffect(() => {
         setSelectedId(currentLang);
     }, []);
 
-    async function handlePress(selectedId: string) {
+    async function handlePress(selectedId: Language) {
         setSelectedId(selectedId);
-        changeLang(selectedId as language);
+        changeLang(selectedId);
     }
 
     return (
@@ -56,7 +56,7 @@ export default function Language() {
 const screenHeight = Dimensions.get("screen").height;
 const style = StyleSheet.create({
     itemContainer: {
-        height: 0.08 * screenHeight,
+        height: 75,
         justifyContent: "space-between",
         borderTopColor: darkGrey,
         borderTopWidth: 1,

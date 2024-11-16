@@ -1,15 +1,14 @@
 import { Text, View, FlatList, StyleSheet, Dimensions, Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { darkGrey } from "@/constants/Colors";
-import type { ReactElement } from "react";
+import { ReactElement, useMemo } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
 
-type menu = { title: string; icon: ReactElement; href: string | undefined };
+type Menu = { title: string; icon: ReactElement; href: string | undefined };
 
-const Item = ({ menu }: { menu: menu }) => {
+const Item = ({ menu }: { menu: Menu }) => {
     const navigation = useNavigation();
     return (
         <Pressable
@@ -26,12 +25,18 @@ const Item = ({ menu }: { menu: menu }) => {
 };
 
 export default function Account() {
-    const { lang } = useLanguage();
-    const data: menu[] = [
-        { title: lang("โปรไฟล์", "Profile"), href: "profile", icon: <Ionicons name="person" size={24} color="black" /> },
-        { title: lang("การตั้งค่า", "Setting"), href: "setting", icon: <FontAwesome name="gear" size={24} color="black" /> },
-        { title: lang("ออกจากระบบ", "Logout"), href: undefined, icon: <Ionicons name="exit-outline" size={24} color="black" /> },
-    ];
+    const { lang, currentLang } = useLanguage();
+    const data = useMemo<Menu[]>(() => {
+        return [
+            { title: lang("โปรไฟล์", "Profile"), href: "profile", icon: <Ionicons name="person" size={24} color="black" /> },
+            { title: lang("การตั้งค่า", "Setting"), href: "setting", icon: <FontAwesome name="gear" size={24} color="black" /> },
+            {
+                title: lang("ออกจากระบบ", "Logout"),
+                href: undefined,
+                icon: <Ionicons name="exit-outline" size={24} color="black" />,
+            },
+        ];
+    }, [currentLang]);
 
     return (
         <View
@@ -46,7 +51,7 @@ export default function Account() {
 const screenHeight = Dimensions.get("screen").height;
 const style = StyleSheet.create({
     itemContainer: {
-        height: 0.08 * screenHeight,
+        height: 75,
         justifyContent: "space-between",
         borderTopColor: darkGrey,
         borderTopWidth: 1,
