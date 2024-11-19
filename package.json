@@ -1,6 +1,6 @@
 {
   "name": "duchenne-mobile",
-  "main": "app/app.tsx",
+  "main": "main.tsx",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",

@@ -3,13 +3,13 @@ import HeaderRight from "@/components/HeaderRight";
 import HeaderLeft from "../HeaderLeft";
 
 const headerHeight = 90;
-type props = { title?: string, navigation: any, options: any, showBackButton? : boolean, route:any };
+type props = { title?: string, navigation: any, options: any, showBackButton? : boolean, showNotification? : boolean ,route:any };
 
-export default function Header({ navigation, options, route, showBackButton = true }: props) {
+export default function Header({ navigation, options, route, showBackButton = true, showNotification = true }: props) {
     return (
         <View style={style.container}>
             <Text style={style.title}>{options.title ?? route.name}</Text>
-            <HeaderRight style={style.headerRight} />
+            {showNotification && <HeaderRight style={style.headerRight} />}
             {showBackButton && <HeaderLeft navigation={navigation} style={style.headerLeft} />}
         </View>
     );
