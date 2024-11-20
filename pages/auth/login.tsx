@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import ChangeLangText from "@/components/ChangeLangText";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useAuthContext } from "@/hooks/authContext";
 
 type LoginData = {
     hn: string;
@@ -17,8 +18,10 @@ export default function Login() {
     const [data, setData] = useState<LoginData>({ hn: "", password: "", hide: true });
     const navigation = useNavigation();
     const { lang } = useLanguage();
+    const { login } = useAuthContext();
     function handleLogin() {
-        // TODO check user data in server
+        // TODO POST TO SERVER
+        login(data);
     }
     return (
         <View style={style.formContainer}>
@@ -33,19 +36,22 @@ export default function Login() {
                     <FontAwesome5 name={data.hide ? "eye-slash" : "eye"} size={15} color="black" />
                 </Pressable>
             </View>
+            <View style={style.forgotPasswordContainer}>
+                <Text style={style.forgotPassword}>{lang("ลืมรหัสผ่าน?", "Forgot password?")}</Text>
+            </View>
+            <CustomButton
+                title={lang("เข้าสู่ระบบ", "Log in")}
+                normalColor="#78ffe6"
+                pressedColor={darkGrey}
+                style={{ height: 60, borderRadius: 10, marginTop: 30 }}
+                onPress={handleLogin}
+            />
             <Text style={style.signup}>
                 {lang("ยังไม่มีบัญชี? ", "Don't have an account? ")}
                 <Text style={style.signupLink} onPress={() => navigation.navigate("register" as never)}>
                     {lang("ลงทะเบียน", "Sign up")}
                 </Text>
             </Text>
-            <CustomButton
-                title={lang("เข้าสู่ระบบ", "Log in")}
-                normalColor="#78ffe6"
-                pressedColor={darkGrey}
-                style={{ height: 60, borderRadius: 10, marginTop: 30 }}
-                onPress={() => navigation.navigate("setPassword" as never)}
-            />
             <Text onPress={() => navigation.navigate("tab" as never)} style={{ bottom: -100, color: "whitesmoke" }}>
                 DEV
             </Text>
@@ -85,6 +91,8 @@ const style = StyleSheet.create({
     signup: { marginTop: 20 },
     signupLink: {
         color: "blue",
+        borderBottomColor: "blue",
+        borderBottomWidth: 5,
     },
     eye: {
         position: "absolute",
@@ -95,5 +103,13 @@ const style = StyleSheet.create({
     lang: {
         position: "absolute",
         bottom: 50,
+    },
+    forgotPasswordContainer: {
+        justifyContent: "center",
+        width: 350,
+        alignItems: "flex-end",
+    },
+    forgotPassword: {
+        color: "blue",
     },
 });

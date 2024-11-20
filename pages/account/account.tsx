@@ -5,15 +5,18 @@ import { darkGrey } from "@/constants/Colors";
 import { ReactElement, useMemo } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useAuthContext } from "@/hooks/authContext";
 
-type Menu = { title: string; icon: ReactElement; href: string | undefined };
+type Menu = { title: string; icon: ReactElement; href?: string | undefined; customOnPress?: Function };
 
 const Item = ({ menu }: { menu: Menu }) => {
     const navigation = useNavigation();
     return (
         <Pressable
             style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.itemContainer]}
-            onPress={() => (menu.href ? navigation.navigate(menu.href as never) : undefined)}
+            onPress={() =>
+                menu.href ? navigation.navigate(menu.href as never) : menu.customOnPress ? menu.customOnPress() : undefined
+            }
         >
             <View style={style.item}>
                 <View style={style.itemIcon}>{menu.icon}</View>
@@ -26,13 +29,14 @@ const Item = ({ menu }: { menu: Menu }) => {
 
 export default function Account() {
     const { lang, currentLang } = useLanguage();
+    const { logout } = useAuthContext();
     const data = useMemo<Menu[]>(() => {
         return [
             { title: lang("โปรไฟล์", "Profile"), href: "profile", icon: <Ionicons name="person" size={24} color="black" /> },
             { title: lang("การตั้งค่า", "Setting"), href: "setting", icon: <FontAwesome name="gear" size={24} color="black" /> },
             {
                 title: lang("ออกจากระบบ", "Logout"),
-                href: undefined,
+                customOnPress: logout,
                 icon: <Ionicons name="exit-outline" size={24} color="black" />,
             },
         ];

@@ -1,24 +1,18 @@
 import { useContext, createContext, useEffect, type PropsWithChildren, useReducer, useMemo } from "react";
-import type { AuthAction, AuthActionEnum, AuthState } from "./authReducer";
+import { AuthAction, AuthActionEnum, AuthState } from "./authReducer";
 import authReducer from "./authReducer";
+import * as SecureStore from "expo-secure-store";
 
 type LoginData = { hn: string; password: string };
 type Login = (data: LoginData) => void;
-export type SignupData = {
-    hn: string;
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    phone: string;
-    email: string;
-};
-type Signup = (data: SignupData) => void;
 type Logout = () => void;
+enum SecureStoreKey {
+    USER_TOKEN = "userToken",
+}
 
-const AuthContext = createContext<{ authState: AuthState; login: Login; signup: Signup; logout: Logout }>({
+const AuthContext = createContext<{ authState: AuthState; login: Login; logout: Logout }>({
     authState: { isLoading: true, isSignin: false, userToken: null },
     login: (data) => null,
-    signup: (data) => null,
     logout: () => null,
 });
 
@@ -28,22 +22,32 @@ export function useAuthContext() {
 }
 export function AuthProvider({ children }: PropsWithChildren) {
     const [authState, dispatch] = useReducer(authReducer, initialState);
-    const { login, signup, logout } = useMemo<{ login: Login; signup: Signup; logout: Logout }>(
+    const { login, logout } = useMemo<{ login: Login; logout: Logout }>(
         () => ({
-            login: (data) => {},
-            signup: (data) => {},
-            logout: () => {},
+            login: async (data) => {
+                //TODO POST TO SERVER
+                await SecureStore.setItemAsync(SecureStoreKey.USER_TOKEN, "dummy-token");
+                dispatch({ type: AuthActionEnum.LOGIN, userToken: "dummy-token" });
+            },
+            logout: async () => {
+                await SecureStore.deleteItemAsync(SecureStoreKey.USER_TOKEN);
+                dispatch({ type: AuthActionEnum.LOGOUT });
+            },
         }),
         []
     );
 
     const restoreToken = async () => {
-        // Restore token from secure store
+        console.log("start restoring token");
+        const result = await SecureStore.getItemAsync(SecureStoreKey.USER_TOKEN);
+        console.log("restore => " + result);
+        dispatch({ type: AuthActionEnum.RESTORE, userToken: result });
+        console.log("restoring end");
     };
     useEffect(() => {
         restoreToken();
     }, []);
-    return <AuthContext.Provider value={{}}>{children}</AuthContext.Provider>;
+    return <AuthContext.Provider value={{ authState: authState, login: login, logout: logout }}>{children}</AuthContext.Provider>;
 }
 
 const initialState: AuthState = {

@@ -25,7 +25,7 @@ const mockup: Array<appointment> = [
     },
     {
         id: 3,
-        dateTime: dayjs("2024-11-16 22:30"),
+        dateTime: dayjs("2024-11-21 22:30"),
         doctor: "Dr.Spiderman",
     },
 ];
@@ -50,6 +50,15 @@ export default function Appointment({ navigation }: props) {
         setApmtList(mockup);
     }, []);
 
+    const display = mockup
+        .filter((v) => (incomingSelected ? v.dateTime.isAfter(now) : v.dateTime.isBefore(now)))
+        .map((v, k) => (
+            <AppointmentCard
+                key={k}
+                appointment={v}
+                onPress={() => incomingSelected && navigation.navigate("viewAppointment", { id: String(v.id) })}
+            />
+        ));
     return (
         <View
             style={{
@@ -77,15 +86,7 @@ export default function Appointment({ navigation }: props) {
             </View>
             <View style={style.bodyBackground}>
                 <ScrollView style={style.bodyContainer} contentContainerStyle={style.bodyContentContainer}>
-                    {mockup
-                        .filter((v) => (incomingSelected ? v.dateTime.isAfter(now) : v.dateTime.isBefore(now)))
-                        .map((v, k) => (
-                            <AppointmentCard
-                                key={k}
-                                appointment={v}
-                                onPress={() => incomingSelected && navigation.navigate("viewAppointment", { id: String(v.id) })}
-                            />
-                        ))}
+                    {display.length > 0 ? display : <Text>{lang("ไม่มีนัดหมาย","No Appointment")}</Text>}
                 </ScrollView>
             </View>
         </View>
@@ -127,5 +128,6 @@ const style = StyleSheet.create({
     },
     bodyContentContainer: {
         overflow: "hidden",
+        alignItems:"center"
     },
 });

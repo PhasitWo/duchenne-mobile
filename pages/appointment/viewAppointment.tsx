@@ -54,7 +54,6 @@ export default function ViewAppointment({ route }: Props) {
     const showTimepicker = () => {
         showMode("time");
     };
-    //TODO validate that selected time is after today date and time
     return (
         <View style={style.container}>
             <Pressable

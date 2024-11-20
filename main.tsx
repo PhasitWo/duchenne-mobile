@@ -4,6 +4,7 @@ import { registerRootComponent } from "expo";
 import * as Notifications from "expo-notifications";
 import type { NotificationTrigger } from "expo-notifications";
 import { LanguageProvider } from "@/hooks/useLanguage";
+import { AuthProvider } from "./hooks/authContext";
 import App from "./app";
 
 registerRootComponent(main);
@@ -21,11 +22,13 @@ export default function main() {
         return () => subscription.remove();
     }, []);
     return (
-        <LanguageProvider>
-            <NavigationContainer>
-                <App />
-            </NavigationContainer>
-        </LanguageProvider>
+        <AuthProvider>
+            <LanguageProvider>
+                <NavigationContainer>
+                    <App />
+                </NavigationContainer>
+            </LanguageProvider>
+        </AuthProvider>
     );
 }
 

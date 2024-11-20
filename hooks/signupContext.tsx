@@ -1,5 +1,13 @@
 import { useContext, createContext, type PropsWithChildren, useState } from "react";
-import type { SignupData } from "./authContext";
+
+export type SignupData = {
+    hn: string;
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    phone: string;
+    email: string;
+};
 
 
 const SignupContext = createContext<{ signupData: SignupData; setSignupData: (signupData: SignupData) => void }>({

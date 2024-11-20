@@ -31,6 +31,7 @@ export default function AddAppointment() {
             Alert.alert("Error", "Please select a doctor from the list");
             return;
         }
+        // validate that selected time is after today date and time
         if (dayjs(date).isBefore(dayjs())) {
             Alert.alert("Error", "Invalid Date");
             return;
@@ -65,7 +66,6 @@ export default function AddAppointment() {
     const showTimepicker = () => {
         showMode("time");
     };
-    //TODO validate that selected time is after today date and time
     return (
         <View style={style.container}>
             <Pressable
