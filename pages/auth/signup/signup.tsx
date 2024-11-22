@@ -20,7 +20,7 @@ export default function Signup() {
     function handleNext() {
         // TODO check user data in server
     }
-
+    // TODO alert required field
     return (
         <KeyboardAvoidingView style={{ backgroundColor: "white", flex: 1 }} behavior="padding">
             <ScrollView contentContainerStyle={style.formContainer}>

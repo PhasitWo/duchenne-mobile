@@ -29,7 +29,7 @@ export default function SetPassword() {
         text = text.trim();
         if (!engRegex.test(text)) return; // english only
         let newCondition: Condition = { length: false, lowerCase: false, upperCase: false, numeric: false };
-        newCondition.length = text.length >= 8;
+        newCondition.length = text.length >= 8 && text.length <= 20;
         for (let i = 0; i < text.length; i++) {
             let char = text.charAt(i);
             if (!isNaN((char as any) * 1)) newCondition.numeric = true;
@@ -80,7 +80,7 @@ export default function SetPassword() {
             </View>
             <View>
                 <Text style={{ color: condition.length ? "green" : "red" }}>
-                    {lang("รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร", "Passwords must be at least 8 characters in length")}
+                    {lang("รหัสผ่านต้องมีความยาวอย่างน้อย 8-20 ตัวอักษร", "Passwords must be between 8-20 characters in length")}
                 </Text>
                 <Text style={{ color: condition.lowerCase ? "green" : "red" }}>
                     {lang("ต้องมีตัวพิมพ์เล็กอย่างน้อย 1 ตัวอักษร [a-z]", "a minimum of 1 lower case letter [a-z]")}

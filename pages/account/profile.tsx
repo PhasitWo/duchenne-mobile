@@ -9,6 +9,16 @@ type Info = { title: string; value: string | number; border?: boolean };
 const Item = ({ info }: { info: Info }) => {
     return (
         <Pressable
+            onPress={async () => {
+                try {
+                    let res = await fetch("http://192.168.1.114:8080/", {
+                        method: "GET",
+                    });
+                    console.log(await res.json());
+                } catch (err: any) {
+                    console.log(err.message);
+                }
+            }}
             style={({ pressed }) => [
                 { backgroundColor: pressed ? darkGrey : "white", borderTopWidth: info.border ? 1 : 0 },
                 style.itemContainer,

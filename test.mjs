@@ -2,6 +2,11 @@ import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat.js";
 import "dayjs/locale/th.js"
 
+async function test() {
+    let res = await fetch("http://192.168.1.114:8080/");
+    console.log(await res.json())
+}
+test()
 // let now = dayjs()
 // let x = []
 // for (let i = 0; i < 7; i++) {
@@ -23,6 +28,6 @@ import "dayjs/locale/th.js"
 //         notifications: [[Object], [Object], [Object]],
 //     },
 // ];
-dayjs.extend(localizedFormat)
-let now = dayjs()
-console.log(now.locale("th").format("MMMM"))
+// dayjs.extend(localizedFormat)
+// let now = dayjs()
+// console.log(now.locale("th").format("MMMM"))
