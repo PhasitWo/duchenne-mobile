@@ -51,7 +51,7 @@ export default function Profile() {
                 flex: 1,
             }}
         >
-            <FlatList data={data} renderItem={({ item }) => <Item info={item} />} />
+            <FlatList data={data} renderItem={({ item }) => <Item info={item} />} showsVerticalScrollIndicator={false} />
         </View>
     );
 }

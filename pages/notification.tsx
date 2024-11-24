@@ -51,7 +51,11 @@ export default function Notification() {
 
     return (
         <View style={style.container}>
-            <FlatList data={data} renderItem={({ item }) => <Item notification={item} />}></FlatList>
+            <FlatList
+                data={data}
+                renderItem={({ item }) => <Item notification={item} />}
+                showsVerticalScrollIndicator={false}
+            ></FlatList>
         </View>
     );
 }

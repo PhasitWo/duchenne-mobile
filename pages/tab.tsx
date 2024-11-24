@@ -8,8 +8,9 @@ import Header from "@/components/navigation/Header";
 import Learn from "@/pages/learn";
 import AddAppointment from "@/pages/appointment/addAppointment";
 import AccountStack from "@/pages/account/_stack";
-import Ask from "@/pages/ask";
+import AddAsk from "./ask/addAsk";
 import AppointmentStack from "@/pages/appointment/_stack";
+import AskStack from "@/pages/ask/_stack";
 import { useLanguage } from "@/hooks/useLanguage";
 
 const Tab = createBottomTabNavigator();
@@ -24,6 +25,7 @@ export default function Tabs() {
                 tabBarStyle: { height: "10%" },
                 tabBarLabelPosition: "below-icon",
                 tabBarLabelStyle: { fontSize: 12, paddingBottom: 10 },
+                tabBarHideOnKeyboard: true,
                 // headerStyle: {
                 //     backgroundColor: "white",
                 // },
@@ -83,10 +85,10 @@ export default function Tabs() {
             />
             <Tab.Screen
                 name="ask"
-                component={Ask}
+                component={AskStack}
                 options={{
                     title: lang("ถามคุณหมอ", "Ask"),
-                    headerShown: true,
+                    headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon name={focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"} color={color} />
                     ),

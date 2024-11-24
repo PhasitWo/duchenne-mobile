@@ -6,7 +6,6 @@ import { type appointment } from "@/components/AppointmentCard";
 import { grey, darkGrey } from "@/constants/Colors";
 import dayjs from "dayjs";
 import { useAppointmentContext } from "@/hooks/appointmentContext";
-import { useNavigation } from "@react-navigation/native";
 // import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 import { StackParamList } from "./_stack";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";

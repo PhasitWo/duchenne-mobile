@@ -1,10 +1,8 @@
-import { useMemo, useState, useEffect, ReactElement } from "react";
-import RadioGroup, { RadioButtonProps } from "react-native-radio-buttons-group";
+import {  useState, useEffect, ReactElement } from "react";
 import { useLanguage, type Language } from "@/hooks/useLanguage";
-import { RadioButton } from "react-native-radio-buttons-group";
 import { darkGrey } from "@/constants/Colors";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
-import { Pressable, View, Text, StyleSheet, Dimensions, FlatList } from "react-native";
+import { Pressable, View, Text, StyleSheet, FlatList } from "react-native";
 
 type LangItemProps = { title: string; value: Language; icon: ReactElement };
 
@@ -48,12 +46,13 @@ export default function Language() {
                 renderItem={({ item }) => (
                     <Item lang={item} selected={selectedId === item.value} pressFunc={() => handlePress(item.value)} />
                 )}
+                showsVerticalScrollIndicator={false}
             />
         </>
     );
 }
 
-const screenHeight = Dimensions.get("screen").height;
+
 const style = StyleSheet.create({
     itemContainer: {
         height: 75,

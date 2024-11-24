@@ -7,21 +7,22 @@ import Login from "@/pages/auth/login";
 import Header from "@/components/navigation/Header";
 import * as SplashScreen from "expo-splash-screen";
 import { useAuthContext } from "./hooks/authContext";
+import AddAsk from "./pages/ask/addAsk";
 
-type StackParamList = {
+export type AppStackParamList = {
     tab: undefined;
     login: undefined;
     register: undefined;
     notification: undefined;
+    addAsk: undefined;
 };
-const Stack = createNativeStackNavigator<StackParamList>();
+const Stack = createNativeStackNavigator<AppStackParamList>();
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
     const { lang } = useLanguage();
     const { authState } = useAuthContext();
-
     if (!authState.isLoading) {
         setTimeout(SplashScreen.hideAsync, 1000)
     }
@@ -41,6 +42,11 @@ export default function App() {
                         name="notification"
                         component={Notification}
                         options={{ headerShown: true, title: "Notifications" }}
+                    />
+                    <Stack.Screen
+                        name="addAsk"
+                        component={AddAsk}
+                        options={{ title: lang("ส่งคำถาม", "New Question"), header: (props) => <Header {...props} /> }}
                     />
                 </>
             )}

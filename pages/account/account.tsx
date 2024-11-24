@@ -48,7 +48,7 @@ export default function Account() {
                 flex: 1,
             }}
         >
-            <FlatList data={data} renderItem={({ item }) => <Item menu={item} />} />
+            <FlatList data={data} renderItem={({ item }) => <Item menu={item} />} showsVerticalScrollIndicator={false} />
         </View>
     );
 }

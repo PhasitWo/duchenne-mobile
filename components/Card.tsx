@@ -21,9 +21,9 @@ export default function Card({ title, bodyText, ...rest }: CardParam & Pressable
 const style = StyleSheet.create({
     container: {
         borderRadius: 30,
-        width: "90%",
+        width: 350,
         height: 120,
-        marginTop: "3%",
+        marginTop: 20,
         padding: 25,
     },
     title: {

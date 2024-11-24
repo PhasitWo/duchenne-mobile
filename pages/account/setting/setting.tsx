@@ -40,7 +40,7 @@ export default function Setting() {
                 flex: 1,
             }}
         >
-            <FlatList data={data} renderItem={({ item }) => <Item setting={item} />} />
+            <FlatList data={data} renderItem={({ item }) => <Item setting={item} />} showsVerticalScrollIndicator={false} />
         </View>
     );
 }
