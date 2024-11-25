@@ -1,4 +1,4 @@
-import {Text, Pressable, PressableProps, StyleSheet, ViewStyle, ColorValue} from "react-native"
+import { Text, Pressable, PressableProps, StyleSheet, ViewStyle, ColorValue, ActivityIndicator } from "react-native";
 import { darkTint, tint } from "@/constants/Colors";
 
 export default function CustomButton({
@@ -6,18 +6,22 @@ export default function CustomButton({
     style,
     normalColor,
     pressedColor,
+    showLoading = false,
     ...rest
-}: { title: string; style?: ViewStyle, normalColor: ColorValue, pressedColor: ColorValue } & PressableProps) {
+}: {
+    title: string;
+    style?: ViewStyle;
+    normalColor: ColorValue;
+    pressedColor: ColorValue;
+    showLoading?: boolean;
+} & PressableProps) {
     return (
         <Pressable
-            style={({ pressed }) => [
-                { backgroundColor: pressed ? pressedColor : normalColor },
-                defaultStyle.button,
-                style,
-            ]}
+            style={({ pressed }) => [{ backgroundColor: pressed ? pressedColor : normalColor }, defaultStyle.button, style]}
+            disabled={showLoading}
             {...rest}
         >
-            <Text>{title}</Text>
+            {showLoading ? <ActivityIndicator size={40} color="white" /> : <Text>{title}</Text>}
         </Pressable>
     );
 }

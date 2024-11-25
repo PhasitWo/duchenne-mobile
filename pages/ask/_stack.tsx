@@ -3,15 +3,15 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Appointment from "@/pages/appointment/appointment";
 import ViewAppointment from "@/pages/appointment/viewAppointment";
 import Ask from "./ask";
-import AddAsk from "./addAsk";
+import ViewAsk from "./viewAsk";
 import Header from "@/components/navigation/Header";
 import { useLanguage } from "@/hooks/useLanguage";
-export type StackParamList = {
+export type AskStackParamList = {
     index: undefined;
-    addAsk: undefined;
+    viewAsk: { id: number };
 };
 
-const Stack = createNativeStackNavigator<StackParamList>();
+const Stack = createNativeStackNavigator<AskStackParamList>();
 
 export default function AskStack() {
     const { lang } = useLanguage();
@@ -23,6 +23,14 @@ export default function AskStack() {
                 options={{
                     title: lang("ถามคุณหมอ", "Ask"),
                     header: (props) => <Header {...props} showBackButton={false} />,
+                }}
+            />
+            <Stack.Screen
+                name="viewAsk"
+                component={ViewAsk}
+                options={{
+                    title: lang("คำถามของคุณ", "Your Question"),
+                    header: (props) => <Header {...props} />,
                 }}
             />
         </Stack.Navigator>

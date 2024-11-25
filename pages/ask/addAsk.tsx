@@ -3,7 +3,6 @@ import CustomButton from "@/components/CustomButton";
 import { darkGrey, tint } from "@/constants/Colors";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useState, useEffect } from "react";
-import { AppStackParamList } from "@/app";
 import { NativeStackScreenProps } from "react-native-screens/lib/typescript/native-stack/types";
 
 type props = NativeStackScreenProps<any, "addAsk">;

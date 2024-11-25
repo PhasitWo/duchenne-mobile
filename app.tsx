@@ -8,10 +8,12 @@ import Header from "@/components/navigation/Header";
 import * as SplashScreen from "expo-splash-screen";
 import { useAuthContext } from "./hooks/authContext";
 import AddAsk from "./pages/ask/addAsk";
+import ForgotPassword from "./pages/auth/forgotPassword";
 
 export type AppStackParamList = {
     tab: undefined;
     login: undefined;
+    forgotPassword: undefined;
     register: undefined;
     notification: undefined;
     addAsk: undefined;
@@ -24,7 +26,7 @@ export default function App() {
     const { lang } = useLanguage();
     const { authState } = useAuthContext();
     if (!authState.isLoading) {
-        setTimeout(SplashScreen.hideAsync, 1000)
+        setTimeout(SplashScreen.hideAsync, 300);
     }
     return (
         <Stack.Navigator
@@ -34,6 +36,14 @@ export default function App() {
                 <>
                     <Stack.Screen name="login" component={Login} options={{ title: lang("ลงชื่อเข้าใช้", "Login") }} />
                     <Stack.Screen name="register" component={SignupStack} options={{ headerShown: false }} />
+                    <Stack.Screen
+                        name="forgotPassword"
+                        component={ForgotPassword}
+                        options={{
+                            title: lang("ลืมรหัสผ่าน", "Forgot Password"),
+                            header: (props) => <Header {...props} showNotification={false} />,
+                        }}
+                    />
                 </>
             ) : (
                 <>

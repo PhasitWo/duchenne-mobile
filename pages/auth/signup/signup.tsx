@@ -1,15 +1,40 @@
-import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, ScrollView, Keyboard } from "react-native";
+import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, ScrollView, Alert } from "react-native";
 import { useRef } from "react";
 import CustomButton from "@/components/CustomButton";
 import { darkGrey } from "@/constants/Colors";
-import { useNavigation } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
-import { useSignupContext } from "@/hooks/signupContext";
+import { SignupData, useSignupContext } from "@/hooks/signupContext";
+
+const fieldMap = {
+    hn: {
+        en: "HN",
+        th: "เลข HN",
+    },
+    firstName: {
+        en: "First Name",
+        th: "ชื่อจริง",
+    },
+    middleName: {
+        en: "Middle Name",
+        th: "ชื่อกลาง",
+    },
+    lastName: {
+        en: "Last Name",
+        th: "นามสกุล",
+    },
+    phone: {
+        en: "Phone Number",
+        th: "เบอร์โทรศัพท์",
+    },
+    email: {
+        en: "Email",
+        th: "อีเมล",
+    },
+};
 
 export default function Signup() {
     const { signupData, setSignupData } = useSignupContext();
-    const navigation = useNavigation();
-    const { lang } = useLanguage();
+    const { lang, currentLang } = useLanguage();
 
     const firstName_ref = useRef<TextInput>(null);
     const middleName_ref = useRef<TextInput>(null);
@@ -17,15 +42,32 @@ export default function Signup() {
     const phone_ref = useRef<TextInput>(null);
     const email_ref = useRef<TextInput>(null);
 
-    function handleNext() {
-        // TODO check user data in server
+    function validateFields(): keyof SignupData | null {
+        const EXCEPTIONFIELDS = ["middleName"];
+        let key: keyof SignupData;
+        for (key in signupData) {
+            if (EXCEPTIONFIELDS.includes(key)) continue;
+            if (signupData[key].trim().length === 0) return key;
+        }
+        return null;
     }
-    // TODO alert required field
+
+    function handleSignup() {
+        const emptyField = validateFields();
+        if (emptyField) {
+            Alert.alert(
+                lang("เกิดข้อผิดพลาด", "Error"),
+                lang(`ขาดข้อมูล : ${fieldMap[emptyField][currentLang]}`, `missing : ${fieldMap[emptyField][currentLang]}`)
+            );
+            return;
+        }
+        // TODO check signup data in server
+    }
     return (
         <KeyboardAvoidingView style={{ backgroundColor: "white", flex: 1 }} behavior="padding">
             <ScrollView contentContainerStyle={style.formContainer}>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>HN</Text>
+                    <Text style={style.label}>HN*</Text>
                     <TextInput
                         style={style.input}
                         placeholderTextColor={placeholderColor}
@@ -33,10 +75,11 @@ export default function Signup() {
                         onChangeText={(text) => setSignupData({ ...signupData, hn: text })}
                         onSubmitEditing={() => firstName_ref.current?.focus()}
                         blurOnSubmit={false}
+                        keyboardType="number-pad"
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>{lang("ชื่อจริง", "First Name")}</Text>
+                    <Text style={style.label}>{lang("ชื่อจริง*", "First Name* (in Thai)")}</Text>
                     <TextInput
                         ref={firstName_ref}
                         style={style.input}
@@ -48,7 +91,7 @@ export default function Signup() {
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>{lang("ชื่อกลาง", "Middle Name")}</Text>
+                    <Text style={style.label}>{lang("ชื่อกลาง", "Middle Name (in Thai)")}</Text>
                     <TextInput
                         ref={middleName_ref}
                         style={style.input}
@@ -60,7 +103,7 @@ export default function Signup() {
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>{lang("นามสกุล", "Last Name")}</Text>
+                    <Text style={style.label}>{lang("นามสกุล*", "Last Name* (in Thai)")}</Text>
                     <TextInput
                         ref={lastName_ref}
                         style={style.input}
@@ -72,7 +115,7 @@ export default function Signup() {
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>{lang("เบอร์โทรศัพท์", "Phone Number")}</Text>
+                    <Text style={style.label}>{lang("เบอร์โทรศัพท์*", "Phone Number*")}</Text>
                     <TextInput
                         ref={phone_ref}
                         style={style.input}
@@ -81,16 +124,14 @@ export default function Signup() {
                         onChangeText={(text) => setSignupData({ ...signupData, phone: text })}
                         onSubmitEditing={() => email_ref.current?.focus()}
                         blurOnSubmit={false}
-                        placeholder="081 111 1111"
                         keyboardType="number-pad"
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>{lang("อีเมล", "Email")}</Text>
+                    <Text style={style.label}>{lang("อีเมล*", "Email*")}</Text>
                     <TextInput
                         ref={email_ref}
                         style={style.input}
-                        placeholder="Email Address"
                         value={signupData.email}
                         onChangeText={(text) => setSignupData({ ...signupData, email: text })}
                         keyboardType="email-address"
@@ -98,11 +139,11 @@ export default function Signup() {
                     />
                 </View>
                 <CustomButton
-                    title={lang("ถัดไป", "Next")}
+                    title={lang("ลงทะเบียน", "Sign up")}
                     normalColor="#78ffe6"
                     pressedColor={darkGrey}
                     style={{ height: 60, borderRadius: 10, marginTop: 50 }}
-                    onPress={() => navigation.navigate("setPassword" as never)}
+                    onPress={handleSignup}
                 />
             </ScrollView>
         </KeyboardAvoidingView>

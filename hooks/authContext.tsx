@@ -3,7 +3,11 @@ import { AuthAction, AuthActionEnum, AuthState } from "./authReducer";
 import authReducer from "./authReducer";
 import * as SecureStore from "expo-secure-store";
 
-type LoginData = { hn: string; password: string };
+export type LoginData = {
+    hn: string;
+    firstName: string;
+    lastName: string;
+};
 type Login = (data: LoginData) => void;
 type Logout = () => void;
 enum SecureStoreKey {
@@ -27,7 +31,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
             login: async (data) => {
                 //TODO POST TO SERVER
                 await SecureStore.setItemAsync(SecureStoreKey.USER_TOKEN, "dummy-token");
-                dispatch({ type: AuthActionEnum.LOGIN, userToken: "dummy-token" });
+                // mockup waiting for server to response
+                setTimeout(() => {
+                    dispatch({ type: AuthActionEnum.LOGIN, userToken: "dummy-token" });
+                }, 1000);
             },
             logout: async () => {
                 await SecureStore.deleteItemAsync(SecureStoreKey.USER_TOKEN);

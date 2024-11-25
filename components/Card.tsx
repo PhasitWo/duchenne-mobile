@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Pressable, PressableProps } from "react-native";
 import { darkGrey } from "@/constants/Colors";
 
-export type CardParam = { title: string; bodyText: string };
+export type CardParam = {id?: number, title: string; bodyText: string };
 
 export default function Card({ title, bodyText, ...rest }: CardParam & PressableProps) {
     return (

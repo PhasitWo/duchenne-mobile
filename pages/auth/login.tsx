@@ -1,43 +1,104 @@
-import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
-import { useState } from "react";
+import { View, Text, StyleSheet, TextInput } from "react-native";
+import { useRef, useState } from "react";
 import CustomButton from "@/components/CustomButton";
-import { darkGrey } from "@/constants/Colors";
+import { darkGrey, tint } from "@/constants/Colors";
 import { useNavigation } from "@react-navigation/native";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import ChangeLangText from "@/components/ChangeLangText";
 import { useLanguage } from "@/hooks/useLanguage";
-import { useAuthContext } from "@/hooks/authContext";
+import { useAuthContext, type LoginData } from "@/hooks/authContext";
 
-type LoginData = {
-    hn: string;
-    password: string;
-    hide: boolean;
+type Warning = {
+    hn: boolean;
+    firstName: boolean;
+    lastName: boolean;
 };
 
 export default function Login() {
-    const [data, setData] = useState<LoginData>({ hn: "", password: "", hide: true });
+    const [data, setData] = useState<LoginData>({ hn: "", firstName: "", lastName: "" });
+    const [warning, setWarning] = useState<Warning>({ hn: false, firstName: false, lastName: false });
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const navigation = useNavigation();
     const { lang } = useLanguage();
     const { login } = useAuthContext();
+
+    const firstName_ref = useRef<TextInput>(null);
+    const lastName_ref = useRef<TextInput>(null);
+    const warningText = lang("กรุณากรอกข้อมูล", "This field is required");
+
     function handleLogin() {
-        // TODO POST TO SERVER
+        // validate Field
+        let key: keyof LoginData;
+        for (key in data) {
+            if (data[key].trim().length === 0) {
+                setWarning({ ...warning, [key]: true });
+                return;
+            }
+        }
+        setIsLoading(true);
         login(data);
     }
     return (
         <View style={style.formContainer}>
             <View style={style.inputContainer}>
-                <Text style={style.label}>HN</Text>
-                <TextInput style={style.input} placeholderTextColor={placeholderColor} />
+                <Text style={[style.label, { color: warning.hn ? "red" : "black" }]}>HN</Text>
+                <TextInput
+                    style={[style.input, { borderColor: warning.hn ? "red" : darkGrey }]}
+                    value={data.hn}
+                    onChangeText={(text) => {
+                        setWarning({ ...warning, hn: false });
+                        setData({ ...data, hn: text });
+                    }}
+                    onSubmitEditing={() => firstName_ref.current?.focus()}
+                    returnKeyType="next"
+                    editable={!isLoading}
+                    placeholder={warning.hn ? warningText : undefined}
+                    placeholderTextColor="red"
+                    blurOnSubmit={false}
+                />
             </View>
             <View style={style.inputContainer}>
-                <Text style={style.label}>{lang("รหัสผ่าน", "Password")}</Text>
-                <TextInput style={style.input} placeholderTextColor={placeholderColor} secureTextEntry={data.hide} />
-                <Pressable style={style.eye} onPress={() => setData({ ...data, hide: !data.hide })}>
-                    <FontAwesome5 name={data.hide ? "eye-slash" : "eye"} size={15} color="black" />
-                </Pressable>
+                <Text style={[style.label, { color: warning.firstName ? "red" : "black" }]}>
+                    {lang("ชื่อจริง", "First Name")}
+                </Text>
+                <TextInput
+                    ref={firstName_ref}
+                    style={[style.input, { borderColor: warning.firstName ? "red" : darkGrey }]}
+                    value={data.firstName}
+                    onChangeText={(text) => {
+                        setWarning({ ...warning, firstName: false });
+                        setData({ ...data, firstName: text });
+                    }}
+                    onSubmitEditing={() => lastName_ref.current?.focus()}
+                    returnKeyType="next"
+                    editable={!isLoading}
+                    placeholder={warning.firstName ? warningText : undefined}
+                    placeholderTextColor="red"
+                    blurOnSubmit={false}
+                />
+            </View>
+            <View style={style.inputContainer}>
+                <Text style={[style.label, { color: warning.lastName ? "red" : "black" }]}>{lang("นามสกุล", "Last Name")}</Text>
+                <TextInput
+                    ref={lastName_ref}
+                    style={[style.input, { borderColor: warning.lastName ? "red" : darkGrey }]}
+                    value={data.lastName}
+                    onChangeText={(text) => {
+                        setWarning({ ...warning, lastName: false });
+                        setData({ ...data, lastName: text });
+                    }}
+                    editable={!isLoading}
+                    placeholder={warning.lastName ? warningText : undefined}
+                    placeholderTextColor="red"
+                />
             </View>
             <View style={style.forgotPasswordContainer}>
-                <Text style={style.forgotPassword}>{lang("ลืมรหัสผ่าน?", "Forgot password?")}</Text>
+                <Text
+                    style={style.forgotPassword}
+                    onPress={() => navigation.navigate("forgotPassword" as never)}
+                    disabled={isLoading}
+                >
+                    {lang("ลืมรหัสผ่าน?", "Forgot password?")}
+                </Text>
             </View>
             <CustomButton
                 title={lang("เข้าสู่ระบบ", "Log in")}
@@ -45,10 +106,11 @@ export default function Login() {
                 pressedColor={darkGrey}
                 style={{ height: 60, borderRadius: 10, marginTop: 30 }}
                 onPress={handleLogin}
+                showLoading={isLoading}
             />
             <Text style={style.signup}>
                 {lang("ยังไม่มีบัญชี? ", "Don't have an account? ")}
-                <Text style={style.signupLink} onPress={() => navigation.navigate("register" as never)}>
+                <Text style={style.signupLink} onPress={() => navigation.navigate("register" as never)} disabled={isLoading}>
                     {lang("ลงทะเบียน", "Sign up")}
                 </Text>
             </Text>
@@ -60,7 +122,6 @@ export default function Login() {
     );
 }
 
-const placeholderColor = darkGrey;
 const style = StyleSheet.create({
     formContainer: {
         flex: 1,
@@ -84,7 +145,6 @@ const style = StyleSheet.create({
     input: {
         flex: 1,
         borderBottomWidth: 1,
-        borderColor: darkGrey,
         margin: 5,
         padding: 5,
     },
@@ -101,8 +161,7 @@ const style = StyleSheet.create({
         padding: 20,
     },
     lang: {
-        position: "absolute",
-        bottom: 50,
+        marginTop: 200,
     },
     forgotPasswordContainer: {
         justifyContent: "center",

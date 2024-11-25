@@ -24,11 +24,13 @@ export default function ViewAppointment({ route }: Props) {
     const [date, setDate]: [date: Date, setDate: Function] = useState(dayjs().toDate());
     const [mode, setMode]: [mode: mode, setMode: Function] = useState("date");
     const [selected, setSelected]: [selected: string, setSelected: Function] = useState("");
-    const [onEdit, setOnEdit]: [onEdit: boolean, setOnEdit: Function] = useState(false);
     const [show, setShow] = useState(false);
     const { apmntList, setApmtList } = useAppointmentContext();
-
     const { id } = route.params;
+
+    function handleDelete() {
+        //TODO delete appointment
+    }
 
     useEffect(() => {
         const current = apmntList.find((v) => v.id === parseInt(id as string));
@@ -57,22 +59,16 @@ export default function ViewAppointment({ route }: Props) {
     return (
         <View style={style.container}>
             <Pressable
-                style={({ pressed }) => [
-                    { backgroundColor: pressed ? darkGrey : onEdit ? "white" : "whitesmoke" },
-                    style.dateTime,
-                ]}
+                style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "whitesmoke" }, style.dateTime]}
                 onPress={showDatepicker}
-                disabled={!onEdit}
+                disabled
             >
                 <Text>{dayjs(date).format("D MMMM YYYY")}</Text>
             </Pressable>
             <Pressable
-                style={({ pressed }) => [
-                    { backgroundColor: pressed ? darkGrey : onEdit ? "white" : "whitesmoke" },
-                    style.dateTime,
-                ]}
+                style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "whitesmoke" }, style.dateTime]}
                 onPress={showTimepicker}
-                disabled={!onEdit}
+                disabled
             >
                 <Text>{dayjs(date).format("HH:mm")}</Text>
             </Pressable>
@@ -87,25 +83,16 @@ export default function ViewAppointment({ route }: Props) {
                 />
             )}
             <Dropdown
-                style={[{ backgroundColor: onEdit ? "white" : "whitesmoke" }, style.dropDown]}
+                style={[{ backgroundColor: "whitesmoke" }, style.dropDown]}
                 data={mockup}
                 labelField="label"
                 valueField="value"
                 onChange={(item) => setSelected(item.value)}
                 value={selected}
                 search
-                disable={!onEdit}
+                disable
             />
-            {onEdit ? (
-                <CustomButton title="Save" normalColor={tint} pressedColor={darkTint} />
-            ) : (
-                <CustomButton
-                    title="Edit"
-                    normalColor="lightsalmon"
-                    pressedColor={darkTint}
-                    onPress={() => setOnEdit(true)}
-                />
-            )}
+            <CustomButton title="Delete" normalColor="lightsalmon" pressedColor={darkGrey} />
             <Text>selected: {date.toString()}</Text>
             <Text>{apmntList.length}</Text>
         </View>

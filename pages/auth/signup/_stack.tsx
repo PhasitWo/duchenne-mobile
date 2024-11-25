@@ -24,7 +24,7 @@ export default function SignupStack() {
                 }}
             >
                 <Stack.Screen name="signup" component={Signup} />
-                <Stack.Screen name="setPassword" component={SetPassword} />
+                {/* <Stack.Screen name="setPassword" component={SetPassword} /> */}
             </Stack.Navigator>
         </SignupProvider>
     );

@@ -3,25 +3,33 @@ import Card, { CardParam } from "@/components/Card";
 import { useLanguage } from "@/hooks/useLanguage";
 import { darkGrey } from "@/constants/Colors";
 import { useNavigation } from "@react-navigation/native";
+import { NativeStackScreenProps } from "react-native-screens/lib/typescript/native-stack/types";
+import { AskStackParamList } from "./_stack";
 
 const data: CardParam[] = [
-    { title: "Question 1", bodyText: "A doctor replied" },
-    { title: "Question 2", bodyText: "No reply" },
-    { title: "Question 3", bodyText: "A doctor replied" },
-    { title: "Question 4", bodyText: "A doctor replied" },
-    { title: "Question 4", bodyText: "A doctor replied" },
-    { title: "Question 4", bodyText: "A doctor replied" },
-    { title: "Question 4", bodyText: "A doctor replied" },
+    { id: 1, title: "Question 1", bodyText: "A doctor replied" },
+    { id: 2, title: "Question 2", bodyText: "No reply" },
+    { id: 3, title: "Question 3", bodyText: "A doctor replied" },
+    { id: 4, title: "Question 4", bodyText: "A doctor replied" },
+    { id: 5, title: "Question 4", bodyText: "A doctor replied" },
+    { id: 6, title: "Question 4", bodyText: "A doctor replied" },
+    { id: 7, title: "Question 4", bodyText: "A doctor replied" },
 ];
 
-export default function Ask() {
+type props = NativeStackScreenProps<AskStackParamList, "index">;
+export default function Ask({ navigation }: props) {
     const { lang } = useLanguage();
-    const navigation = useNavigation();
     return (
         <View style={style.container}>
             <FlatList
                 data={data}
-                renderItem={({ item }) => <Card title={item.title} bodyText={item.bodyText} />}
+                renderItem={({ item }) => (
+                    <Card
+                        title={item.title}
+                        bodyText={item.bodyText}
+                        onPress={() => navigation.navigate("viewAsk", { id: item.id as number })}
+                    />
+                )}
                 showsVerticalScrollIndicator={false}
             />
             <Pressable
