@@ -1,33 +1,19 @@
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat.js";
-import "dayjs/locale/th.js"
+import "dayjs/locale/th.js";
+import utc from "dayjs/plugin/utc.js";
+import axios from "axios";
+
+// let unixNow = dayjs().unix() * 1000 // convert to millisec;
+// send this to server and when converting back from server just use dayjs(datafromserver) no need to use utc plugin
 
 async function test() {
-    let res = await fetch("http://192.168.1.114:8080/");
-    console.log(await res.json())
+    try {
+        const response = await axios.post("http://192.168.1.114:8080/mobile/auth/login", { hn: "test3s", fiasrstName:"fn3", lastName:"ln3", deviceName:"node", expoToken:"dummy-expo-token" });
+        console.log(response.data);
+    } catch (err) {
+        console.log(JSON.stringify(err.response.data));
+    }
 }
-test()
-// let now = dayjs()
-// let x = []
-// for (let i = 0; i < 7; i++) {
-//     x.push(dayjs().add(i, 'day'))
-// }
-// x.forEach((v) => console.log(v.format("ddd D")));
 
-// [
-//     {
-//         date: "2024-11-14T11:55:00.000Z",
-//         doctor: "Dr.Earth Bindai",
-//         identifier: "A1731574557484",
-//         notifications: [[Object], [Object], [Object]],
-//     },
-//     {
-//         date: "2024-11-14T11:56:00.000Z",
-//         doctor: "Dr.Earth Bindai",
-//         identifier: "A1731574567003",
-//         notifications: [[Object], [Object], [Object]],
-//     },
-// ];
-// dayjs.extend(localizedFormat)
-// let now = dayjs()
-// console.log(now.locale("th").format("MMMM"))
+test();

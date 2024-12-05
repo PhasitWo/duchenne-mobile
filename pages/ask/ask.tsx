@@ -1,36 +1,85 @@
-import { View, ScrollView, Alert, StyleSheet, Pressable, Text, FlatList } from "react-native";
-import Card, { CardParam } from "@/components/Card";
+import { View, Alert, StyleSheet, Pressable, Text, FlatList, RefreshControl } from "react-native";
+import QuestionCard, { QuestionTopic } from "@/components/QuestionCard";
 import { useLanguage } from "@/hooks/useLanguage";
 import { darkGrey } from "@/constants/Colors";
-import { useNavigation } from "@react-navigation/native";
 import { NativeStackScreenProps } from "react-native-screens/lib/typescript/native-stack/types";
 import { AskStackParamList } from "./_stack";
+import { useEffect, useState } from "react";
+import { useApiContext } from "@/hooks/apiContext";
+import { AxiosError, AxiosResponse } from "axios";
+import { useAuthContext } from "@/hooks/authContext";
+import { ApiQuestionTopicModel } from "@/model/model";
 
-const data: CardParam[] = [
-    { id: 1, title: "Question 1", bodyText: "A doctor replied" },
-    { id: 2, title: "Question 2", bodyText: "No reply" },
-    { id: 3, title: "Question 3", bodyText: "A doctor replied" },
-    { id: 4, title: "Question 4", bodyText: "A doctor replied" },
-    { id: 5, title: "Question 4", bodyText: "A doctor replied" },
-    { id: 6, title: "Question 4", bodyText: "A doctor replied" },
-    { id: 7, title: "Question 4", bodyText: "A doctor replied" },
-];
+
+// const data: CardParam[] = [
+//     { id: 1, title: "Question 1", bodyText: "A doctor replied" },
+//     { id: 2, title: "Question 2", bodyText: "No reply" },
+//     { id: 3, title: "Question 3", bodyText: "A doctor replied" },
+//     { id: 4, title: "Question 4", bodyText: "A doctor replied" },
+//     { id: 5, title: "Question 4", bodyText: "A doctor replied" },
+//     { id: 6, title: "Question 4", bodyText: "A doctor replied" },
+//     { id: 7, title: "Question 4", bodyText: "A doctor replied" },
+// ];
 
 type props = NativeStackScreenProps<AskStackParamList, "index">;
 export default function Ask({ navigation }: props) {
+    const [topicList, setTopicList] = useState<QuestionTopic[]>([]);
     const { lang } = useLanguage();
+    const [isLoading, setIsLoading] = useState(true);
+    const { api } = useApiContext();
+    const { logoutDispatch } = useAuthContext();
+
+    const fetch = async () => {
+        setIsLoading(true);
+        try {
+            const response = await api.get<any, AxiosResponse<ApiQuestionTopicModel[], any>, any>("/api/question?onlytopic");
+            switch (response.status) {
+                case 200:
+                    setTopicList(
+                        response.data.map((v) => ({
+                            id: v.id,
+                            title: v.topic,
+                            unixTime: v.createAt,
+                            text: v.answerAt
+                                ? lang("คุณหมอตอบกลับแล้ว", "ไม่มีการตอบกลับ")
+                                : lang("A doctor replied", "No reply"),
+                        }))
+                    );
+                    break;
+                case 401:
+                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    logoutDispatch();
+                    break;
+                default:
+                    Alert.alert("Something went wrong...", JSON.stringify(response));
+            }
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                Alert.alert("Request Error", `${err.status ?? ""} ${err.code}`);
+            } else {
+                Alert.alert("Fatal Error", `${err as Error}`);
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetch();
+    }, []);
+
     return (
         <View style={style.container}>
             <FlatList
-                data={data}
+                data={topicList}
                 renderItem={({ item }) => (
-                    <Card
-                        title={item.title}
-                        bodyText={item.bodyText}
+                    <QuestionCard
+                        questionTopic={item}
                         onPress={() => navigation.navigate("viewAsk", { id: item.id as number })}
                     />
                 )}
                 showsVerticalScrollIndicator={false}
+                refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetch} />}
             />
             <Pressable
                 style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.button]}
@@ -43,7 +92,7 @@ export default function Ask({ navigation }: props) {
 }
 
 const style = StyleSheet.create({
-    container: { justifyContent: "center", alignItems: "center" },
+    container: { justifyContent: "center", alignItems: "center", flex: 1 },
     button: {
         height: 50,
         width: "auto",

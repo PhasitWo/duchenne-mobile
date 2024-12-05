@@ -21,14 +21,14 @@ export default function AppointmentStack() {
                     name="index"
                     component={Appointment}
                     options={{
-                        title: lang("การนัดหมาย","Appointment"),
+                        title: lang("การนัดหมาย", "Appointment"),
                         header: (props) => <Header {...props} showBackButton={false} />,
                     }}
                 />
                 <Stack.Screen
                     name="viewAppointment"
                     component={ViewAppointment}
-                    options={{ title: "Appointment", header: (props) => <Header {...props} /> }}
+                    options={{ title: lang("การนัดหมาย", "Appointment"), header: (props) => <Header {...props} /> }}
                 />
             </Stack.Navigator>
         </AppointmentProvider>

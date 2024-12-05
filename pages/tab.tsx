@@ -57,6 +57,7 @@ export default function Tabs() {
                         <TabBarIcon name={focused ? "calendar" : "calendar-outline"} color={color} />
                     ),
                     // lazy: false, // render the screen on initial render
+                    unmountOnBlur: true, // force fetching data
                 }}
             />
             <Tab.Screen
@@ -78,7 +79,7 @@ export default function Tabs() {
                         />
                         /* </Link> */
                     ),
-                    unmountOnBlur: true, // Reset to initial state
+                    unmountOnBlur: true, // force fetching data
 
                     tabBarLabelStyle: { display: "none" },
                 }}
@@ -92,6 +93,7 @@ export default function Tabs() {
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon name={focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"} color={color} />
                     ),
+                    unmountOnBlur: true, // force fetching data
                 }}
             />
             <Tab.Screen

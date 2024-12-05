@@ -12,7 +12,11 @@ export interface appointment {
 export default function AppointmentCard({ appointment, ...rest }: { appointment: appointment } & PressableProps) {
     const { currentLang } = useLanguage();
     return (
-        <Pressable style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.container]} {...rest}>
+        <Pressable
+            key={appointment.id}
+            style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.container]}
+            {...rest}
+        >
             <Text style={style.date}>{appointment.dateTime.locale(currentLang).format("D MMMM YYYY")}</Text>
             <Text style={style.time}>{appointment.dateTime.format("HH:mm")}</Text>
             <Text style={style.time}>{appointment.doctor}</Text>

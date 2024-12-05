@@ -7,6 +7,7 @@ import type { Dayjs } from "dayjs";
 import type { AskStackParamList } from "./_stack";
 import dayjs from "dayjs";
 import Fontisto from "@expo/vector-icons/Fontisto";
+import LoadingView from "@/components/LoadingView";
 
 type Question = {
     createAt: Dayjs | null;
@@ -48,9 +49,7 @@ export default function ViewAsk({ navigation, route }: props) {
 
     if (isLoading)
         return (
-            <View style={{ height: "100%", justifyContent: "center", alignItems: "center" }}>
-                <ActivityIndicator size={80} color={tint} />
-            </View>
+            <LoadingView/>
         );
 
     return (

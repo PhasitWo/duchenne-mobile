@@ -2,22 +2,22 @@ import { useContext, createContext, useEffect, type PropsWithChildren, useReduce
 import { AuthAction, AuthActionEnum, AuthState } from "./authReducer";
 import authReducer from "./authReducer";
 import * as SecureStore from "expo-secure-store";
+import { SecureStoreKey } from "@/constants/SecureStorageKey";
+import axios from "axios";
 
-export type LoginData = {
-    hn: string;
-    firstName: string;
-    lastName: string;
+type LoginDispatch = (userToken: string) => void;
+type LogoutDispatch = () => void;
+
+const initialState: AuthState = {
+    isLoading: true,
+    isSignin: false,
+    userToken: null,
 };
-type Login = (data: LoginData) => void;
-type Logout = () => void;
-enum SecureStoreKey {
-    USER_TOKEN = "userToken",
-}
 
-const AuthContext = createContext<{ authState: AuthState; login: Login; logout: Logout }>({
+const AuthContext = createContext<{ authState: AuthState; loginDispatch: LoginDispatch; logoutDispatch: LogoutDispatch }>({
     authState: { isLoading: true, isSignin: false, userToken: null },
-    login: (data) => null,
-    logout: () => null,
+    loginDispatch: (data) => null,
+    logoutDispatch: () => null,
 });
 
 export function useAuthContext() {
@@ -26,17 +26,13 @@ export function useAuthContext() {
 }
 export function AuthProvider({ children }: PropsWithChildren) {
     const [authState, dispatch] = useReducer(authReducer, initialState);
-    const { login, logout } = useMemo<{ login: Login; logout: Logout }>(
+    const { loginDispatch, logoutDispatch } = useMemo<{ loginDispatch: LoginDispatch; logoutDispatch: LogoutDispatch }>(
         () => ({
-            login: async (data) => {
-                //TODO POST TO SERVER
-                await SecureStore.setItemAsync(SecureStoreKey.USER_TOKEN, "dummy-token");
-                // mockup waiting for server to response
-                setTimeout(() => {
-                    dispatch({ type: AuthActionEnum.LOGIN, userToken: "dummy-token" });
-                }, 1000);
+            loginDispatch: async (userToken) => {
+                await SecureStore.setItemAsync(SecureStoreKey.USER_TOKEN, userToken);
+                dispatch({ type: AuthActionEnum.LOGIN, userToken: userToken });
             },
-            logout: async () => {
+            logoutDispatch: async () => {
                 await SecureStore.deleteItemAsync(SecureStoreKey.USER_TOKEN);
                 dispatch({ type: AuthActionEnum.LOGOUT });
             },
@@ -54,11 +50,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
     useEffect(() => {
         restoreToken();
     }, []);
-    return <AuthContext.Provider value={{ authState: authState, login: login, logout: logout }}>{children}</AuthContext.Provider>;
+    return (
+        <AuthContext.Provider value={{ authState: authState, loginDispatch: loginDispatch, logoutDispatch: logoutDispatch }}>
+            {children}
+        </AuthContext.Provider>
+    );
 }
-
-const initialState: AuthState = {
-    isLoading: true,
-    isSignin: false,
-    userToken: null,
-};

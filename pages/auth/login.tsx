@@ -1,11 +1,14 @@
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
 import { useRef, useState } from "react";
 import CustomButton from "@/components/CustomButton";
 import { darkGrey, tint } from "@/constants/Colors";
 import { useNavigation } from "@react-navigation/native";
 import ChangeLangText from "@/components/ChangeLangText";
 import { useLanguage } from "@/hooks/useLanguage";
-import { useAuthContext, type LoginData } from "@/hooks/authContext";
+import { useAuthContext } from "@/hooks/authContext";
+import { AxiosError, AxiosResponse } from "axios";
+import { useApiContext } from "@/hooks/apiContext";
+import type { ApiLoginResponse } from "@/model/model";
 
 type Warning = {
     hn: boolean;
@@ -13,19 +16,27 @@ type Warning = {
     lastName: boolean;
 };
 
+type LoginData = {
+    hn: string;
+    firstName: string;
+    lastName: string;
+};
+
 export default function Login() {
-    const [data, setData] = useState<LoginData>({ hn: "", firstName: "", lastName: "" });
+    const [data, setData] = useState<LoginData>({ hn: "test3", firstName: "fn3", lastName: "ln3" });
     const [warning, setWarning] = useState<Warning>({ hn: false, firstName: false, lastName: false });
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const navigation = useNavigation();
     const { lang } = useLanguage();
-    const { login } = useAuthContext();
+    const { loginDispatch } = useAuthContext();
 
     const firstName_ref = useRef<TextInput>(null);
     const lastName_ref = useRef<TextInput>(null);
     const warningText = lang("กรุณากรอกข้อมูล", "This field is required");
 
-    function handleLogin() {
+    const { apiNoAuth } = useApiContext();
+
+    async function handleLogin() {
         // validate Field
         let key: keyof LoginData;
         for (key in data) {
@@ -34,8 +45,35 @@ export default function Login() {
                 return;
             }
         }
+        // POST
         setIsLoading(true);
-        login(data);
+        try {
+            const response = await apiNoAuth.post<any, AxiosResponse<ApiLoginResponse, any>, any>(
+                "/auth/login",
+                { ...data, deviceName: "TestDevice", expoToken: "dummy-expo-token" },
+                { timeout: 5000 }
+            );
+            switch(response.status) {
+                case 200:
+                    console.log(response.data.token)
+                    loginDispatch(response.data.token)
+                    break
+                case 401:
+                    Alert.alert("Error", "Invalid credentials")
+                    break
+                default:
+                    Alert.alert("Something went wrong...", JSON.stringify(response));
+            }
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                Alert.alert("Request Error", `${err.status ?? ""} ${err.code}`);
+            }
+            else {
+                Alert.alert("Fatal Error", `${err as Error}`);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     }
     return (
         <View style={style.formContainer}>

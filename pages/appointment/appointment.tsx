@@ -1,63 +1,47 @@
-import { Text, View, ScrollView, StyleSheet, Pressable } from "react-native";
-import { useState, useEffect } from "react";
+import { Text, View, ScrollView, StyleSheet, Pressable, RefreshControl } from "react-native";
+import { useState, useMemo } from "react";
 import Calendar from "@/components/Calendar";
 import AppointmentCard from "@/components/AppointmentCard";
-import { type appointment } from "@/components/AppointmentCard";
 import { grey, darkGrey } from "@/constants/Colors";
 import dayjs from "dayjs";
 import { useAppointmentContext } from "@/hooks/appointmentContext";
-// import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 import { StackParamList } from "./_stack";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useLanguage } from "@/hooks/useLanguage";
-// mockup fetching data
-const mockup: Array<appointment> = [
-    {
-        id: 1,
-        dateTime: dayjs("2024-11-08 23:30"),
-        doctor: "Dr.Earth Bindai",
-    },
-    {
-        id: 2,
-        dateTime: dayjs("2024-11-09 22:30"),
-        doctor: "Dr.Earth Bindai",
-    },
-    {
-        id: 3,
-        dateTime: dayjs("2024-11-29 22:30"),
-        doctor: "Dr.Spiderman",
-    },
-];
+import LoadingView from "@/components/LoadingView";
 
 type props = NativeStackScreenProps<StackParamList, "index">;
 
 export default function Appointment({ navigation }: props) {
     const [incomingSelected, setIncomingSelected] = useState(true);
-    const { apmntList, setApmtList } = useAppointmentContext();
+    const { apmntList, isLoading, fetch } = useAppointmentContext();
     const { lang } = useLanguage();
-    let markedDateKey = [];
-    // normalize to dayOfMonth:00:00:00
     const now = dayjs();
-    const normalizedNow = dayjs().hour(0).minute(0).second(0);
-    for (let apmt of mockup) {
-        if (apmt.dateTime.isBefore(normalizedNow)) continue;
-        let diff = apmt.dateTime.hour(0).minute(0).second(0).diff(normalizedNow, "day", true);
-        markedDateKey.push(Math.ceil(diff));
-    }
+    // compute calendar component data ,normalize to dayOfMonth:00:00:00
+    const markedDateKey = useMemo<number[]>(() => {
+        let res = [];
 
-    useEffect(() => {
-        setApmtList(mockup);
-    }, []);
+        const normalizedNow = dayjs().hour(0).minute(0).second(0);
+        for (let apmt of apmntList) {
+            if (apmt.dateTime.isBefore(normalizedNow)) continue;
+            let diff = apmt.dateTime.hour(0).minute(0).second(0).diff(normalizedNow, "day", true);
+            res.push(Math.ceil(diff));
+        }
+        return res;
+    }, [apmntList]);
+    // scrollview children
+    const display = useMemo<React.JSX.Element[]>(() => {
+        return apmntList
+            .filter((v) => (incomingSelected ? v.dateTime.isAfter(now) : v.dateTime.isBefore(now)))
+            .map((v, k) => (
+                <AppointmentCard
+                    key={k}
+                    appointment={v}
+                    onPress={() => incomingSelected && navigation.navigate("viewAppointment", { id: String(v.id) })}
+                />
+            ));
+    }, [apmntList, incomingSelected]);
 
-    const display = mockup
-        .filter((v) => (incomingSelected ? v.dateTime.isAfter(now) : v.dateTime.isBefore(now)))
-        .map((v, k) => (
-            <AppointmentCard
-                key={k}
-                appointment={v}
-                onPress={() => incomingSelected && navigation.navigate("viewAppointment", { id: String(v.id) })}
-            />
-        ));
     return (
         <View
             style={{
@@ -84,8 +68,17 @@ export default function Appointment({ navigation }: props) {
                 </Pressable>
             </View>
             <View style={style.bodyBackground}>
-                <ScrollView style={style.bodyContainer} contentContainerStyle={style.bodyContentContainer}>
-                    {display.length > 0 ? display : <Text>{lang("ไม่มีนัดหมาย","No Appointment")}</Text>}
+                <ScrollView
+                    style={style.bodyContainer}
+                    contentContainerStyle={style.bodyContentContainer}
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetch} />}
+                >
+                    {display.length > 0 ? (
+                        display
+                    ) : (
+                        <Text>{lang("ไม่มีนัดหมาย", "No Appointment")}</Text>
+                    )}
                 </ScrollView>
             </View>
         </View>
@@ -127,6 +120,6 @@ const style = StyleSheet.create({
     },
     bodyContentContainer: {
         overflow: "hidden",
-        alignItems:"center"
+        alignItems: "center",
     },
 });

@@ -5,6 +5,7 @@ import * as Notifications from "expo-notifications";
 import type { NotificationTrigger } from "expo-notifications";
 import { LanguageProvider } from "@/hooks/useLanguage";
 import { AuthProvider } from "./hooks/authContext";
+import { ApiProvider } from "./hooks/apiContext";
 import App from "./app";
 
 registerRootComponent(main);
@@ -23,11 +24,13 @@ export default function main() {
     }, []);
     return (
         <AuthProvider>
-            <LanguageProvider>
-                <NavigationContainer>
-                    <App />
-                </NavigationContainer>
-            </LanguageProvider>
+            <ApiProvider>
+                <LanguageProvider>
+                    <NavigationContainer>
+                        <App />
+                    </NavigationContainer>
+                </LanguageProvider>
+            </ApiProvider>
         </AuthProvider>
     );
 }

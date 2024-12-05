@@ -1,4 +1,4 @@
-import { View, Text, Pressable, StyleSheet, Dimensions } from "react-native";
+import { View, Text, Pressable, StyleSheet, Dimensions, Alert } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { useState, useEffect } from "react";
@@ -9,6 +9,10 @@ import CustomButton from "@/components/CustomButton";
 import { useAppointmentContext } from "@/hooks/appointmentContext";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { type StackParamList } from "./_stack";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useApiContext } from "@/hooks/apiContext";
+import { AxiosError, AxiosResponse } from "axios";
+import { useAuthContext } from "@/hooks/authContext";
 
 type mode = "date" | "time";
 
@@ -20,28 +24,68 @@ const mockup = [
 
 type Props = NativeStackScreenProps<StackParamList, "viewAppointment">;
 
-export default function ViewAppointment({ route }: Props) {
-    const [date, setDate]: [date: Date, setDate: Function] = useState(dayjs().toDate());
-    const [mode, setMode]: [mode: mode, setMode: Function] = useState("date");
-    const [selected, setSelected]: [selected: string, setSelected: Function] = useState("");
-    const [show, setShow] = useState(false);
-    const { apmntList, setApmtList } = useAppointmentContext();
+export default function ViewAppointment({ route, navigation }: Props) {
     const { id } = route.params;
+    const [date, setDate] = useState<Date>(dayjs().toDate());
+    const [mode, setMode] = useState<mode>("date");
+    const [selected, setSelected] = useState<string>("");
+    const [show, setShow] = useState(false);
+    const { apmntList, fetch } = useAppointmentContext();
+    const { lang, currentLang } = useLanguage();
+    const { api } = useApiContext();
+    const { logoutDispatch } = useAuthContext();
 
-    function handleDelete() {
-        //TODO delete appointment
+    const [isLoading, setIsLoading] = useState(false);
+    function showDeleteAlert() {
+        Alert.alert(
+            lang("คุณแน่ใจหรือไม่", "Are you sure?"),
+            undefined,
+            [{ text: lang("ลบ", "Delete"), onPress: handleDelete }, { text: lang("ยกเลิก", "Cancel") }],
+            { cancelable: true }
+        );
+    }
+    async function handleDelete() {
+        try {
+            setIsLoading(true);
+            const response = await api.delete("/api/appointment/" + id);
+            switch (response.status) {
+                case 204:
+                    fetch();
+                    Alert.alert("", lang("ลบนัดหมายแล้ว", "Deleted successfully"));
+                    navigation.navigate("index");
+                    break;
+                case 401:
+                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    logoutDispatch();
+                    break;
+                default:
+                    Alert.alert("Something went wrong...", JSON.stringify(response));
+            }
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                Alert.alert("Request Error", `${err.status ?? ""} ${err.code}`);
+            } else {
+                Alert.alert("Fatal Error", `${err as Error}`);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     useEffect(() => {
         const current = apmntList.find((v) => v.id === parseInt(id as string));
-        setDate(current?.dateTime.toDate());
-        setSelected(current?.doctor);
+        if (current) {
+            setDate(current?.dateTime.toDate());
+            setSelected(current?.doctor ?? "");
+        }
     }, []);
 
     const onChange = (event: DateTimePickerEvent, selectedDate: Date | undefined) => {
         const currentDate = selectedDate;
-        setShow(false);
-        setDate(currentDate);
+        if (currentDate) {
+            setShow(false);
+            setDate(currentDate);
+        }
     };
 
     const showMode = (currentMode: mode) => {
@@ -58,18 +102,10 @@ export default function ViewAppointment({ route }: Props) {
     };
     return (
         <View style={style.container}>
-            <Pressable
-                style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "whitesmoke" }, style.dateTime]}
-                onPress={showDatepicker}
-                disabled
-            >
-                <Text>{dayjs(date).format("D MMMM YYYY")}</Text>
+            <Pressable style={style.pressable} onPress={showDatepicker} disabled>
+                <Text>{dayjs(date).locale(currentLang).format("D MMMM YYYY")}</Text>
             </Pressable>
-            <Pressable
-                style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "whitesmoke" }, style.dateTime]}
-                onPress={showTimepicker}
-                disabled
-            >
+            <Pressable style={style.pressable} onPress={showTimepicker} disabled>
                 <Text>{dayjs(date).format("HH:mm")}</Text>
             </Pressable>
             {show && (
@@ -82,17 +118,16 @@ export default function ViewAppointment({ route }: Props) {
                     minimumDate={dayjs().toDate()}
                 />
             )}
-            <Dropdown
-                style={[{ backgroundColor: "whitesmoke" }, style.dropDown]}
-                data={mockup}
-                labelField="label"
-                valueField="value"
-                onChange={(item) => setSelected(item.value)}
-                value={selected}
-                search
-                disable
+            <Pressable style={style.pressable} disabled>
+                <Text>{selected}</Text>
+            </Pressable>
+            <CustomButton
+                title={lang("ลบนัดหมาย", "Delete")}
+                normalColor={isLoading ? darkGrey : "lightsalmon"}
+                onPress={showDeleteAlert}
+                pressedColor={darkGrey}
+                showLoading={isLoading}
             />
-            <CustomButton title="Delete" normalColor="lightsalmon" pressedColor={darkGrey} />
             <Text>selected: {date.toString()}</Text>
             <Text>{apmntList.length}</Text>
         </View>
@@ -105,7 +140,8 @@ const style = StyleSheet.create({
         alignItems: "center",
         flex: 1,
     },
-    dateTime: {
+    pressable: {
+        backgroundColor: "white",
         width: "100%",
         height: "15%",
         paddingLeft: "5%",

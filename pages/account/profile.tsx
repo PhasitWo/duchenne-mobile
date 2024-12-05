@@ -1,24 +1,19 @@
-import { Text, View, FlatList, StyleSheet, Dimensions, Pressable } from "react-native";
+import { Text, View, FlatList, StyleSheet, Dimensions, Pressable, Alert } from "react-native";
 import { darkGrey } from "@/constants/Colors";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
+import type { ApiPatientModel } from "@/model/model";
+import { useApiContext } from "@/hooks/apiContext";
+import { AxiosError, AxiosResponse } from "axios";
+import { useAuthContext } from "@/hooks/authContext";
+import LoadingView from "@/components/LoadingView";
 
-type Info = { title: string; value: string | number; border?: boolean };
+type Info = { title: string; value: string | number | undefined; border?: boolean };
 
 const Item = ({ info }: { info: Info }) => {
     return (
         <Pressable
-            onPress={async () => {
-                try {
-                    let res = await fetch("http://192.168.1.114:8080/", {
-                        method: "GET",
-                    });
-                    console.log(await res.json());
-                } catch (err: any) {
-                    console.log(err.message);
-                }
-            }}
             style={({ pressed }) => [
                 { backgroundColor: pressed ? darkGrey : "white", borderTopWidth: info.border ? 1 : 0 },
                 style.itemContainer,
@@ -34,16 +29,53 @@ const Item = ({ info }: { info: Info }) => {
 
 export default function Profile() {
     const { lang, currentLang } = useLanguage();
-    const [userInfo, setUserInfo] = useState();
+    const [userInfo, setUserInfo] = useState<ApiPatientModel>();
     const data = useMemo<Info[]>(() => {
         return [
-            { title: lang("ชื่อ", "First Name"), value: "test" },
-            { title: lang("นามสกุล", "Last Name"), value: "test" },
-            { title: lang("เพศ", "Gender"), value: "test" },
-            { title: lang("รหัส HN", "HN Number"), value: "test", border: true },
-            { title: lang("เบอร์โทรศัพท์", "Phone Number"), value: "090-000-0000" },
+            { title: lang("ชื่อ", "First Name"), value: userInfo?.firstName },
+            { title: lang("ชื่อกลาง", "Middle Name"), value: userInfo?.middleName ?? "-" },
+            { title: lang("นามสกุล", "Last Name"), value: userInfo?.lastName },
+            { title: lang("รหัส HN", "HN Number"), value: userInfo?.hn},
+            { title: lang("อีเมล", "Email"), value: userInfo?.email },
+            { title: lang("เบอร์โทรศัพท์", "Phone Number"), value: userInfo?.phone },
         ];
     }, [currentLang, userInfo]);
+
+    // fetch
+    const [isLoading, setIsLoading] = useState(true);
+    const { api } = useApiContext();
+    const { logoutDispatch } = useAuthContext();
+    const fetch = async () => {
+        try {
+            const response = await api.get<any, AxiosResponse<ApiPatientModel, any>, any>(
+                "/api/profile",
+            );
+            switch (response.status) {
+                case 200:
+                    setUserInfo(response.data);
+                    break;
+                case 401:
+                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    logoutDispatch();
+                    break;
+                default:
+                    Alert.alert("Something went wrong...", JSON.stringify(response));
+            }
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                Alert.alert("Request Error", `${err.status ?? ""} ${err.code}`);
+            } else {
+                Alert.alert("Fatal Error", `${err as Error}`);
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    useEffect(() => {
+        fetch();
+    }, []);
+
+    if (isLoading) return <LoadingView />;
 
     return (
         <View
@@ -51,14 +83,14 @@ export default function Profile() {
                 flex: 1,
             }}
         >
-            <FlatList data={data} renderItem={({ item }) => <Item info={item} />} showsVerticalScrollIndicator={false} />
+            <FlatList style={{backgroundColor:"white"}} data={data} renderItem={({ item }) => <Item info={item} />} showsVerticalScrollIndicator={false} />
         </View>
     );
 }
 
 const style = StyleSheet.create({
     itemContainer: {
-        height: 75,
+        height: 100,
         justifyContent: "space-between",
         borderTopColor: darkGrey,
         alignItems: "flex-start",

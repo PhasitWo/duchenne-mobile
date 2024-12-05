@@ -29,14 +29,14 @@ const Item = ({ menu }: { menu: Menu }) => {
 
 export default function Account() {
     const { lang, currentLang } = useLanguage();
-    const { logout } = useAuthContext();
+    const { logoutDispatch } = useAuthContext();
     const data = useMemo<Menu[]>(() => {
         return [
             { title: lang("โปรไฟล์", "Profile"), href: "profile", icon: <Ionicons name="person" size={24} color="black" /> },
             { title: lang("การตั้งค่า", "Setting"), href: "setting", icon: <FontAwesome name="gear" size={24} color="black" /> },
             {
                 title: lang("ออกจากระบบ", "Logout"),
-                customOnPress: logout,
+                customOnPress: logoutDispatch,
                 icon: <Ionicons name="exit-outline" size={24} color="black" />,
             },
         ];
