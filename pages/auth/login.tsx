@@ -37,13 +37,12 @@ export default function Login({ route, navigation }: Props) {
     const firstName_ref = useRef<TextInput>(null);
     const lastName_ref = useRef<TextInput>(null);
     const warningText = lang("กรุณากรอกข้อมูล", "This field is required");
-
+    
     // route param is used once, when the screen is focused
     useFocusEffect(
         useCallback(() => {
-            console.log("run")
             if (route.params) setData(route.params);
-        }, [])
+        }, [route.params])
     );
 
     const { apiNoAuth } = useApiContext();

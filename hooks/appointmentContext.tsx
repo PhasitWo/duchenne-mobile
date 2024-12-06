@@ -60,9 +60,9 @@ export function AppointmentProvider({ children }: PropsWithChildren) {
             setIsLoading(false);
         }
     };
-    useEffect(() => {
-        fetch();
-    }, []);
+    // useEffect(() => {
+    //     fetch();
+    // }, []);
 
     return (
         <AppointmentContext.Provider

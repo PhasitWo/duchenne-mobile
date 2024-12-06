@@ -76,17 +76,7 @@ export default function Signup({ navigation }: Props) {
         // check signup data in server
         setIsLoading(true);
         try {
-            console.log({
-                ...signupData,
-                middleName: signupData.middleName === "" ? null : signupData.middleName,
-            });
-            const response = await apiNoAuth.post(
-                "/auth/signup",
-                {
-                    ...signupData,
-                },
-                { timeout: 5000 }
-            );
+            const response = await apiNoAuth.post("/auth/signup", signupData, { timeout: 5000 });
             switch (response.status) {
                 case 200:
                     Alert.alert(lang("ลงทะเบียนเสร็จสิ้น!", "Registration completed!"));
