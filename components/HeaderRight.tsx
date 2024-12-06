@@ -6,12 +6,11 @@ import type { ViewProps, ViewStyle } from "react-native";
 
 export default function HeaderRight({style, ...rest }: ViewProps & { style?: ViewStyle }) {
     const navigation = useNavigation();
-    const test = () => Alert.alert("test alert", "haha xdxd");
     return (
         <View style={[stylesheet.container, style]} {...rest}>
             <Pressable onPress={() => navigation.navigate("notification" as never)}>
                 <FontAwesome style={stylesheet.bell} name="bell" size={30} color="black" />
-                <Text style={stylesheet.notification}>2</Text>
+                {/* <Text style={stylesheet.notification}>2</Text> */}
             </Pressable>
             {/* <Pressable>
                 <Ionicons

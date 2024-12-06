@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from "react-native";
 import HeaderRight from "@/components/HeaderRight";
 import HeaderLeft from "../HeaderLeft";
 
-const headerHeight = 90;
+const headerHeight = 100;
 type props = { title?: string, navigation: any, options: any, showBackButton? : boolean, showNotification? : boolean ,route:any };
 
 export default function Header({ navigation, options, route, showBackButton = true, showNotification = true }: props) {

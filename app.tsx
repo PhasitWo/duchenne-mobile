@@ -36,7 +36,7 @@ export default function App() {
         >
             {authState.userToken === null ? (
                 <>
-                    <Stack.Screen name="login" component={Login} options={{ title: lang("ลงชื่อเข้าใช้", "Login"), }} />
+                    <Stack.Screen name="login" component={Login} options={{ title: lang("ลงชื่อเข้าใช้", "Login") }} />
                     <Stack.Screen name="signup" component={SignupStack} options={{ headerShown: false }} />
                     <Stack.Screen
                         name="forgotPassword"
@@ -53,7 +53,10 @@ export default function App() {
                     <Stack.Screen
                         name="notification"
                         component={Notification}
-                        options={{ headerShown: true, title: "Notifications" }}
+                        options={{
+                            title: "Notifications",
+                            header: (props) => <Header {...props} showNotification={false} />,
+                        }}
                     />
                     <Stack.Screen
                         name="addAsk"

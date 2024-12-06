@@ -3,15 +3,14 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import HeaderRight from "@/components/HeaderRight";
-import HeaderLeft from "@/components/HeaderLeft";
 import Header from "@/components/navigation/Header";
 import Learn from "@/pages/learn";
 import AddAppointment from "@/pages/appointment/addAppointment";
 import AccountStack from "@/pages/account/_stack";
-import AddAsk from "./ask/addAsk";
 import AppointmentStack from "@/pages/appointment/_stack";
 import AskStack from "@/pages/ask/_stack";
 import { useLanguage } from "@/hooks/useLanguage";
+import { Platform } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
@@ -22,18 +21,13 @@ export default function Tabs() {
         <Tab.Navigator
             screenOptions={{
                 tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-                tabBarStyle: { height: "10%" },
+                tabBarStyle: { height: Platform.OS =="ios" ? 120 : 100 },
                 tabBarLabelPosition: "below-icon",
-                tabBarLabelStyle: { fontSize: 12, paddingBottom: 10 },
+                tabBarLabelStyle: { fontSize: 12, marginTop: 5 },
+                tabBarIconStyle: { width: "auto", height: 50, overflow: "visible", backgroundColor: "red" },
                 tabBarHideOnKeyboard: true,
-                // headerStyle: {
-                //     backgroundColor: "white",
-                // },
-
-                // headerTitleStyle: {
-                //     fontWeight: "bold",
-                // },
-                // headerTitleAlign: "center",
+                tabBarItemStyle: { overflow: "visible" },
+                animation: "fade",
                 headerRight: () => <HeaderRight />,
                 header: (props) => <Header {...props} showBackButton={false} />,
             }}
@@ -71,16 +65,11 @@ export default function Tabs() {
                         //     href="/(tabs)/addAppointment"
                         //     style={{ transform: "translateY(-20px)" }}
                         // >
-                        <TabBarIcon
-                            name="add-circle-sharp"
-                            size={80}
-                            color={"#26fbd4"}
-                            style={{ transform: "translateY(-25px)" }}
-                        />
+                        <TabBarIcon name="add-circle-sharp" size={80} color={"#26fbd4"} />
                         /* </Link> */
                     ),
                     // unmountOnBlur: true, // force fetching data
-
+                    tabBarIconStyle: { width: 80, height: 80, transform: "translateY(-25px)" },
                     tabBarLabelStyle: { display: "none" },
                 }}
             />
@@ -103,7 +92,7 @@ export default function Tabs() {
                     title: lang("บัญชี", "Account"),
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "person" : "person-outline"} color={color} />,
-                    unmountOnBlur: true, // Reset to initial route of account stack
+                    popToTopOnBlur: true, // Reset to initial route of account stack
                 }}
             />
         </Tab.Navigator>
