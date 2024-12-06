@@ -13,7 +13,7 @@
                 "buildType": "apk"
             },
             "env" : {
-              "API_URL":"https://duchenne-server.onrender.com/mobile"
+              "EXPO_PUBLIC_API_URL":"https://duchenne-server.onrender.com/mobile"
             }
         },
         "production": {
