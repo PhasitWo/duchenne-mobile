@@ -1,22 +1,26 @@
 {
-  "cli": {
-    "version": ">= 13.1.1",
-    "appVersionSource": "remote"
-  },
-  "build": {
-      "development": {
-          "distribution": "internal"
-      },
-      "preview": {
-          "android": {
-              "buildType": "apk"
-          }
-      },
-      "production": {
-          "autoIncrement": true
-      }
-  },
-  "submit": {
-    "production": {}
-  }
+    "cli": {
+        "version": ">= 13.1.1",
+        "appVersionSource": "remote"
+    },
+    "build": {
+        "development": {
+            "distribution": "internal"
+        },
+        "preview": {
+            "autoIncrement": true,
+            "android": {
+                "buildType": "apk"
+            },
+            "env" : {
+              "API_URL":"https://duchenne-server.onrender.com/mobile"
+            }
+        },
+        "production": {
+            "autoIncrement": true
+        }
+    },
+    "submit": {
+        "production": {}
+    }
 }

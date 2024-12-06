@@ -74,7 +74,7 @@ export default function AddAsk({ navigation }: props) {
             switch (response.status) {
                 case 201:
                     Alert.alert(lang("ส่งคำถามสำเร็จแล้ว", "The question has been submitted"), undefined);
-                    navigation.navigate("ask" as never);
+                    navigation.navigate("tab",{screen: "ask"});
                     break;
                 case 401:
                     Alert.alert("Error", "Unauthorized, Invalid token");

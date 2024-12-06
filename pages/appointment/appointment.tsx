@@ -108,10 +108,11 @@ const style = StyleSheet.create({
         justifyContent: "center",
     },
     bodyBackground: {
+        
         borderTopLeftRadius: 40,
         borderTopRightRadius: 40,
         width: "90%",
-        height: "72%",
+        height: "68%",
         backgroundColor: "white",
         padding: "3%",
         marginTop: 10,
