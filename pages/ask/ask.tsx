@@ -4,11 +4,12 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { darkGrey } from "@/constants/Colors";
 import { NativeStackScreenProps } from "react-native-screens/lib/typescript/native-stack/types";
 import { AskStackParamList } from "./_stack";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { useAuthContext } from "@/hooks/authContext";
 import { ApiQuestionTopicModel } from "@/model/model";
+import { useFocusEffect } from "@react-navigation/native";
 
 
 // const data: CardParam[] = [
@@ -41,8 +42,8 @@ export default function Ask({ navigation }: props) {
                             title: v.topic,
                             unixTime: v.createAt,
                             text: v.answerAt
-                                ? lang("คุณหมอตอบกลับแล้ว", "ไม่มีการตอบกลับ")
-                                : lang("A doctor replied", "No reply"),
+                                ? lang("คุณหมอตอบกลับแล้ว", "A doctor replied")
+                                : lang("ไม่มีการตอบกลับ", "No reply"),
                         }))
                     );
                     break;
@@ -64,9 +65,12 @@ export default function Ask({ navigation }: props) {
         }
     };
 
-    useEffect(() => {
-        fetch();
-    }, []);
+    // fetch data on focus
+    useFocusEffect(
+        useCallback(() => {
+            fetch();
+        }, [])
+    );
 
     return (
         <View style={style.container}>

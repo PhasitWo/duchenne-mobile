@@ -1,13 +1,13 @@
 import { View, Text, Pressable, StyleSheet, Dimensions } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { darkGrey, tint, darkTint } from "@/constants/Colors";
 import CustomButton from "@/components/CustomButton";
 import { Dropdown } from "react-native-element-dropdown";
 import { Alert } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthContext } from "@/hooks/authContext";
 import { useApiContext } from "@/hooks/apiContext";
@@ -71,9 +71,12 @@ export default function AddAppointment() {
         }
     }
 
-    useEffect(() => {
-        fetchDoctor();
-    }, []);
+    // fetch data on focus
+    useFocusEffect(
+        useCallback(() => {
+            fetchDoctor();
+        }, [])
+    );
 
     // save
     function showSaveAlert() {
@@ -111,7 +114,7 @@ export default function AddAppointment() {
             const response = await api.post("/api/appointment", { date: dayjs(date).unix(), doctorId: parseInt(selected) });
             switch (response.status) {
                 case 201:
-                    Alert.alert(lang("บันทึกนัดหมายเรียบร้อยแล้ว", "The appointment has been scheduled"), undefined);
+                    Alert.alert(lang("บันทึกนัดหมายสำเร็จแล้ว", "The appointment has been scheduled"), undefined);
                     navigation.navigate("appointment" as never);
                     break;
                 case 401:
@@ -179,16 +182,19 @@ export default function AddAppointment() {
                 value={selected}
                 search
                 placeholder={lang("เลือกคุณหมอ", "Select Doctor")}
+                disable={isLoading}
             />
             <Pressable
                 style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.dateTime]}
                 onPress={showDatepicker}
+                disabled={isLoading}
             >
                 <Text>{dayjs(date).format("D MMMM YYYY")}</Text>
             </Pressable>
             <Pressable
                 style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.dateTime]}
                 onPress={showTimepicker}
+                disabled={isLoading}
             >
                 <Text>{dayjs(date).format("HH:mm")}</Text>
             </Pressable>

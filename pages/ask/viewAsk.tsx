@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import { darkGrey, tint } from "@/constants/Colors";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useState, useEffect } from "react";
@@ -8,17 +8,21 @@ import type { AskStackParamList } from "./_stack";
 import dayjs from "dayjs";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import LoadingView from "@/components/LoadingView";
+import { useApiContext } from "@/hooks/apiContext";
+import { useAuthContext } from "@/hooks/authContext";
+import { AxiosError, AxiosResponse } from "axios";
+import { ApiQuestionModel } from "@/model/model";
 
 type Question = {
     createAt: Dayjs | null;
     topic: string;
-    body: string;
+    question: string;
 };
 
 type Answer = {
-    createAt: Dayjs | null;
+    answerAt: Dayjs | null;
     doctor: string;
-    body: string;
+    answer: string;
 };
 
 type props = NativeStackScreenProps<AskStackParamList, "viewAsk">;
@@ -26,38 +30,63 @@ export default function ViewAsk({ navigation, route }: props) {
     const { lang, currentLang } = useLanguage();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [question, setQuestion] = useState<Question>({
-        createAt: dayjs(),
-        topic: "djakslkj asdlkjlk",
-        body: "daskdjjl lasjlaskjdlaskdjasldjkj asdkjlkajsdlkaslkdjlkjsadasdasjdjalskdjsaldjlkjlkjasldkjasldjasldjasldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjldjlkjlkjasldkjasldjasldjasldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalsk",
+        createAt: null,
+        topic: "-",
+        question: "-",
     });
-    const [answer, setAnswer] = useState<Answer | null>({
-        createAt: dayjs(),
-        doctor: "Dr.Spiderman",
-        body: "daskdjjl lasjlaskjdlaskdjasldjkj asdkjlkajsdlkaslkdjlkjsadasdasjdjalskdjsaldjlkjlkjasldkjasldjasldjasldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjldjlkjlkjasldkjasldjasldjasldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalskdjsaldjlkjasjdjalsk",
-    });
+    const [answer, setAnswer] = useState<Answer | null>(null);
     const { id } = route.params;
-    console.log("id => " + id);
+    const { api } = useApiContext();
+    const { logoutDispatch } = useAuthContext();
     // Fetch question and answer
-    const fetchData = async () => {
-        setTimeout(() => {
+    const fetch = async () => {
+        setIsLoading(true);
+        try {
+            const response = await api.get<any, AxiosResponse<ApiQuestionModel, any>, any>("/api/question/" + id);
+            switch (response.status) {
+                case 200:
+                    setQuestion({
+                        createAt: dayjs(response.data.createAt * 1000),
+                        topic: response.data.topic,
+                        question: response.data.question,
+                    });
+                    if (response.data.answer)
+                        setAnswer({
+                            answerAt: dayjs((response.data.answerAt as number) * 1000),
+                            doctor: `${response.data.doctor?.firstName} ${response.data.doctor?.middleName} ${response.data.doctor?.lastName}`,
+                            answer: response.data.answer,
+                        });
+                    break;
+                case 401:
+                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    logoutDispatch();
+                    break;
+                default:
+                    Alert.alert("Something went wrong...", JSON.stringify(response));
+            }
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                Alert.alert("Request Error", `${err.status ?? ""} ${err.code}`);
+            } else {
+                Alert.alert("Fatal Error", `${err as Error}`);
+            }
+        } finally {
             setIsLoading(false);
-        }, 2000);
+        }
     };
+
     useEffect(() => {
-        fetchData();
+        fetch();
     }, []);
 
-    if (isLoading)
-        return (
-            <LoadingView/>
-        );
+    if (isLoading) return <LoadingView />;
 
     return (
         <View style={style.container}>
             <View style={style.questionContainer}>
                 <Text style={style.boldText}>{question.topic} </Text>
-                <Text style={style.date}>{question.createAt?.locale(currentLang).format("HH:mm  D MMMM YYYY")}</Text>
-                <Text style={style.body}>{question.body}</Text>
+                <Text style={style.date}>{question.createAt?.locale(currentLang).format("D MMMM YYYY  HH:mm")}</Text>
+                <Text style={style.body}>{question.question}</Text>
             </View>
             {answer ? (
                 <View style={style.answerContainer}>
@@ -67,13 +96,13 @@ export default function ViewAsk({ navigation, route }: props) {
                         </View>
                         <View style={style.doctorNameContainer}>
                             <Text style={style.doctorName}>{answer.doctor}</Text>
-                            <Text style={style.date}>{answer.createAt?.locale(currentLang).format("HH:mm  D MMMM YYYY")}</Text>
+                            <Text style={style.date}>{answer.answerAt?.locale(currentLang).format("D MMMM YYYY  HH:mm")}</Text>
                         </View>
                     </View>
-                    <Text style={style.body}>{answer.body}</Text>
+                    <Text style={style.body}>{answer.answer}</Text>
                 </View>
             ) : (
-                <Text>No Reply</Text>
+                <Text style={{ marginTop: 10 }}>No Reply</Text>
             )}
         </View>
     );

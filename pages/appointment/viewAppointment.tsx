@@ -102,6 +102,9 @@ export default function ViewAppointment({ route, navigation }: Props) {
     };
     return (
         <View style={style.container}>
+            <Pressable style={style.pressable} disabled>
+                <Text>{selected}</Text>
+            </Pressable>
             <Pressable style={style.pressable} onPress={showDatepicker} disabled>
                 <Text>{dayjs(date).locale(currentLang).format("D MMMM YYYY")}</Text>
             </Pressable>
@@ -118,9 +121,6 @@ export default function ViewAppointment({ route, navigation }: Props) {
                     minimumDate={dayjs().toDate()}
                 />
             )}
-            <Pressable style={style.pressable} disabled>
-                <Text>{selected}</Text>
-            </Pressable>
             <CustomButton
                 title={lang("ลบนัดหมาย", "Delete")}
                 normalColor={isLoading ? darkGrey : "lightsalmon"}

@@ -9,12 +9,14 @@ import * as SplashScreen from "expo-splash-screen";
 import { useAuthContext } from "./hooks/authContext";
 import AddAsk from "./pages/ask/addAsk";
 import ForgotPassword from "./pages/auth/forgotPassword";
+import type { LoginData } from "@/pages/auth/login";
+
 
 export type AppStackParamList = {
     tab: undefined;
-    login: undefined;
+    login: undefined | LoginData;
     forgotPassword: undefined;
-    register: undefined;
+    signup: undefined;
     notification: undefined;
     addAsk: undefined;
 };
@@ -34,8 +36,8 @@ export default function App() {
         >
             {authState.userToken === null ? (
                 <>
-                    <Stack.Screen name="login" component={Login} options={{ title: lang("ลงชื่อเข้าใช้", "Login") }} />
-                    <Stack.Screen name="register" component={SignupStack} options={{ headerShown: false }} />
+                    <Stack.Screen name="login" component={Login} options={{ title: lang("ลงชื่อเข้าใช้", "Login"), }} />
+                    <Stack.Screen name="signup" component={SignupStack} options={{ headerShown: false }} />
                     <Stack.Screen
                         name="forgotPassword"
                         component={ForgotPassword}

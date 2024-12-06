@@ -1,9 +1,13 @@
 import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, ScrollView, Alert } from "react-native";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import CustomButton from "@/components/CustomButton";
 import { darkGrey } from "@/constants/Colors";
 import { useLanguage } from "@/hooks/useLanguage";
 import { SignupData, useSignupContext } from "@/hooks/signupContext";
+import type { SignupStackParamList } from "./_stack";
+import { NativeStackScreenProps } from "react-native-screens/lib/typescript/native-stack/types";
+import { useApiContext } from "@/hooks/apiContext";
+import { AxiosError } from "axios";
 
 const fieldMap = {
     hn: {
@@ -31,10 +35,11 @@ const fieldMap = {
         th: "อีเมล",
     },
 };
-
-export default function Signup() {
+type Props = NativeStackScreenProps<SignupStackParamList, "index">;
+export default function Signup({ navigation }: Props) {
     const { signupData, setSignupData } = useSignupContext();
     const { lang, currentLang } = useLanguage();
+    const [isLoading, setIsLoading] = useState(false);
 
     const firstName_ref = useRef<TextInput>(null);
     const middleName_ref = useRef<TextInput>(null);
@@ -46,13 +51,16 @@ export default function Signup() {
         const EXCEPTIONFIELDS = ["middleName"];
         let key: keyof SignupData;
         for (key in signupData) {
+            signupData[key] = signupData[key].trim(); // trim all inputs
             if (EXCEPTIONFIELDS.includes(key)) continue;
-            if (signupData[key].trim().length === 0) return key;
+            if (signupData[key].length === 0) return key;
         }
         return null;
     }
 
-    function handleSignup() {
+    const { apiNoAuth } = useApiContext();
+    async function handleSignup() {
+        // validate field
         const emptyField = validateFields();
         if (emptyField) {
             Alert.alert(
@@ -61,13 +69,74 @@ export default function Signup() {
             );
             return;
         }
-        // TODO check signup data in server
+        if (!signupData.email.includes("@")) {
+            Alert.alert(lang("เกิดข้อผิดพลาด", "Error"), lang("อีเมลไม่ถูกต้อง", "Invalid email address"));
+            return;
+        }
+        // check signup data in server
+        setIsLoading(true);
+        try {
+            console.log({
+                ...signupData,
+                middleName: signupData.middleName === "" ? null : signupData.middleName,
+            });
+            const response = await apiNoAuth.post(
+                "/auth/signup",
+                {
+                    ...signupData,
+                },
+                { timeout: 5000 }
+            );
+            switch (response.status) {
+                case 200:
+                    Alert.alert(lang("ลงทะเบียนเสร็จสิ้น!", "Registration completed!"));
+                    navigation.navigate("login", {
+                        hn: signupData.hn,
+                        firstName: signupData.firstName,
+                        lastName: signupData.lastName,
+                    });
+                    break;
+                case 401:
+                    Alert.alert(
+                        lang("เกิดข้อผิดพลาด", "Error"),
+                        lang(
+                            "ข้อมูลไม่ถูกต้อง (ชื่อ หรือ ชื่อกลาง หรือ นามสกุล)",
+                            "Invalid credentials (first name or middle name or last name)"
+                        )
+                    );
+                    break;
+                case 409:
+                    Alert.alert(
+                        lang("เกิดข้อผิดพลาด", "Error"),
+                        lang("บัญชีนี้ได้ลงทะเบียนแล้ว", "The account with this HN has already been verified")
+                    );
+                    break;
+                default:
+                    Alert.alert("Something went wrong...", JSON.stringify(response));
+            }
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                if (err.status === 404)
+                    Alert.alert(
+                        lang("เกิดข้อผิดพลาด", "Error"),
+                        lang(`ไม่มีบัญชีที่มีรหัส HN : ${signupData.hn}`, `No account with HN: ${signupData.hn}`)
+                    );
+                else Alert.alert("Request Error", `${err.status ?? ""} ${JSON.stringify(err.response)}`);
+            } else {
+                Alert.alert("Fatal Error", `${err as Error}`);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     }
     return (
         <KeyboardAvoidingView style={{ backgroundColor: "white", flex: 1 }} behavior="padding">
             <ScrollView contentContainerStyle={style.formContainer}>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>HN*</Text>
+                    <Text style={style.label}>
+                        HN
+                        <Asterisk />
+                    </Text>
                     <TextInput
                         style={style.input}
                         placeholderTextColor={placeholderColor}
@@ -75,11 +144,15 @@ export default function Signup() {
                         onChangeText={(text) => setSignupData({ ...signupData, hn: text })}
                         onSubmitEditing={() => firstName_ref.current?.focus()}
                         blurOnSubmit={false}
-                        keyboardType="number-pad"
+                        // keyboardType="number-pad"
+                        editable={!isLoading}
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>{lang("ชื่อจริง*", "First Name* (in Thai)")}</Text>
+                    <Text style={style.label}>
+                        {lang("ชื่อจริง", "First Name (in Thai)")}
+                        <Asterisk />
+                    </Text>
                     <TextInput
                         ref={firstName_ref}
                         style={style.input}
@@ -88,6 +161,7 @@ export default function Signup() {
                         onChangeText={(text) => setSignupData({ ...signupData, firstName: text })}
                         onSubmitEditing={() => middleName_ref.current?.focus()}
                         blurOnSubmit={false}
+                        editable={!isLoading}
                     />
                 </View>
                 <View style={style.inputContainer}>
@@ -100,10 +174,14 @@ export default function Signup() {
                         onChangeText={(text) => setSignupData({ ...signupData, middleName: text })}
                         onSubmitEditing={() => lastName_ref.current?.focus()}
                         blurOnSubmit={false}
+                        editable={!isLoading}
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>{lang("นามสกุล*", "Last Name* (in Thai)")}</Text>
+                    <Text style={style.label}>
+                        {lang("นามสกุล", "Last Name (in Thai)")}
+                        <Asterisk />
+                    </Text>
                     <TextInput
                         ref={lastName_ref}
                         style={style.input}
@@ -112,10 +190,14 @@ export default function Signup() {
                         onChangeText={(text) => setSignupData({ ...signupData, lastName: text })}
                         onSubmitEditing={() => phone_ref.current?.focus()}
                         blurOnSubmit={false}
+                        editable={!isLoading}
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>{lang("เบอร์โทรศัพท์*", "Phone Number*")}</Text>
+                    <Text style={style.label}>
+                        {lang("เบอร์โทรศัพท์", "Phone Number")}
+                        <Asterisk />
+                    </Text>
                     <TextInput
                         ref={phone_ref}
                         style={style.input}
@@ -125,10 +207,14 @@ export default function Signup() {
                         onSubmitEditing={() => email_ref.current?.focus()}
                         blurOnSubmit={false}
                         keyboardType="number-pad"
+                        editable={!isLoading}
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>{lang("อีเมล*", "Email*")}</Text>
+                    <Text style={style.label}>
+                        {lang("อีเมล", "Email")}
+                        <Asterisk />
+                    </Text>
                     <TextInput
                         ref={email_ref}
                         style={style.input}
@@ -136,6 +222,7 @@ export default function Signup() {
                         onChangeText={(text) => setSignupData({ ...signupData, email: text })}
                         keyboardType="email-address"
                         placeholderTextColor={placeholderColor}
+                        editable={!isLoading}
                     />
                 </View>
                 <CustomButton
@@ -144,6 +231,7 @@ export default function Signup() {
                     pressedColor={darkGrey}
                     style={{ height: 60, borderRadius: 10, marginTop: 50 }}
                     onPress={handleSignup}
+                    showLoading={isLoading}
                 />
             </ScrollView>
         </KeyboardAvoidingView>
@@ -181,4 +269,9 @@ const style = StyleSheet.create({
         position: "absolute",
         top: 5,
     },
+    asterisk: {
+        color: "red",
+    },
 });
+
+const Asterisk = () => <Text style={style.asterisk}>*</Text>;

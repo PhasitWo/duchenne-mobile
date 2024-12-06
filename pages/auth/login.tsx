@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CustomButton from "@/components/CustomButton";
 import { darkGrey, tint } from "@/constants/Colors";
 import { useNavigation } from "@react-navigation/native";
@@ -9,6 +9,10 @@ import { useAuthContext } from "@/hooks/authContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { useApiContext } from "@/hooks/apiContext";
 import type { ApiLoginResponse } from "@/model/model";
+import type { AppStackParamList } from "@/app";
+import { NativeStackScreenProps } from "react-native-screens/lib/typescript/native-stack/types";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 type Warning = {
     hn: boolean;
@@ -16,17 +20,17 @@ type Warning = {
     lastName: boolean;
 };
 
-type LoginData = {
+export type LoginData = {
     hn: string;
     firstName: string;
     lastName: string;
 };
 
-export default function Login() {
+type Props = NativeStackScreenProps<AppStackParamList, "login">;
+export default function Login({ route, navigation }: Props) {
     const [data, setData] = useState<LoginData>({ hn: "test3", firstName: "fn3", lastName: "ln3" });
     const [warning, setWarning] = useState<Warning>({ hn: false, firstName: false, lastName: false });
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const navigation = useNavigation();
     const { lang } = useLanguage();
     const { loginDispatch } = useAuthContext();
 
@@ -34,8 +38,15 @@ export default function Login() {
     const lastName_ref = useRef<TextInput>(null);
     const warningText = lang("กรุณากรอกข้อมูล", "This field is required");
 
-    const { apiNoAuth } = useApiContext();
+    // route param is used once, when the screen is focused
+    useFocusEffect(
+        useCallback(() => {
+            console.log("run")
+            if (route.params) setData(route.params);
+        }, [])
+    );
 
+    const { apiNoAuth } = useApiContext();
     async function handleLogin() {
         // validate Field
         let key: keyof LoginData;
@@ -50,25 +61,30 @@ export default function Login() {
         try {
             const response = await apiNoAuth.post<any, AxiosResponse<ApiLoginResponse, any>, any>(
                 "/auth/login",
-                { ...data, deviceName: "TestDevice", expoToken: "dummy-expo-token" },
+                {
+                    hn: data.hn.trim(),
+                    firstName: data.firstName.trim(),
+                    lastName: data.lastName.trim(),
+                    deviceName: "TestDevice",
+                    expoToken: "dummy-expo-token",
+                },
                 { timeout: 5000 }
             );
-            switch(response.status) {
+            switch (response.status) {
                 case 200:
-                    console.log(response.data.token)
-                    loginDispatch(response.data.token)
-                    break
+                    console.log(response.data.token);
+                    loginDispatch(response.data.token);
+                    break;
                 case 401:
-                    Alert.alert("Error", "Invalid credentials")
-                    break
+                    Alert.alert("Error", "Invalid credentials");
+                    break;
                 default:
                     Alert.alert("Something went wrong...", JSON.stringify(response));
             }
         } catch (err) {
             if (err instanceof AxiosError) {
                 Alert.alert("Request Error", `${err.status ?? ""} ${err.code}`);
-            }
-            else {
+            } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
             }
         } finally {
@@ -148,7 +164,7 @@ export default function Login() {
             />
             <Text style={style.signup}>
                 {lang("ยังไม่มีบัญชี? ", "Don't have an account? ")}
-                <Text style={style.signupLink} onPress={() => navigation.navigate("register" as never)} disabled={isLoading}>
+                <Text style={style.signupLink} onPress={() => navigation.navigate("signup" as never)} disabled={isLoading}>
                     {lang("ลงทะเบียน", "Sign up")}
                 </Text>
             </Text>

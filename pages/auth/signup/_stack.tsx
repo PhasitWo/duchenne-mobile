@@ -4,26 +4,27 @@ import { useLanguage } from "@/hooks/useLanguage";
 import Signup from "./signup";
 import SetPassword from "./setPassword";
 import { SignupProvider } from "@/hooks/signupContext";
+import { LoginData } from "../login";
 
-export type StackParamList = {
-    signup: undefined;
+export type SignupStackParamList = {
+    index: undefined;
     setPassword: undefined;
+    login: LoginData;
 };
 
-const Stack = createNativeStackNavigator<StackParamList>();
+const Stack = createNativeStackNavigator<SignupStackParamList>();
 
 export default function SignupStack() {
     const { lang } = useLanguage();
     return (
         <SignupProvider>
             <Stack.Navigator
-                initialRouteName="signup"
                 screenOptions={{
                     title: lang("ลงทะเบียน", "Sign Up"),
                     header: (props) => <Header {...props} showNotification={false} />,
                 }}
             >
-                <Stack.Screen name="signup" component={Signup} />
+                <Stack.Screen name="index" component={Signup} />
                 {/* <Stack.Screen name="setPassword" component={SetPassword} /> */}
             </Stack.Navigator>
         </SignupProvider>

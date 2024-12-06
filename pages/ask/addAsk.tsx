@@ -4,12 +4,19 @@ import { darkGrey, tint } from "@/constants/Colors";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useState, useEffect } from "react";
 import { NativeStackScreenProps } from "react-native-screens/lib/typescript/native-stack/types";
+import dayjs from "dayjs";
+import { useApiContext } from "@/hooks/apiContext";
+import { useAuthContext } from "@/hooks/authContext";
+import { AxiosError } from "axios";
 
 type props = NativeStackScreenProps<any, "addAsk">;
 export default function AddAsk({ navigation }: props) {
     const { lang } = useLanguage();
     const [topic, setTopic] = useState("");
     const [question, setQuestion] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const { api } = useApiContext();
+    const { logoutDispatch } = useAuthContext();
     // Warning before goback
     useEffect(
         () =>
@@ -40,7 +47,7 @@ export default function AddAsk({ navigation }: props) {
         if (text.length > 500) return;
         setQuestion(text);
     }
-    function handleSubmit() {
+    function showSubmitAlert() {
         if (topic.trim().length === 0) {
             Alert.alert(lang("เกิดข้อผิดพลาด", "Error"), lang("กรุณากรอกหัวข้อ", "Topic cannot be empty."));
             return;
@@ -49,7 +56,42 @@ export default function AddAsk({ navigation }: props) {
             Alert.alert(lang("เกิดข้อผิดพลาด", "Error"), lang("กรุณากรอกคำถาม", "Question cannot be empty."));
             return;
         }
-        //TODO handle submiting question
+        Alert.alert(lang("คุณแน่ใจหรือไม่", "Are you sure?"), undefined, [
+            {
+                text: lang("ยืนยัน", "Confirm"),
+                onPress: handleSubmit,
+            },
+            {
+                text: lang("ยกเลิก", "Cancel"),
+            },
+        ]);
+    }
+
+    async function handleSubmit() {
+        try {
+            setIsLoading(true);
+            const response = await api.post("/api/question", { topic: topic, question: question });
+            switch (response.status) {
+                case 201:
+                    Alert.alert(lang("ส่งคำถามสำเร็จแล้ว", "The question has been submitted"), undefined);
+                    navigation.navigate("ask" as never);
+                    break;
+                case 401:
+                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    logoutDispatch();
+                    break;
+                default:
+                    Alert.alert("Something went wrong...", JSON.stringify(response));
+            }
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                Alert.alert("Request Error", `${err.status ?? ""} ${err.code}`);
+            } else {
+                Alert.alert("Fatal Error", `${err as Error}`);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
@@ -59,7 +101,7 @@ export default function AddAsk({ navigation }: props) {
                     {lang("หัวข้อ  ", "Topic  ")}
                     <Count current={topic.length} max={30} />
                 </Text>
-                <TextInput style={style.topicInput} value={topic} onChangeText={handleTopicChange} />
+                <TextInput style={style.topicInput} value={topic} onChangeText={handleTopicChange} editable={!isLoading} />
             </View>
             <View style={style.bodyContainer}>
                 <Text style={[{ color: question.length == 0 ? "red" : "black" }, style.label]}>
@@ -72,9 +114,16 @@ export default function AddAsk({ navigation }: props) {
                     returnKeyType="done"
                     value={question}
                     onChangeText={handleQuestionChange}
+                    editable={!isLoading}
                 />
             </View>
-            <CustomButton normalColor={tint} pressedColor={darkGrey} title={lang("ส่ง", "submit")} onPress={handleSubmit} />
+            <CustomButton
+                normalColor={tint}
+                pressedColor={darkGrey}
+                title={lang("ส่ง", "submit")}
+                onPress={showSubmitAlert}
+                showLoading={isLoading}
+            />
         </View>
     );
 }
