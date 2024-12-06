@@ -30,12 +30,12 @@ export default function Appointment({ navigation }: props) {
 
         const normalizedNow = dayjs().hour(0).minute(0).second(0);
         for (let apmt of apmntList) {
-            if (apmt.dateTime.isBefore(normalizedNow)) continue;
+            if (apmt.dateTime.isBefore(now)) continue;
             let diff = apmt.dateTime.hour(0).minute(0).second(0).diff(normalizedNow, "day", true);
             res.push(Math.ceil(diff));
         }
         return res;
-    }, [apmntList]);
+    }, [apmntList, isLoading]);
     // scrollview children
     const display = useMemo<React.JSX.Element[]>(() => {
         return apmntList
@@ -47,7 +47,7 @@ export default function Appointment({ navigation }: props) {
                     onPress={() => incomingSelected && navigation.navigate("viewAppointment", { id: String(v.id) })}
                 />
             ));
-    }, [apmntList, incomingSelected]);
+    }, [apmntList, incomingSelected, isLoading]);
 
     return (
         <View
