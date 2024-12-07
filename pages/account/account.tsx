@@ -1,11 +1,14 @@
-import { Text, View, FlatList, StyleSheet, Dimensions, Pressable } from "react-native";
+import { Text, View, FlatList, StyleSheet, Dimensions, Pressable, Alert } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { darkGrey } from "@/constants/Colors";
-import { ReactElement, useMemo } from "react";
+import { ReactElement, useMemo, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthContext } from "@/hooks/authContext";
+import LoadingView from "@/components/LoadingView";
+import { useApiContext } from "@/hooks/apiContext";
+import { AxiosError } from "axios";
 
 type Menu = { title: string; icon: ReactElement; href?: string | undefined; customOnPress?: Function };
 
@@ -29,18 +32,51 @@ const Item = ({ menu }: { menu: Menu }) => {
 
 export default function Account() {
     const { lang, currentLang } = useLanguage();
+    const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
+    const [isLoading, setIsLoading] = useState(false);
+
     const data = useMemo<Menu[]>(() => {
         return [
             { title: lang("โปรไฟล์", "Profile"), href: "profile", icon: <Ionicons name="person" size={24} color="black" /> },
             { title: lang("การตั้งค่า", "Setting"), href: "setting", icon: <FontAwesome name="gear" size={24} color="black" /> },
             {
                 title: lang("ออกจากระบบ", "Logout"),
-                customOnPress: logoutDispatch,
+                customOnPress: handleLogout,
                 icon: <Ionicons name="exit-outline" size={24} color="black" />,
             },
         ];
     }, [currentLang]);
+
+    async function handleLogout() {
+        // POST
+        setIsLoading(true);
+        try {
+            const response = await api.post("/auth/logout");
+            switch (response.status) {
+                case 200:
+                    Alert.alert("Logout successfully");
+                    break;
+                case 401:
+                    Alert.alert("Error", "Logout without removing this device from the database");
+                    break;
+                default:
+                    Alert.alert("Something went wrong...", JSON.stringify(response));
+            }
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                Alert.alert(
+                    "Request Error",
+                    `${err.status ?? ""} ${err.code}\nLogout without removing this device from the database`
+                );
+            } else {
+                Alert.alert("Fatal Error", `${err as Error}`);
+            }
+        } finally {
+            setIsLoading(false);
+            logoutDispatch();
+        }
+    }
 
     return (
         <View
@@ -49,6 +85,7 @@ export default function Account() {
             }}
         >
             <FlatList data={data} renderItem={({ item }) => <Item menu={item} />} showsVerticalScrollIndicator={false} />
+            {isLoading && <LoadingView />}
         </View>
     );
 }

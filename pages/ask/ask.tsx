@@ -11,7 +11,6 @@ import { useAuthContext } from "@/hooks/authContext";
 import { ApiQuestionTopicModel } from "@/model/model";
 import { useFocusEffect } from "@react-navigation/native";
 
-
 // const data: CardParam[] = [
 //     { id: 1, title: "Question 1", bodyText: "A doctor replied" },
 //     { id: 2, title: "Question 2", bodyText: "No reply" },
@@ -25,7 +24,7 @@ import { useFocusEffect } from "@react-navigation/native";
 type props = NativeStackScreenProps<AskStackParamList, "index">;
 export default function Ask({ navigation }: props) {
     const [topicList, setTopicList] = useState<QuestionTopic[]>([]);
-    const { lang } = useLanguage();
+    const { lang, currentLang } = useLanguage();
     const [isLoading, setIsLoading] = useState(true);
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
@@ -41,9 +40,7 @@ export default function Ask({ navigation }: props) {
                             id: v.id,
                             title: v.topic,
                             unixTime: v.createAt,
-                            text: v.answerAt
-                                ? lang("คุณหมอตอบกลับแล้ว", "A doctor replied")
-                                : lang("ไม่มีการตอบกลับ", "No reply"),
+                            hasReply: Boolean(v.answerAt),
                         }))
                     );
                     break;
@@ -69,7 +66,7 @@ export default function Ask({ navigation }: props) {
     useFocusEffect(
         useCallback(() => {
             fetch();
-        }, [])
+        }, [currentLang])
     );
 
     return (
