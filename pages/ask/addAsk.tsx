@@ -3,7 +3,7 @@ import CustomButton from "@/components/CustomButton";
 import { darkGrey, tint } from "@/constants/Colors";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useState, useEffect } from "react";
-import { NativeStackScreenProps } from "react-native-screens/lib/typescript/native-stack/types";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import dayjs from "dayjs";
 import { useApiContext } from "@/hooks/apiContext";
 import { useAuthContext } from "@/hooks/authContext";

@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import { darkGrey, tint } from "@/constants/Colors";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useState, useEffect } from "react";
-import { NativeStackScreenProps } from "react-native-screens/lib/typescript/native-stack/types";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { Dayjs } from "dayjs";
 import type { AskStackParamList } from "./_stack";
 import dayjs from "dayjs";

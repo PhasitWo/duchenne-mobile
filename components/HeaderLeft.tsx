@@ -2,7 +2,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { Pressable, ViewStyle } from "react-native";
 import { darkGrey } from "@/constants/Colors";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type props = { navigation: NativeStackNavigationProp<ParamListBase>; style: ViewStyle };
 export default function HeaderLeft({ navigation, style }: props) {

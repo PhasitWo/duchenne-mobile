@@ -1,8 +1,7 @@
 import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import CustomButton from "@/components/CustomButton";
-import { darkGrey, tint } from "@/constants/Colors";
-import { useNavigation } from "@react-navigation/native";
+import { darkGrey } from "@/constants/Colors";
 import ChangeLangText from "@/components/ChangeLangText";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthContext } from "@/hooks/authContext";
@@ -10,9 +9,12 @@ import { AxiosError, AxiosResponse } from "axios";
 import { useApiContext } from "@/hooks/apiContext";
 import type { ApiLoginResponse } from "@/model/model";
 import type { AppStackParamList } from "@/app";
-import { NativeStackScreenProps } from "react-native-screens/lib/typescript/native-stack/types";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback } from "react";
+import Constants from "expo-constants";
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
 
 type Warning = {
     hn: boolean;
@@ -55,6 +57,17 @@ export default function Login({ route, navigation }: Props) {
                 return;
             }
         }
+        // EXPO TOKEN
+        let expoToken = await getExpoToken();
+        if (!expoToken) {
+            Alert.alert(
+                lang(
+                    "ไม่สามารถเชื่อมต่อ Expo ได้\nกรุณาเช็คการเชื่อมต่อกับอินเทอร์เน็ต",
+                    "Can't get expo token, check your internet connection"
+                )
+            );
+            return;
+        }
         // POST
         setIsLoading(true);
         try {
@@ -64,8 +77,8 @@ export default function Login({ route, navigation }: Props) {
                     hn: data.hn.trim(),
                     firstName: data.firstName.trim(),
                     lastName: data.lastName.trim(),
-                    deviceName: "TestDevice",
-                    expoToken: "dummy-expo-token",
+                    deviceName: Device.deviceName ? Device.deviceName : "Unknown Device",
+                    expoToken: expoToken,
                 },
                 { timeout: 5000 }
             );
@@ -119,7 +132,7 @@ export default function Login({ route, navigation }: Props) {
                     editable={!isLoading}
                     placeholder={warning.hn ? warningText : undefined}
                     placeholderTextColor="red"
-                    blurOnSubmit={false}
+                    submitBehavior="submit"
                 />
             </View>
             <View style={style.inputContainer}>
@@ -139,7 +152,7 @@ export default function Login({ route, navigation }: Props) {
                     editable={!isLoading}
                     placeholder={warning.firstName ? warningText : undefined}
                     placeholderTextColor="red"
-                    blurOnSubmit={false}
+                    submitBehavior="submit"
                 />
             </View>
             <View style={style.inputContainer}>
@@ -180,7 +193,10 @@ export default function Login({ route, navigation }: Props) {
                     {lang("ลงทะเบียน", "Sign up")}
                 </Text>
             </Text>
-            <Text onPress={() => navigation.navigate("tab" as never)} style={{ bottom: -100, color: "whitesmoke" }}>
+            <Text
+                onPress={() => setData({ hn: "test3", firstName: "fn3", lastName: "ln3" })}
+                style={{ bottom: -100, color: "whitesmoke" }}
+            >
                 DEV
             </Text>
             <ChangeLangText style={style.lang} />
@@ -238,3 +254,17 @@ const style = StyleSheet.create({
         color: "blue",
     },
 });
+
+async function getExpoToken(): Promise<string | null> {
+    let token = null;
+    try {
+        const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+        if (!projectId) {
+            throw new Error("Project ID not found");
+        }
+        token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+    } catch (e: any) {
+        Alert.alert(e.message);
+    }
+    return token;
+}

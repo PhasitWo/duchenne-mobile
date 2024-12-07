@@ -46,6 +46,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         console.log("restore => " + result);
         dispatch({ type: AuthActionEnum.RESTORE, userToken: result });
         console.log("restoring end");
+        console.log(process.env.EXPO_PUBLIC_API_URL);
     };
     useEffect(() => {
         restoreToken();

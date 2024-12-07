@@ -5,7 +5,7 @@ import { darkGrey } from "@/constants/Colors";
 import { useLanguage } from "@/hooks/useLanguage";
 import { SignupData, useSignupContext } from "@/hooks/signupContext";
 import type { SignupStackParamList } from "./_stack";
-import { NativeStackScreenProps } from "react-native-screens/lib/typescript/native-stack/types";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError } from "axios";
 
@@ -60,7 +60,7 @@ export default function Signup({ navigation }: Props) {
 
     const { apiNoAuth } = useApiContext();
     async function handleSignup() {
-        console.log(signupData)
+        console.log(signupData);
         // validate field
         const emptyField = validateFields();
         if (emptyField) {
@@ -134,7 +134,7 @@ export default function Signup({ navigation }: Props) {
                         value={signupData.hn}
                         onChangeText={(text) => setSignupData({ ...signupData, hn: text })}
                         onSubmitEditing={() => firstName_ref.current?.focus()}
-                        blurOnSubmit={false}
+                        submitBehavior="submit"
                         // keyboardType="number-pad"
                         editable={!isLoading}
                     />
@@ -151,7 +151,7 @@ export default function Signup({ navigation }: Props) {
                         value={signupData.firstName}
                         onChangeText={(text) => setSignupData({ ...signupData, firstName: text })}
                         onSubmitEditing={() => middleName_ref.current?.focus()}
-                        blurOnSubmit={false}
+                        submitBehavior="submit"
                         editable={!isLoading}
                     />
                 </View>
@@ -164,7 +164,7 @@ export default function Signup({ navigation }: Props) {
                         value={signupData.middleName}
                         onChangeText={(text) => setSignupData({ ...signupData, middleName: text })}
                         onSubmitEditing={() => lastName_ref.current?.focus()}
-                        blurOnSubmit={false}
+                        submitBehavior="submit"
                         editable={!isLoading}
                     />
                 </View>
@@ -180,7 +180,7 @@ export default function Signup({ navigation }: Props) {
                         value={signupData.lastName}
                         onChangeText={(text) => setSignupData({ ...signupData, lastName: text })}
                         onSubmitEditing={() => phone_ref.current?.focus()}
-                        blurOnSubmit={false}
+                        submitBehavior="submit"
                         editable={!isLoading}
                     />
                 </View>
@@ -196,7 +196,7 @@ export default function Signup({ navigation }: Props) {
                         value={signupData.phone}
                         onChangeText={(text) => setSignupData({ ...signupData, phone: text })}
                         onSubmitEditing={() => email_ref.current?.focus()}
-                        blurOnSubmit={false}
+                        submitBehavior="submit"
                         keyboardType="number-pad"
                         editable={!isLoading}
                     />

@@ -2,7 +2,7 @@ import { View, Alert, StyleSheet, Pressable, Text, FlatList, RefreshControl } fr
 import QuestionCard, { QuestionTopic } from "@/components/QuestionCard";
 import { useLanguage } from "@/hooks/useLanguage";
 import { darkGrey } from "@/constants/Colors";
-import { NativeStackScreenProps } from "react-native-screens/lib/typescript/native-stack/types";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AskStackParamList } from "./_stack";
 import { useCallback, useEffect, useState } from "react";
 import { useApiContext } from "@/hooks/apiContext";
@@ -71,7 +71,7 @@ export default function Ask({ navigation }: props) {
 
     return (
         <View style={style.container}>
-            {topicList.length == 0 && <Text style={{marginTop:10}}>{lang("ไม่มีคำถาม", "No Question")}</Text>}
+            {topicList.length == 0 && <Text style={{ marginTop: 10 }}>{lang("ไม่มีคำถาม", "No Question")}</Text>}
             <FlatList
                 data={topicList}
                 renderItem={({ item }) => (

@@ -26,7 +26,8 @@
                 "barStyle": "dark-content",
                 "translucent": true,
                 "hidden": false
-            }
+            },
+            "googleServicesFile": "./google-services.json"
         },
         "web": {
             "bundler": "metro",
