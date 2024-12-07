@@ -71,6 +71,7 @@ export default function Ask({ navigation }: props) {
 
     return (
         <View style={style.container}>
+            {topicList.length == 0 && <Text style={{marginTop:10}}>{lang("ไม่มีคำถาม", "No Question")}</Text>}
             <FlatList
                 data={topicList}
                 renderItem={({ item }) => (

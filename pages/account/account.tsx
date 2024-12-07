@@ -42,11 +42,20 @@ export default function Account() {
             { title: lang("การตั้งค่า", "Setting"), href: "setting", icon: <FontAwesome name="gear" size={24} color="black" /> },
             {
                 title: lang("ออกจากระบบ", "Logout"),
-                customOnPress: handleLogout,
+                customOnPress: showAlertLogout,
                 icon: <Ionicons name="exit-outline" size={24} color="black" />,
             },
         ];
     }, [currentLang]);
+
+    function showAlertLogout() {
+        Alert.alert(
+            lang("คุณแน่ใจหรือไม่", "Are you sure?"),
+            lang("คุณกำลังจะออกจากระบบ", "You're trying to log out"),
+            [{ text: lang("ออกจากระบบ", "Log out"), onPress: handleLogout }, { text: lang("ยกเลิก", "Cancel") }],
+            { cancelable: true }
+        );
+    }
 
     async function handleLogout() {
         // POST
