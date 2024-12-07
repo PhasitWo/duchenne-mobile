@@ -28,7 +28,7 @@ export type LoginData = {
 
 type Props = NativeStackScreenProps<AppStackParamList, "login">;
 export default function Login({ route, navigation }: Props) {
-    const [data, setData] = useState<LoginData>({ hn: "test3", firstName: "fn3", lastName: "ln3" });
+    const [data, setData] = useState<LoginData>({ hn: "", firstName: "", lastName: "" });
     const [warning, setWarning] = useState<Warning>({ hn: false, firstName: false, lastName: false });
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { lang } = useLanguage();
@@ -37,7 +37,7 @@ export default function Login({ route, navigation }: Props) {
     const firstName_ref = useRef<TextInput>(null);
     const lastName_ref = useRef<TextInput>(null);
     const warningText = lang("กรุณากรอกข้อมูล", "This field is required");
-    
+
     // route param is used once, when the screen is focused
     useFocusEffect(
         useCallback(() => {
@@ -75,14 +75,27 @@ export default function Login({ route, navigation }: Props) {
                     loginDispatch(response.data.token);
                     break;
                 case 401:
-                    Alert.alert("Error", "Invalid credentials");
+                    Alert.alert(lang("เกิดข้อผิดพลาด", "Error"), lang("ข้อมูลไม่ถูกต้อง", "Invalid credentials"));
+                    break;
+                case 403:
+                    Alert.alert(
+                        lang("เกิดข้อผิดพลาด", "Error"),
+                        lang(`HN: ${data.hn} ยังไม่ได้ลงทะเบียน`, `Unverified Account HN: ${data.hn}`)
+                    );
                     break;
                 default:
                     Alert.alert("Something went wrong...", JSON.stringify(response));
             }
         } catch (err) {
             if (err instanceof AxiosError) {
-                Alert.alert("Request Error", `${err.status ?? ""} ${err.code}`);
+                if (err.status == 404) {
+                    Alert.alert(
+                        lang("เกิดข้อผิดพลาด", "Error"),
+                        lang(`ไม่มี HN: ${data.hn} ในฐานข้อมูล`, `HN: ${data.hn} is not found in the database`)
+                    );
+                    return;
+                }
+                Alert.alert("Request Error", `${err.message ?? ""} ${err.code}`);
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
             }

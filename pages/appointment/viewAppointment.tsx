@@ -63,7 +63,7 @@ export default function ViewAppointment({ route, navigation }: Props) {
             }
         } catch (err) {
             if (err instanceof AxiosError) {
-                Alert.alert("Request Error", `${err.status ?? ""} ${err.code}`);
+                Alert.alert("Request Error", `${err.message ?? ""} ${err.code}`);
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
             }

@@ -60,7 +60,7 @@ export default function AddAppointment() {
             }
         } catch (err) {
             if (err instanceof AxiosError) {
-                Alert.alert("Request Error", `${err.status ?? ""} ${err.code}`);
+                Alert.alert("Request Error", `${err.message ?? ""} ${err.code}`);
                 navigation.navigate("learn" as never);
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
@@ -132,7 +132,7 @@ export default function AddAppointment() {
             }
         } catch (err) {
             if (err instanceof AxiosError) {
-                Alert.alert("Request Error", `${err.status ?? ""} ${err.code}`);
+                Alert.alert("Request Error", `${err.message ?? ""} ${err.code}`);
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
             }

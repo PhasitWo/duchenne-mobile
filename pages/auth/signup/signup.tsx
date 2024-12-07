@@ -60,6 +60,7 @@ export default function Signup({ navigation }: Props) {
 
     const { apiNoAuth } = useApiContext();
     async function handleSignup() {
+        console.log(signupData)
         // validate field
         const emptyField = validateFields();
         if (emptyField) {
@@ -111,7 +112,7 @@ export default function Signup({ navigation }: Props) {
                         lang("เกิดข้อผิดพลาด", "Error"),
                         lang(`ไม่มีบัญชีที่มีรหัส HN : ${signupData.hn}`, `No account with HN: ${signupData.hn}`)
                     );
-                else Alert.alert("Request Error", `${err.status ?? ""} ${JSON.stringify(err.response)}`);
+                else Alert.alert("Request Error", `${err.message ?? ""} ${JSON.stringify(err.response)}`);
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
             }

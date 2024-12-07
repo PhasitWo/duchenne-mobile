@@ -74,7 +74,7 @@ export default function AddAsk({ navigation }: props) {
             switch (response.status) {
                 case 201:
                     Alert.alert(lang("ส่งคำถามสำเร็จแล้ว", "The question has been submitted"), undefined);
-                    navigation.navigate("tab",{screen: "ask"});
+                    navigation.navigate("tab", { screen: "ask" });
                     break;
                 case 401:
                     Alert.alert("Error", "Unauthorized, Invalid token");
@@ -85,7 +85,7 @@ export default function AddAsk({ navigation }: props) {
             }
         } catch (err) {
             if (err instanceof AxiosError) {
-                Alert.alert("Request Error", `${err.status ?? ""} ${err.code}`);
+                Alert.alert("Request Error", `${err.message ?? ""} ${err.code}`);
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
             }

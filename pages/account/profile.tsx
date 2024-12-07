@@ -35,7 +35,7 @@ export default function Profile() {
             { title: lang("ชื่อ", "First Name"), value: userInfo?.firstName },
             { title: lang("ชื่อกลาง", "Middle Name"), value: userInfo?.middleName ?? "-" },
             { title: lang("นามสกุล", "Last Name"), value: userInfo?.lastName },
-            { title: lang("รหัส HN", "HN Number"), value: userInfo?.hn},
+            { title: lang("รหัส HN", "HN Number"), value: userInfo?.hn },
             { title: lang("อีเมล", "Email"), value: userInfo?.email },
             { title: lang("เบอร์โทรศัพท์", "Phone Number"), value: userInfo?.phone },
         ];
@@ -47,9 +47,7 @@ export default function Profile() {
     const { logoutDispatch } = useAuthContext();
     const fetch = async () => {
         try {
-            const response = await api.get<any, AxiosResponse<ApiPatientModel, any>, any>(
-                "/api/profile",
-            );
+            const response = await api.get<any, AxiosResponse<ApiPatientModel, any>, any>("/api/profile");
             switch (response.status) {
                 case 200:
                     setUserInfo(response.data);
@@ -63,7 +61,7 @@ export default function Profile() {
             }
         } catch (err) {
             if (err instanceof AxiosError) {
-                Alert.alert("Request Error", `${err.status ?? ""} ${err.code}`);
+                Alert.alert("Request Error", `${err.message ?? ""} ${err.code}`);
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
             }
@@ -83,7 +81,12 @@ export default function Profile() {
                 flex: 1,
             }}
         >
-            <FlatList style={{backgroundColor:"white"}} data={data} renderItem={({ item }) => <Item info={item} />} showsVerticalScrollIndicator={false} />
+            <FlatList
+                style={{ backgroundColor: "white" }}
+                data={data}
+                renderItem={({ item }) => <Item info={item} />}
+                showsVerticalScrollIndicator={false}
+            />
         </View>
     );
 }
