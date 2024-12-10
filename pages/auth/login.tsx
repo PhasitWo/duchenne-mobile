@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
+import { View, Text, StyleSheet, TextInput, Alert, Platform } from "react-native";
 import { useRef, useState } from "react";
 import CustomButton from "@/components/CustomButton";
 import { darkGrey } from "@/constants/Colors";
@@ -15,6 +15,9 @@ import { useCallback } from "react";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
+import * as Linking from "expo-linking";
+import { startActivityAsync, ActivityAction } from "expo-intent-launcher";
+import * as Application from "expo-application";
 
 type Warning = {
     hn: boolean;
@@ -47,6 +50,26 @@ export default function Login({ route, navigation }: Props) {
         }, [route.params])
     );
 
+    async function getNotificationPermission() {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== "granted") {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+        }
+        if (finalStatus !== "granted") {
+            if (Platform.OS == "android")
+            Alert.alert(lang("กรุณาเปิดการแจ้งเตือนของแอป", "Require notification permission"), undefined, [
+                {
+                    text: "Ok",
+                    onPress: openNotificationSetting,
+                },
+            ]);
+            return false;
+        }
+        return true;
+    }
+
     const { apiNoAuth } = useApiContext();
     async function handleLogin() {
         // validate Field
@@ -57,6 +80,8 @@ export default function Login({ route, navigation }: Props) {
                 return;
             }
         }
+        // notification permission
+        if (!(await getNotificationPermission())) return;
         // EXPO TOKEN
         let expoToken = await getExpoToken();
         if (!expoToken) {
@@ -156,7 +181,9 @@ export default function Login({ route, navigation }: Props) {
                 />
             </View>
             <View style={style.inputContainer}>
-                <Text style={[style.label, { color: warning.lastName ? "red" : "black" }]}>{lang("นามสกุล", "Last Name")}</Text>
+                <Text style={[style.label, { color: warning.lastName ? "red" : "black" }]}>
+                    {lang("นามสกุล", "Last Name")}
+                </Text>
                 <TextInput
                     ref={lastName_ref}
                     style={[style.input, { borderColor: warning.lastName ? "red" : darkGrey }]}
@@ -189,7 +216,11 @@ export default function Login({ route, navigation }: Props) {
             />
             <Text style={style.signup}>
                 {lang("ยังไม่มีบัญชี? ", "Don't have an account? ")}
-                <Text style={style.signupLink} onPress={() => navigation.navigate("signup" as never)} disabled={isLoading}>
+                <Text
+                    style={style.signupLink}
+                    onPress={() => navigation.navigate("signup" as never)}
+                    disabled={isLoading}
+                >
                     {lang("ลงทะเบียน", "Sign up")}
                 </Text>
             </Text>
@@ -267,4 +298,15 @@ async function getExpoToken(): Promise<string | null> {
         Alert.alert(e.message);
     }
     return token;
+}
+
+async function openNotificationSetting() {
+    if (Platform.OS == "android") {
+        startActivityAsync(ActivityAction.APP_NOTIFICATION_SETTINGS, {
+            extra: { "android.provider.extra.APP_PACKAGE": Application.applicationId },
+        });
+        
+    } else {
+        Linking.openSettings();
+    }
 }

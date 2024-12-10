@@ -64,10 +64,10 @@ export default function Account() {
             const response = await api.post("/auth/logout");
             switch (response.status) {
                 case 200:
-                    Alert.alert("Logout successfully");
+                    Alert.alert(lang("ออกจากระบบเสร็จสิ้น","Logout successfully"));
                     break;
                 case 401:
-                    Alert.alert("Error", "Logout without removing this device from the database");
+                    Alert.alert(lang("เกิดข้อผิดพลาด","Error"), lang("ออกจากระบบโดยไม่ได้ลบอุปกรณ์ออกจากฐานข้อมูล","Logout without removing this device from the database"));
                     break;
                 default:
                     Alert.alert("Something went wrong...", JSON.stringify(response));
@@ -76,7 +76,10 @@ export default function Account() {
             if (err instanceof AxiosError) {
                 Alert.alert(
                     "Request Error",
-                    `${err.status ?? ""} ${err.code}\nLogout without removing this device from the database`
+                    `${err.status ?? ""} ${err.code}\n${lang(
+                        "ออกจากระบบโดยไม่ได้ลบอุปกรณ์ออกจากฐานข้อมูล",
+                        "Logout without removing this device from the database"
+                    )}`
                 );
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);

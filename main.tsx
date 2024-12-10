@@ -10,6 +10,7 @@ import { Platform } from "react-native";
 import * as Device from "expo-device";
 import App from "./app";
 import Constants from "expo-constants";
+
 type notificationReceiveTrigger = NotificationTrigger & { value: number };
 
 registerRootComponent(main);
@@ -56,18 +57,8 @@ async function registerForPushNotificationsAsync() {
             finalStatus = status;
         }
         if (finalStatus !== "granted") {
-            alert("Failed to get push token for push notification!");
+            alert("Require notification permission!");
             return;
-        }
-        let token;
-        try {
-            const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
-            if (!projectId) {
-                throw new Error("Project ID not found");
-            }
-            token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
-        } catch (e) {
-            token = `${e}`;
         }
     } else {
         alert("Must use physical device for Push Notifications");
