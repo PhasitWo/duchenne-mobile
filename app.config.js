@@ -19,7 +19,7 @@ module.exports = {
             foregroundImage: "./assets/images/adaptive-icon.png",
             backgroundColor: "#ffffff",
         },
-        package: "com.anonymous.duchennemobile",
+        package: "com.care.duchennemobile",
         androidStatusBar: {
             backgroundColor: "#ffffff",
             barStyle: "dark-content",
