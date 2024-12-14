@@ -36,7 +36,7 @@ export default function SwipeHand({ from, to }: { from: number; to: number }) {
             ]}
         >
             <MaterialCommunityIcons name="gesture-swipe-down" size={60} color="black" />
-            <Text style={{ marginTop: 10 }}>{lang("ดึงลงเพื่อ refresh", "Swipe to Refresh")}</Text>
+            <Text style={{ marginTop: 10, backgroundColor:"white", borderRadius: 40, padding: 10 }}>{lang("ดึงลงเพื่อ refresh", "Swipe to Refresh")}</Text>
         </Animated.View>
     );
 }
