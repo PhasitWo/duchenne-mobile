@@ -1,9 +1,9 @@
 import { useContext, createContext, useEffect, type PropsWithChildren, useReducer, useMemo } from "react";
-import { AuthAction, AuthActionEnum, AuthState } from "./authReducer";
+import { AuthActionEnum, AuthState } from "./authReducer";
 import authReducer from "./authReducer";
 import * as SecureStore from "expo-secure-store";
 import { SecureStoreKey } from "@/constants/SecureStorageKey";
-import axios from "axios";
+import useTutorial from "./useTutorial";
 
 type LoginDispatch = (userToken: string) => void;
 type LogoutDispatch = () => void;
@@ -26,10 +26,13 @@ export function useAuthContext() {
 }
 export function AuthProvider({ children }: PropsWithChildren) {
     const [authState, dispatch] = useReducer(authReducer, initialState);
+    const {setShowAppointmentTutorial, setShowAskTutorial} = useTutorial()
     const { loginDispatch, logoutDispatch } = useMemo<{ loginDispatch: LoginDispatch; logoutDispatch: LogoutDispatch }>(
         () => ({
             loginDispatch: async (userToken) => {
                 await SecureStore.setItemAsync(SecureStoreKey.USER_TOKEN, userToken);
+                setShowAppointmentTutorial(true);
+                setShowAskTutorial(true);
                 dispatch({ type: AuthActionEnum.LOGIN, userToken: userToken });
             },
             logoutDispatch: async () => {

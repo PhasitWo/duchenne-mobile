@@ -48,4 +48,6 @@ export type ApiQuestionTopicModel = {
     topic: string;
     createAt: number;
     answerAt: number | null;
+    doctor: ApiDoctorModel | null;
+    patient: ApiPatientModel;
 };

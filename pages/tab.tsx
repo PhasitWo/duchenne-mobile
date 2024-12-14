@@ -10,7 +10,7 @@ import AccountStack from "@/pages/account/_stack";
 import AppointmentStack from "@/pages/appointment/_stack";
 import AskStack from "@/pages/ask/_stack";
 import { useLanguage } from "@/hooks/useLanguage";
-import { Platform } from "react-native";
+import { Platform, Pressable, TouchableOpacity } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
@@ -21,9 +21,10 @@ export default function Tabs() {
         <Tab.Navigator
             screenOptions={{
                 tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-                tabBarStyle: { height: Platform.OS =="ios" ? 120 : 100 },
+                tabBarStyle: { height: Platform.OS == "ios" ? 120 : 100 },
                 tabBarLabelPosition: "below-icon",
-                tabBarLabelStyle: { fontSize: 12, marginTop: 5 },
+                tabBarLabelStyle: { fontSize: 12, marginTop: 5, width: 100 },
+                tabBarButton: (props) => <Pressable {...props} android_ripple={null} />,
                 tabBarIconStyle: { width: "auto", height: 50, overflow: "visible", backgroundColor: "red" },
                 tabBarHideOnKeyboard: true,
                 tabBarItemStyle: { overflow: "visible" },
@@ -38,7 +39,9 @@ export default function Tabs() {
                 options={{
                     title: lang("ศูนย์เรียนรู้", "Learn"),
                     headerShown: true,
-                    tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "bulb" : "bulb-outline"} color={color} />,
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabBarIcon name={focused ? "bulb" : "bulb-outline"} color={color} />
+                    ),
                 }}
             />
             <Tab.Screen
@@ -80,7 +83,10 @@ export default function Tabs() {
                     title: lang("ถามคุณหมอ", "Ask"),
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
-                        <TabBarIcon name={focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"} color={color} />
+                        <TabBarIcon
+                            name={focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"}
+                            color={color}
+                        />
                     ),
                     // unmountOnBlur: true, // force fetching data
                 }}
@@ -91,7 +97,9 @@ export default function Tabs() {
                 options={{
                     title: lang("บัญชี", "Account"),
                     headerShown: false,
-                    tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "person" : "person-outline"} color={color} />,
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabBarIcon name={focused ? "person" : "person-outline"} color={color} />
+                    ),
                     popToTopOnBlur: true, // Reset to initial route of account stack
                 }}
             />

@@ -1,5 +1,5 @@
 import { Text, View, ScrollView, StyleSheet, Pressable, RefreshControl } from "react-native";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import Calendar from "@/components/Calendar";
 import AppointmentCard from "@/components/AppointmentCard";
 import { grey, darkGrey } from "@/constants/Colors";
@@ -8,16 +8,27 @@ import { useAppointmentContext } from "@/hooks/appointmentContext";
 import { StackParamList } from "./_stack";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useLanguage } from "@/hooks/useLanguage";
-import LoadingView from "@/components/LoadingView";
 import { useFocusEffect } from "@react-navigation/native";
+import SwipeHand from "@/components/SwipeHand";
+import useTutorial from "@/hooks/useTutorial";
 
 type props = NativeStackScreenProps<StackParamList, "index">;
 
 export default function Appointment({ navigation }: props) {
     const [incomingSelected, setIncomingSelected] = useState(true);
+    const [showTutorial, setShowTutorial] = useState(false);
     const { apmntList, isLoading, fetch } = useAppointmentContext();
     const { lang } = useLanguage();
     const now = dayjs();
+    // tutorial onmount
+    useEffect(() => {
+        const { getShowAppointmentTutorial, setShowAppointmentTutorial } = useTutorial();
+        getShowAppointmentTutorial().then((value) => setShowTutorial(value));
+        setTimeout(() => {
+            setShowTutorial(false)
+            setShowAppointmentTutorial(false)
+        }, 5200)
+    }, []);
     // fetch data on focus
     useFocusEffect(
         useCallback(() => {
@@ -55,6 +66,7 @@ export default function Appointment({ navigation }: props) {
                 alignItems: "center",
             }}
         >
+            {showTutorial && <SwipeHand from={250} to={500} />}
             <Calendar markedDateKey={markedDateKey} />
             <View style={style.headContainer}>
                 <Pressable
@@ -108,7 +120,6 @@ const style = StyleSheet.create({
         justifyContent: "center",
     },
     bodyBackground: {
-        
         borderTopLeftRadius: 40,
         borderTopRightRadius: 40,
         width: "90%",
@@ -125,5 +136,6 @@ const style = StyleSheet.create({
     bodyContentContainer: {
         overflow: "hidden",
         alignItems: "center",
+        paddingBottom: 50,
     },
 });

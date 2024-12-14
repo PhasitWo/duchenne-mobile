@@ -40,11 +40,11 @@ export default function AddAsk({ navigation }: props) {
     );
 
     function handleTopicChange(text: string) {
-        if (text.length > 30) return;
+        if (text.length > 50) return;
         setTopic(text);
     }
     function handleQuestionChange(text: string) {
-        if (text.length > 500) return;
+        if (text.length > 700) return;
         setQuestion(text);
     }
     function showSubmitAlert() {
@@ -99,18 +99,19 @@ export default function AddAsk({ navigation }: props) {
             <View style={style.topicContainer}>
                 <Text style={[{ color: topic.length == 0 ? "red" : "black" }, style.label]}>
                     {lang("หัวข้อ  ", "Topic  ")}
-                    <Count current={topic.length} max={30} />
+                    <Count current={topic.length} max={50} />
                 </Text>
                 <TextInput style={style.topicInput} value={topic} onChangeText={handleTopicChange} editable={!isLoading} />
             </View>
             <View style={style.bodyContainer}>
                 <Text style={[{ color: question.length == 0 ? "red" : "black" }, style.label]}>
                     {lang("คำถาม  ", "Question  ")}
-                    <Count current={question.length} max={500} />
+                    <Count current={question.length} max={700} />
                 </Text>
                 <TextInput
                     style={style.bodyInput}
                     multiline
+                    submitBehavior="blurAndSubmit"
                     returnKeyType="done"
                     value={question}
                     onChangeText={handleQuestionChange}

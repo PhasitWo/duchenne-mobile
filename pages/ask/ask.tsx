@@ -10,6 +10,8 @@ import { AxiosError, AxiosResponse } from "axios";
 import { useAuthContext } from "@/hooks/authContext";
 import { ApiQuestionTopicModel } from "@/model/model";
 import { useFocusEffect } from "@react-navigation/native";
+import SwipeHand from "@/components/SwipeHand";
+import useTutorial from "@/hooks/useTutorial";
 
 // const data: CardParam[] = [
 //     { id: 1, title: "Question 1", bodyText: "A doctor replied" },
@@ -24,15 +26,26 @@ import { useFocusEffect } from "@react-navigation/native";
 type props = NativeStackScreenProps<AskStackParamList, "index">;
 export default function Ask({ navigation }: props) {
     const [topicList, setTopicList] = useState<QuestionTopic[]>([]);
+    const [showTutorial, setShowTutorial] = useState(false)
     const { lang, currentLang } = useLanguage();
     const [isLoading, setIsLoading] = useState(true);
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
 
+    // tutorial onmount
+    useEffect(() => {
+        const { getShowAskTutorial, setShowAskTutorial } = useTutorial();
+        getShowAskTutorial().then((value) => setShowTutorial(value));
+        setTimeout(() => {
+            setShowTutorial(false);
+            setShowAskTutorial(false);
+        }, 5200);
+    }, []);
+
     const fetch = async () => {
         setIsLoading(true);
         try {
-            const response = await api.get<any, AxiosResponse<ApiQuestionTopicModel[], any>, any>("/api/question?onlytopic");
+            const response = await api.get<any, AxiosResponse<ApiQuestionTopicModel[], any>, any>("/api/question");
             switch (response.status) {
                 case 200:
                     setTopicList(
@@ -71,8 +84,10 @@ export default function Ask({ navigation }: props) {
 
     return (
         <View style={style.container}>
+            {showTutorial && <SwipeHand from={50} to={350} />}
             {topicList.length == 0 && <Text style={{ marginTop: 10 }}>{lang("ไม่มีคำถาม", "No Question")}</Text>}
             <FlatList
+                contentContainerStyle={{ paddingBottom: 150 }}
                 data={topicList}
                 renderItem={({ item }) => (
                     <QuestionCard

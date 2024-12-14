@@ -13,10 +13,12 @@ export default function QuestionCard({ questionTopic, ...rest }: { questionTopic
             style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.container]}
             {...rest}
         >
-            <Text style={style.title}>{questionTopic.title}</Text>
+            <Text numberOfLines={1} style={style.title}>{questionTopic.title}</Text>
             <Text style={style.time}>{dayjs(questionTopic.unixTime * 1000).format("D/MM/YYYY HH:mm")}</Text>
             <Text>
-                {questionTopic.hasReply ? lang("คุณหมอตอบกลับแล้ว", "A doctor replied") : lang("ไม่มีการตอบกลับ", "No reply")}
+                {questionTopic.hasReply
+                    ? lang("คุณหมอตอบกลับแล้ว", "A doctor replied")
+                    : lang("ไม่มีการตอบกลับ", "No reply")}
             </Text>
         </Pressable>
     );

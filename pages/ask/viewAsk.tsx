@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ActivityIndicator, Alert } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, Alert, Pressable } from "react-native";
 import { darkGrey, tint } from "@/constants/Colors";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useState, useEffect } from "react";
@@ -12,6 +12,7 @@ import { useApiContext } from "@/hooks/apiContext";
 import { useAuthContext } from "@/hooks/authContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiQuestionModel } from "@/model/model";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 type Question = {
     createAt: Dayjs | null;
@@ -38,6 +39,43 @@ export default function ViewAsk({ navigation, route }: props) {
     const { id } = route.params;
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
+
+    function showDeleteAlert() {
+        Alert.alert(
+            lang("คุณแน่ใจหรือไม่", "Are you sure?"),
+            lang("คุณกำลังลบคำถามนี้", "You are deleting this question"),
+            [{ text: "Delete", onPress: handleDelete }, { text: "Cancel" }],
+            { cancelable: true }
+        );
+    }
+
+    async function handleDelete() {
+        try {
+            setIsLoading(true);
+            const response = await api.delete("/api/question/" + id);
+            switch (response.status) {
+                case 204:
+                    Alert.alert("", lang("ลบคำถามแล้ว", "Deleted successfully"));
+                    navigation.navigate("index");
+                    break;
+                case 401:
+                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    logoutDispatch();
+                    break;
+                default:
+                    Alert.alert("Something went wrong...", JSON.stringify(response));
+            }
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                Alert.alert("Request Error", `${err.message ?? ""} ${err.code}`);
+            } else {
+                Alert.alert("Fatal Error", `${err as Error}`);
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     // Fetch question and answer
     const fetch = async () => {
         setIsLoading(true);
@@ -87,6 +125,9 @@ export default function ViewAsk({ navigation, route }: props) {
                 <Text style={style.boldText}>{question.topic} </Text>
                 <Text style={style.date}>{question.createAt?.locale(currentLang).format("D MMMM YYYY  HH:mm")}</Text>
                 <Text style={style.body}>{question.question}</Text>
+                <Pressable style={style.bin} onPress={showDeleteAlert}>
+                    <FontAwesome name="trash-o" size={20} color="red" style={{}} />
+                </Pressable>
             </View>
             {answer ? (
                 <View style={style.answerContainer}>
@@ -96,7 +137,9 @@ export default function ViewAsk({ navigation, route }: props) {
                         </View>
                         <View style={style.doctorNameContainer}>
                             <Text style={style.doctorName}>{answer.doctor}</Text>
-                            <Text style={style.date}>{answer.answerAt?.locale(currentLang).format("D MMMM YYYY  HH:mm")}</Text>
+                            <Text style={style.date}>
+                                {answer.answerAt?.locale(currentLang).format("D MMMM YYYY  HH:mm")}
+                            </Text>
                         </View>
                     </View>
                     <Text style={style.body}>{answer.answer}</Text>
@@ -153,5 +196,11 @@ const style = StyleSheet.create({
         fontWeight: "normal",
         fontSize: 12,
         color: "grey",
+    },
+    bin: {
+        justifyContent: "flex-end",
+        alignItems: "flex-end",
+        flexDirection: "row",
+        height: "auto",
     },
 });
