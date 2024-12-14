@@ -51,3 +51,17 @@ export type ApiQuestionTopicModel = {
     doctor: ApiDoctorModel | null;
     patient: ApiPatientModel;
 };
+
+export type ApiDeviceModel = {
+    id : number;
+    loginAt: number;
+    deviceName: string;
+    expoToken: string;
+    patientId: number;
+}
+
+export type ApiJwtClaimModel = {
+    deviceId: number;
+    exp: number;
+    patientId: number;
+}

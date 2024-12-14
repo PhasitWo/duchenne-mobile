@@ -1,74 +1,191 @@
-import { Text, FlatList, View, StyleSheet, Dimensions, Pressable } from "react-native";
-import { darkGrey } from "@/constants/Colors";
-import { useState, useEffect } from "react";
-
-
-interface notification {
-    id: string | number;
-    message: string;
-    href?: string;
-}
-
-let DATA = [
-    { id: 1, message: "hello world", href: "/(appointment)/" },
-    { id: 2, message: "hello world" },
-    { id: 3, message: "hello world" },
-    { id: 4, message: "hello world" },
-];
-
-for (let i = 5; i < 15; i++) {
-    DATA.push({ id: i, message: "interate" });
-}
-
-import * as Notifications from "expo-notifications";
-
-const Item = ({ notification }: { notification: notification }) => {
-    return (
-        <Pressable
-            style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : undefined }, style.item]}
-            // onPress={notification.href ? () => router.navigate(notification.href as Href) : null}
-        >
-            <Text>{notification.message}</Text>
-        </Pressable>
-    );
-};
+import { Text, FlatList, View, StyleSheet, Dimensions, Alert } from "react-native";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { ApiDeviceModel, ApiJwtClaimModel, ApiLoginResponse } from "@/model/model";
+import { useApiContext } from "@/hooks/apiContext";
+import { AxiosError, AxiosResponse } from "axios";
+import { useAuthContext } from "@/hooks/authContext";
+import LoadingView from "@/components/LoadingView";
+import dayjs from "dayjs";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { jwtDecode } from "jwt-decode";
+import CustomButton from "@/components/CustomButton";
+import { darkGrey, tint } from "@/constants/Colors";
+import { useFocusEffect } from "@react-navigation/native";
+import { useLanguage } from "@/hooks/useLanguage";
+import { getDeviceName, getExpoToken } from "@/hooks/useDeviceInfo";
+import useTutorial from "@/hooks/useTutorial";
 
 export default function Notification() {
-    const [data, setData]: [data: notification[], setData: Function] = useState([]);
+    const [data, setData] = useState<ApiDeviceModel[]>([]);
+    const [deviceId, setDeviceId] = useState(-1);
+    const [isLoading, setIsLoading] = useState(true);
+    const { logoutDispatch, authState } = useAuthContext();
+    const { api } = useApiContext();
+    const { lang, currentLang } = useLanguage();
+    const { loginDispatch } = useAuthContext();
+    const { setShowAppointmentTutorial, setShowAskTutorial } = useTutorial();
+    const fetch = async () => {
+        try {
+            setIsLoading(true);
+            const response = await api.get<any, AxiosResponse<ApiDeviceModel[], any>, any>("/api/device");
+            switch (response.status) {
+                case 200:
+                    setData(response.data);
+                    break;
+                case 401:
+                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    logoutDispatch();
+                    break;
+                default:
+                    Alert.alert("Something went wrong...", JSON.stringify(response));
+            }
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                Alert.alert("Request Error", `${err.message ?? ""} ${err.code}`);
+            } else {
+                Alert.alert("Fatal Error", `${err as Error}`);
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    const decodeToken = (token : string) => {
+        let id = jwtDecode<ApiJwtClaimModel>(token).deviceId;
+        setDeviceId(id);
+    };
 
-    async function getLocalNotifications() {
-        const res: any[] = await Notifications.getAllScheduledNotificationsAsync();
-        if (res.length === 0) return;
-        const i: notification[] = res.map((v) => {
-            return { id: v.identifier, message: new Date(v.trigger.value).toLocaleString() as string };
-        });
-        setData(i);
+    useFocusEffect(
+        useCallback(() => {
+            fetch().then((_) => decodeToken(authState.userToken as string));
+        }, [])
+    );
+
+    async function handlePushButton() {
+        try {
+            setIsLoading(true);
+            const expoToken = await getExpoToken();
+            const deviceName = getDeviceName();
+            const response = await api.post<any, AxiosResponse<ApiLoginResponse, any>, any>("/api/device", {
+                deviceName: deviceName,
+                expoToken: expoToken,
+            });
+            switch (response.status) {
+                case 200:
+                    loginDispatch(response.data.token)
+                    fetch()
+                    decodeToken(response.data.token)
+                    setShowAppointmentTutorial(false);
+                    setShowAskTutorial(false)
+                    break;
+                case 401:
+                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    logoutDispatch();
+                    break;
+                default:
+                    Alert.alert("Something went wrong...", JSON.stringify(response));
+            }
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                Alert.alert("Request Error", `${err.message ?? ""} ${JSON.stringify(err.response?.data)}`);
+            } else {
+                Alert.alert("Fatal Error", `${err as Error}`);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     }
 
-    useEffect(() => {
-        getLocalNotifications();
-    }, []);
+    const Item = useMemo(() => {
+        return ({ device }: { device: ApiDeviceModel }) => {
+            return (
+                <View style={style.itemContainer}>
+                    <FontAwesome style={{ flex: 1, textAlign: "right" }} name="circle" size={12} color="green" />
+                    <Text style={{ flex: 11, textAlign: "left", paddingLeft: 20 }}>
+                        {device.deviceName}
+                        {device.id === deviceId && "(Your device)"}
+                    </Text>
+                    <Text style={{ flex: 9, textAlign: "left" }}>
+                        {dayjs(device.loginAt * 1000).format("D/MM/YYYY HH:mm ")}
+                    </Text>
+                </View>
+            );
+        };
+    }, [deviceId, currentLang]);
+
+    const canPushButton = data.find((v) => v.id === deviceId) === undefined;
+
+    if (isLoading) return <LoadingView />;
 
     return (
         <View style={style.container}>
-            <FlatList
-                data={data}
-                renderItem={({ item }) => <Item notification={item} />}
-                showsVerticalScrollIndicator={false}
-            ></FlatList>
+            <View style={style.itemContainer}>
+                <Text style={{ flex: 8, textAlign: "center" }}>{lang("ชื่ออุปกรณ์","Device Name")}</Text>
+                <Text style={{ flex: 12, textAlign: "center" }}>{lang("เข้าสู่ระบบเมื่อ","Login at")}</Text>
+            </View>
+            <View>
+                <FlatList
+                    data={data}
+                    renderItem={({ item }) => <Item device={item} />}
+                    showsVerticalScrollIndicator={false}
+                ></FlatList>
+            </View>
+
+            <View style={{ marginTop: 10, padding: 10 }}>
+                <Text style={{ fontWeight: "bold" }}>
+                    {lang("ทำไมไม่ได้รับการแจ้งเตือน?", "Why I don't receive any notifications?")}
+                </Text>
+                <Text>{lang("อาจมีปัจจัยดังนี้", "These are possible reasons:")}</Text>
+                <Text style={{ marginTop: 10 }}>
+                    {lang(
+                        "1. อุปกรณ์ของคุณไม่ใช่อุปกรณ์ที่เข้าสู่ระบบ 3 เครื่องล่าสุด มีเพียงแค่ 3  เครื่องล่าสุดเท่านั้นที่จะได้รับการแจ้งเตือน",
+                        "1. Your device is not an active device for receiving push notifications. Only '3' devices that recently logged in will receive push notifications."
+                    )}
+                </Text>
+                <View style={{ justifyContent: "center", alignItems: "center", width: "100%" }}>
+                    <CustomButton
+                        title={lang("ทำให้อุปกรณ์นี้ได้รับการแจ้งเตือน", "Make this device receive notification")}
+                        normalColor={canPushButton ? tint : darkGrey}
+                        pressedColor={darkGrey}
+                        style={{ height: 50, marginBottom: 20 }}
+                        disabled={!canPushButton}
+                        onPress={handlePushButton}
+                    />
+                </View>
+                <Text>
+                    {lang(
+                        "2. แอปไม่ได้รับอนุญาตการแจ้งเตือน (ต้องเปิดในตั้งค่า)",
+                        "2. App's notification permission is disabled (please enable it in the setting)"
+                    )}
+                </Text>
+                <Text style={{ marginTop: 10 }}>
+                    {lang(
+                        "3. การปรับค่าเพื่อถนอมอายุการใช้งานของแบตเตอรี่ (Battery Optimization) (ในแอนดรอยด์บางเครื่อง)",
+                        "3. Battery Optimization is turn on for this app (in some android device)"
+                    )}
+                </Text>
+                <Text style={{ marginTop: 10 }}>
+                    {lang(
+                        "4. แอปนี้ถูกตั้งค่าให้หลับ (Sleeping App) (ในแอนดรอยด์บางเครื่อง)",
+                        "4. This app is put in the 'sleeping app' list (in some android device)"
+                    )}
+                </Text>
+            </View>
         </View>
     );
 }
 const screenHeight = Dimensions.get("screen").height;
 const style = StyleSheet.create({
     container: {
-        flex: 1,
+        height: screenHeight * 0.9,
+        backgroundColor: "white",
+        marginTop: 10,
+        paddingBottom: 50,
     },
-    item: {
-        height: 0.1 * screenHeight,
+    itemContainer: {
+        height: 60,
         justifyContent: "center",
-        borderBottomColor: darkGrey,
-        borderBottomWidth: 1,
-        paddingLeft: "5%",
+        alignItems: "center",
+        paddingLeft: 10,
+        flexDirection: "row",
     },
 });

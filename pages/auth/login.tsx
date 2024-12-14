@@ -18,6 +18,7 @@ import * as Device from "expo-device";
 import * as Linking from "expo-linking";
 import { startActivityAsync, ActivityAction } from "expo-intent-launcher";
 import * as Application from "expo-application";
+import { getExpoToken } from "@/hooks/useDeviceInfo";
 
 type Warning = {
     hn: boolean;
@@ -72,74 +73,73 @@ export default function Login({ route, navigation }: Props) {
 
     const { apiNoAuth } = useApiContext();
     async function handleLogin() {
-        // validate Field
-        let key: keyof LoginData;
-        for (key in data) {
-            if (data[key].trim().length === 0) {
-                setWarning({ ...warning, [key]: true });
-                return;
-            }
-        }
-        // notification permission
-        if (!(await getNotificationPermission())) return;
-        // EXPO TOKEN
-        let expoToken = await getExpoToken();
-        if (!expoToken) {
-            Alert.alert(
-                lang(
-                    "ไม่สามารถเชื่อมต่อ Expo ได้\nกรุณาเช็คการเชื่อมต่อกับอินเทอร์เน็ต",
-                    "Can't get expo token, check your internet connection"
-                )
-            );
-            return;
-        }
-        // POST
-        setIsLoading(true);
-        try {
-            const response = await apiNoAuth.post<any, AxiosResponse<ApiLoginResponse, any>, any>(
-                "/auth/login",
-                {
-                    hn: data.hn.trim(),
-                    firstName: data.firstName.trim(),
-                    lastName: data.lastName.trim(),
-                    deviceName: Device.deviceName ? Device.deviceName : "Unknown Device",
-                    expoToken: expoToken,
-                },
-                { timeout: 5000 }
-            );
-            switch (response.status) {
-                case 200:
-                    console.log(response.data.token);
-                    loginDispatch(response.data.token);
-                    break;
-                case 401:
-                    Alert.alert(lang("เกิดข้อผิดพลาด", "Error"), lang("ข้อมูลไม่ถูกต้อง", "Invalid credentials"));
-                    break;
-                case 403:
-                    Alert.alert(
-                        lang("เกิดข้อผิดพลาด", "Error"),
-                        lang(`HN: ${data.hn} ยังไม่ได้ลงทะเบียน`, `Unverified Account HN: ${data.hn}`)
-                    );
-                    break;
-                default:
-                    Alert.alert("Something went wrong...", JSON.stringify(response));
-            }
-        } catch (err) {
-            if (err instanceof AxiosError) {
-                if (err.status == 404) {
-                    Alert.alert(
-                        lang("เกิดข้อผิดพลาด", "Error"),
-                        lang(`ไม่มี HN: ${data.hn} ในฐานข้อมูล`, `HN: ${data.hn} is not found in the database`)
-                    );
-                    return;
-                }
-                Alert.alert("Request Error", `${err.message ?? ""} ${err.code}`);
-            } else {
-                Alert.alert("Fatal Error", `${err as Error}`);
-            }
-        } finally {
-            setIsLoading(false);
-        }
+         setIsLoading(true);
+         try {
+             // validate Field
+             let key: keyof LoginData;
+             for (key in data) {
+                 if (data[key].trim().length === 0) {
+                     setWarning({ ...warning, [key]: true });
+                     return;
+                 }
+             }
+             // notification permission
+             if (!(await getNotificationPermission())) return;
+             // EXPO TOKEN
+             let expoToken = await getExpoToken();
+             if (!expoToken) {
+                 Alert.alert(
+                     lang(
+                         "ไม่สามารถเชื่อมต่อ Expo ได้\nกรุณาเช็คการเชื่อมต่อกับอินเทอร์เน็ต",
+                         "Can't get expo token, check your internet connection"
+                     )
+                 );
+                 return;
+             }
+             // POST
+             const response = await apiNoAuth.post<any, AxiosResponse<ApiLoginResponse, any>, any>(
+                 "/auth/login",
+                 {
+                     hn: data.hn.trim(),
+                     firstName: data.firstName.trim(),
+                     lastName: data.lastName.trim(),
+                     deviceName: Device.deviceName ? Device.deviceName : "Unknown Device",
+                     expoToken: expoToken,
+                 },
+                 { timeout: 5000 }
+             );
+             switch (response.status) {
+                 case 200:
+                     loginDispatch(response.data.token);
+                     break;
+                 case 401:
+                     Alert.alert(lang("เกิดข้อผิดพลาด", "Error"), lang("ข้อมูลไม่ถูกต้อง", "Invalid credentials"));
+                     break;
+                 case 403:
+                     Alert.alert(
+                         lang("เกิดข้อผิดพลาด", "Error"),
+                         lang(`HN: ${data.hn} ยังไม่ได้ลงทะเบียน`, `Unverified Account HN: ${data.hn}`)
+                     );
+                     break;
+                 default:
+                     Alert.alert("Something went wrong...", JSON.stringify(response));
+             }
+         } catch (err) {
+             if (err instanceof AxiosError) {
+                 if (err.status == 404) {
+                     Alert.alert(
+                         lang("เกิดข้อผิดพลาด", "Error"),
+                         lang(`ไม่มี HN: ${data.hn} ในฐานข้อมูล`, `HN: ${data.hn} is not found in the database`)
+                     );
+                     return;
+                 }
+                 Alert.alert("Request Error", `${err.message ?? ""} ${err.code}`);
+             } else {
+                 Alert.alert("Fatal Error", `${err as Error}`);
+             }
+         } finally {
+             setIsLoading(false);
+         }
     }
     return (
         <View style={style.formContainer}>
@@ -285,20 +285,6 @@ const style = StyleSheet.create({
         color: "blue",
     },
 });
-
-async function getExpoToken(): Promise<string | null> {
-    let token = null;
-    try {
-        const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
-        if (!projectId) {
-            throw new Error("Project ID not found");
-        }
-        token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
-    } catch (e: any) {
-        Alert.alert(e.message);
-    }
-    return token;
-}
 
 async function openNotificationSetting() {
     if (Platform.OS == "android") {

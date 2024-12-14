@@ -5,7 +5,7 @@ import * as SecureStore from "expo-secure-store";
 import { SecureStoreKey } from "@/constants/SecureStorageKey";
 import useTutorial from "./useTutorial";
 
-type LoginDispatch = (userToken: string) => void;
+type LoginDispatch = (userToken: string) => Promise<void>;
 type LogoutDispatch = () => void;
 
 const initialState: AuthState = {
@@ -16,7 +16,7 @@ const initialState: AuthState = {
 
 const AuthContext = createContext<{ authState: AuthState; loginDispatch: LoginDispatch; logoutDispatch: LogoutDispatch }>({
     authState: { isLoading: true, isSignin: false, userToken: null },
-    loginDispatch: (data) => null,
+    loginDispatch: async (data) => {},
     logoutDispatch: () => null,
 });
 
@@ -54,6 +54,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     useEffect(() => {
         restoreToken();
     }, []);
+
     return (
         <AuthContext.Provider value={{ authState: authState, loginDispatch: loginDispatch, logoutDispatch: logoutDispatch }}>
             {children}

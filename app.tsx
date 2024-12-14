@@ -54,7 +54,7 @@ export default function App() {
                         name="notification"
                         component={Notification}
                         options={{
-                            title: "Notifications",
+                            title: lang("การแจ้งเตือน","Notifications"),
                             header: (props) => <Header {...props} showNotification={false} />,
                         }}
                     />
