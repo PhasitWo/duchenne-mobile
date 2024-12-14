@@ -52,7 +52,7 @@ export default function Ask({ navigation }: props) {
                         response.data.map((v) => ({
                             id: v.id,
                             title: v.topic,
-                            unixTime: v.createAt,
+                            unixTime: v.answerAt ? v.answerAt : v.createAt,
                             hasReply: Boolean(v.answerAt),
                         }))
                     );
@@ -70,6 +70,7 @@ export default function Ask({ navigation }: props) {
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
             }
+            setTopicList([])
         } finally {
             setIsLoading(false);
         }

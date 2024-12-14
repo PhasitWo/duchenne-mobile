@@ -56,6 +56,7 @@ export function AppointmentProvider({ children }: PropsWithChildren) {
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
             }
+            setApmtList([])
         } finally {
             setIsLoading(false);
         }

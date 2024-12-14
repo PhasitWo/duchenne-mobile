@@ -1,7 +1,9 @@
-import { Text, StyleSheet, Pressable, PressableProps } from "react-native";
+import { Text, StyleSheet, Pressable, PressableProps, View } from "react-native";
 import { darkGrey } from "@/constants/Colors";
 import dayjs from "dayjs";
 import { useLanguage } from "@/hooks/useLanguage";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 export type QuestionTopic = { id: number; title: string; unixTime: number; hasReply: boolean };
 
@@ -13,8 +15,17 @@ export default function QuestionCard({ questionTopic, ...rest }: { questionTopic
             style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.container]}
             {...rest}
         >
-            <Text numberOfLines={1} style={style.title}>{questionTopic.title}</Text>
-            <Text style={style.time}>{dayjs(questionTopic.unixTime * 1000).format("D/MM/YYYY HH:mm")}</Text>
+            <Text numberOfLines={1} style={style.title}>
+                {questionTopic.title}
+            </Text>
+            <View style={style.timeContainer}>
+                <Text style={style.time}>{dayjs(questionTopic.unixTime * 1000).format("D/MM/YYYY HH:mm ")}</Text>
+                {questionTopic.hasReply ? (
+                    <MaterialCommunityIcons name="reply-circle" size={15} color="green" />
+                ) : (
+                    <MaterialIcons name="pending" size={15} color="salmon" />
+                )}
+            </View>
             <Text>
                 {questionTopic.hasReply
                     ? lang("คุณหมอตอบกลับแล้ว", "A doctor replied")
@@ -27,9 +38,9 @@ export default function QuestionCard({ questionTopic, ...rest }: { questionTopic
 const style = StyleSheet.create({
     container: {
         borderRadius: 30,
-        width: 350,
+        width: 360,
         height: 120,
-        marginTop: 20,
+        marginTop: 10,
         padding: 25,
     },
     title: {
@@ -37,6 +48,11 @@ const style = StyleSheet.create({
     },
     time: {
         color: "darkgrey",
+    },
+    timeContainer: {
+        justifyContent: "flex-start",
+        alignItems: "center",
+        flexDirection: "row",
         marginBottom: 10,
     },
 });
