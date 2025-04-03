@@ -30,6 +30,7 @@ export type ApiAppointmentModel = {
     date: number;
     patient: ApiPatientModel;
     doctor: ApiDoctorModel;
+    approveAt: number | null;
 };
 
 export type ApiQuestionModel = {

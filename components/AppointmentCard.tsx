@@ -7,17 +7,24 @@ export interface appointment {
     id: number | string;
     dateTime: Dayjs;
     doctor: string;
+    approveAt: number | null;
 }
 
 export default function AppointmentCard({ appointment, ...rest }: { appointment: appointment } & PressableProps) {
-    const { currentLang } = useLanguage();
+    const { currentLang, lang } = useLanguage();
+    const isApprove = appointment.approveAt !== null
     return (
         <Pressable
             key={appointment.id}
             style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.container]}
             {...rest}
         >
-            <Text style={style.date}>{appointment.dateTime.locale(currentLang).format("D MMMM YYYY")}</Text>
+            <View style={style.statusContainer}>
+                <Text style={style.date}>{appointment.dateTime.locale(currentLang).format("D MMMM YYYY")}</Text>
+                <Text style={[style.status, {backgroundColor: isApprove ? "lightgreen" : "orange"}]}>
+                    {isApprove ? lang("ยืนยันแล้ว", "Approved") : lang("รอยืนยัน", "Pending")}
+                </Text>
+            </View>
             <Text style={style.time}>{appointment.dateTime.format("HH:mm")}</Text>
             <Text style={style.time}>{appointment.doctor}</Text>
         </Pressable>
@@ -26,13 +33,22 @@ export default function AppointmentCard({ appointment, ...rest }: { appointment:
 
 const style = StyleSheet.create({
     container: {
-        height: 100,
+        height: "auto",
         borderBottomWidth: 1,
         borderColor: darkGrey,
         width: "100%",
         padding: "5%",
-
         borderRadius: 40,
+    },
+    statusContainer: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    status: {
+        borderRadius: 40,
+        paddingLeft: 5,
+        paddingRight: 5,
     },
     date: {
         fontWeight: "bold",
