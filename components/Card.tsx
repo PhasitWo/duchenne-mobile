@@ -23,7 +23,7 @@ const style = StyleSheet.create({
         borderRadius: 30,
         width: 350,
         height: 120,
-        marginTop: 20,
+        marginTop: 10,
         padding: 25,
     },
     title: {

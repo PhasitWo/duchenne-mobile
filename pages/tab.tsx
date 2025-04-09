@@ -4,13 +4,14 @@ import { Colors } from "@/constants/Colors";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import HeaderRight from "@/components/HeaderRight";
 import Header from "@/components/navigation/Header";
-import Learn from "@/pages/learn";
+import Content from "@/pages/content/content";
 import AddAppointment from "@/pages/appointment/addAppointment";
 import AccountStack from "@/pages/account/_stack";
 import AppointmentStack from "@/pages/appointment/_stack";
 import AskStack from "@/pages/ask/_stack";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Platform, Pressable, TouchableOpacity } from "react-native";
+import ContentStack from "./content/_stack";
 
 const Tab = createBottomTabNavigator();
 
@@ -34,11 +35,11 @@ export default function Tabs() {
             }}
         >
             <Tab.Screen
-                name="learn"
-                component={Learn}
+                name="content"
+                component={ContentStack}
                 options={{
                     title: lang("ศูนย์เรียนรู้", "Learn"),
-                    headerShown: true,
+                    headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon name={focused ? "bulb" : "bulb-outline"} color={color} />
                     ),

@@ -13,16 +13,6 @@ import { useFocusEffect } from "@react-navigation/native";
 import SwipeHand from "@/components/SwipeHand";
 import useTutorial from "@/hooks/useTutorial";
 
-// const data: CardParam[] = [
-//     { id: 1, title: "Question 1", bodyText: "A doctor replied" },
-//     { id: 2, title: "Question 2", bodyText: "No reply" },
-//     { id: 3, title: "Question 3", bodyText: "A doctor replied" },
-//     { id: 4, title: "Question 4", bodyText: "A doctor replied" },
-//     { id: 5, title: "Question 4", bodyText: "A doctor replied" },
-//     { id: 6, title: "Question 4", bodyText: "A doctor replied" },
-//     { id: 7, title: "Question 4", bodyText: "A doctor replied" },
-// ];
-
 type props = NativeStackScreenProps<AskStackParamList, "index">;
 export default function Ask({ navigation }: props) {
     const [topicList, setTopicList] = useState<QuestionTopic[]>([]);

@@ -66,3 +66,13 @@ export type ApiJwtClaimModel = {
     exp: number;
     patientId: number;
 }
+
+export type ApiContentModel = {
+    id: number;
+    createAt: number;
+    updateAt: number;
+    title: string;
+    body: string;
+    isPublished: boolean;
+    order: number;
+}

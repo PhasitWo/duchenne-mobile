@@ -224,12 +224,12 @@ export default function Login({ route, navigation }: Props) {
                     {lang("ลงทะเบียน", "Sign up")}
                 </Text>
             </Text>
-            <Text
+            {/* <Text
                 onPress={() => setData({ hn: "test3", firstName: "fn3", lastName: "ln3" })}
                 style={{ bottom: -100, color: "whitesmoke" }}
             >
                 DEV
-            </Text>
+            </Text> */}
             <ChangeLangText style={style.lang} />
         </View>
     );
