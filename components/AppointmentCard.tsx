@@ -7,6 +7,7 @@ export interface appointment {
     id: number | string;
     dateTime: Dayjs;
     doctor: string;
+    specialist: string | null;
     approveAt: number | null;
 }
 
@@ -27,6 +28,7 @@ export default function AppointmentCard({ appointment, ...rest }: { appointment:
             </View>
             <Text style={style.time}>{appointment.dateTime.format("HH:mm")}</Text>
             <Text style={style.time}>{appointment.doctor}</Text>
+            {appointment.specialist && <Text style={style.time}>{appointment.specialist}</Text>}
         </Pressable>
     );
 }

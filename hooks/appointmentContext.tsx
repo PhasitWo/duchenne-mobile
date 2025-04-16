@@ -40,6 +40,7 @@ export function AppointmentProvider({ children }: PropsWithChildren) {
                             id: v.id,
                             dateTime: dayjs(v.date * 1000),
                             doctor: `${v.doctor.firstName} ${v.doctor.middleName ?? ""} ${v.doctor.lastName}`,
+                            specialist: v.doctor.specialist,
                             approveAt: v.approveAt
                         }))
                     );

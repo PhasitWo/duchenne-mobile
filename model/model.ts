@@ -22,6 +22,7 @@ export type ApiDoctorModel = {
     firstName: string;
     middleName: string | null;
     lastName: string;
+    specialist: string | null;
 };
 
 export type ApiAppointmentModel = {

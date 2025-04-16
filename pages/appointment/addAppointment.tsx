@@ -43,9 +43,10 @@ export default function AddAppointment() {
             const response = await api.get<any, AxiosResponse<ApiDoctorModel[], any>, any>("/api/doctor");
             switch (response.status) {
                 case 200:
+                    console.log(response.data)
                     setDoctorList(
                         response.data.map((v) => ({
-                            label: `${v.firstName} ${v.middleName ?? ""} ${v.lastName}`,
+                            label: `${v.firstName} ${v.middleName ?? ""} ${v.lastName} ${v.specialist !== null ? `(${v.specialist})` : ""}`,
                             value: `${v.id}`,
                         }))
                     );
@@ -141,7 +142,7 @@ export default function AddAppointment() {
         }
     }
 
-    const onChange = (event: DateTimePickerEvent, selectedDate: Date | undefined) => {
+    const onChange = (_: DateTimePickerEvent, selectedDate: Date | undefined) => {
         const currentDate = selectedDate;
         if (currentDate) {
             setShow(false);
@@ -216,12 +217,10 @@ export default function AddAppointment() {
                 onPress={showSaveAlert}
                 showLoading={isLoading}
             />
-            <Text>selected: {date.toLocaleString()}</Text>
         </View>
     );
 }
 
-const screenHeight = Dimensions.get("screen").height;
 const style = StyleSheet.create({
     container: {
         alignItems: "center",
