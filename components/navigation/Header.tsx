@@ -8,7 +8,7 @@ type props = { title?: string, navigation: any, options: any, showBackButton? : 
 export default function Header({ navigation, options, route, showBackButton = true, showNotification = true }: props) {
     return (
         <View style={style.container}>
-            <StatusBar backgroundColor="#ffffff" translucent={true} style="dark"/>
+            <StatusBar translucent={true} style="dark"/>
             <Text style={style.title}>{options.title ?? route.name}</Text>
             {showNotification && <HeaderRight style={style.headerRight} />}
             {showBackButton && <HeaderLeft navigation={navigation} style={style.headerLeft} />}
