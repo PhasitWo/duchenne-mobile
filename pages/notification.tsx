@@ -1,5 +1,5 @@
 import { Text, FlatList, View, StyleSheet, Dimensions, Alert } from "react-native";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { ApiDeviceModel, ApiJwtClaimModel, ApiLoginResponse } from "@/model/model";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError, AxiosResponse } from "axios";
@@ -49,7 +49,7 @@ export default function Notification() {
             setIsLoading(false);
         }
     };
-    const decodeToken = (token : string) => {
+    const decodeToken = (token: string) => {
         let id = jwtDecode<ApiJwtClaimModel>(token).deviceId;
         setDeviceId(id);
     };
@@ -71,11 +71,11 @@ export default function Notification() {
             });
             switch (response.status) {
                 case 200:
-                    loginDispatch(response.data.token)
-                    fetch()
-                    decodeToken(response.data.token)
+                    loginDispatch(response.data.token);
+                    fetch();
+                    decodeToken(response.data.token);
                     setShowAppointmentTutorial(false);
-                    setShowAskTutorial(false)
+                    setShowAskTutorial(false);
                     break;
                 case 401:
                     Alert.alert("Error", "Unauthorized, Invalid token");
@@ -119,8 +119,8 @@ export default function Notification() {
     return (
         <View style={style.container}>
             <View style={style.itemContainer}>
-                <Text style={{ flex: 8, textAlign: "center" }}>{lang("ชื่ออุปกรณ์","Device Name")}</Text>
-                <Text style={{ flex: 12, textAlign: "center" }}>{lang("เข้าสู่ระบบเมื่อ","Login at")}</Text>
+                <Text style={{ flex: 8, textAlign: "center" }}>{lang("ชื่ออุปกรณ์", "Device Name")}</Text>
+                <Text style={{ flex: 12, textAlign: "center" }}>{lang("เข้าสู่ระบบเมื่อ", "Login at")}</Text>
             </View>
             <View>
                 <FlatList
@@ -178,7 +178,6 @@ const style = StyleSheet.create({
     container: {
         height: screenHeight * 0.9,
         backgroundColor: "white",
-        marginTop: 10,
         paddingBottom: 50,
     },
     itemContainer: {

@@ -6,6 +6,23 @@ export type ApiLoginResponse = {
     token: string;
 };
 
+export interface VaccineHistory {
+    id: string;
+    vaccineName: string;
+    vaccineLocation: string | null;
+    vaccineAt: number;
+    complication: string | null;
+}
+
+export interface Medicine {
+    id: string;
+    medicineName: string;
+    dose: string | null;
+    frequencyPerDay: string | null;
+    instruction: string | null;
+    quantity: string | null;
+}
+
 export type ApiPatientModel = {
     id: number;
     hn: string;
@@ -15,6 +32,10 @@ export type ApiPatientModel = {
     email: string;
     phone: string;
     verified: boolean;
+    weight: number | null;
+    height: number | null;
+    medicine: Medicine[] | null;
+    vaccineHistory: VaccineHistory[] | null;
 };
 
 export type ApiDoctorModel = {
@@ -55,18 +76,18 @@ export type ApiQuestionTopicModel = {
 };
 
 export type ApiDeviceModel = {
-    id : number;
+    id: number;
     loginAt: number;
     deviceName: string;
     expoToken: string;
     patientId: number;
-}
+};
 
 export type ApiJwtClaimModel = {
     deviceId: number;
     exp: number;
     patientId: number;
-}
+};
 
 export type ApiContentModel = {
     id: number;
@@ -76,4 +97,5 @@ export type ApiContentModel = {
     body: string;
     isPublished: boolean;
     order: number;
-}
+    coverImageURL: string | null;
+};

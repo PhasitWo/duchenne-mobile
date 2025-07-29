@@ -1,4 +1,4 @@
-import { useContext, createContext, useEffect, type PropsWithChildren, useState } from "react";
+import { useContext, createContext, type PropsWithChildren, useState } from "react";
 import type { appointment } from "@/components/AppointmentCard";
 import { useApiContext } from "./apiContext";
 import { useAuthContext } from "./authContext";
@@ -8,7 +8,7 @@ import { Alert } from "react-native";
 import dayjs from "dayjs";
 
 const AppointmentContext = createContext<{
-    apmntList: Array<appointment>;
+    apmntList: appointment[];
     setApmtList: Function;
     isLoading: boolean;
     fetch: () => void;
@@ -41,7 +41,7 @@ export function AppointmentProvider({ children }: PropsWithChildren) {
                             dateTime: dayjs(v.date * 1000),
                             doctor: `${v.doctor.firstName} ${v.doctor.middleName ?? ""} ${v.doctor.lastName}`,
                             specialist: v.doctor.specialist,
-                            approveAt: v.approveAt
+                            approveAt: v.approveAt,
                         }))
                     );
                     break;
@@ -58,7 +58,7 @@ export function AppointmentProvider({ children }: PropsWithChildren) {
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
             }
-            setApmtList([])
+            setApmtList([]);
         } finally {
             setIsLoading(false);
         }
@@ -69,7 +69,12 @@ export function AppointmentProvider({ children }: PropsWithChildren) {
 
     return (
         <AppointmentContext.Provider
-            value={{ apmntList: apmntList, setApmtList: setApmtList, isLoading: isLoading, fetch: fetch }}
+            value={{
+                apmntList: apmntList,
+                setApmtList: setApmtList,
+                isLoading: isLoading,
+                fetch: fetch,
+            }}
         >
             {children}
         </AppointmentContext.Provider>

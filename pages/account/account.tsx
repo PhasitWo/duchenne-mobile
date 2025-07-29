@@ -1,7 +1,7 @@
-import { Text, View, FlatList, StyleSheet, Dimensions, Pressable, Alert } from "react-native";
+import { Text, View, FlatList, StyleSheet, Pressable, Alert } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { darkGrey } from "@/constants/Colors";
+import { color, darkGrey } from "@/constants/Colors";
 import { ReactElement, useMemo, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -18,7 +18,11 @@ const Item = ({ menu }: { menu: Menu }) => {
         <Pressable
             style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.itemContainer]}
             onPress={() =>
-                menu.href ? navigation.navigate(menu.href as never) : menu.customOnPress ? menu.customOnPress() : undefined
+                menu.href
+                    ? navigation.navigate(menu.href as never)
+                    : menu.customOnPress
+                      ? menu.customOnPress()
+                      : undefined
             }
         >
             <View style={style.item}>
@@ -38,8 +42,16 @@ export default function Account() {
 
     const data = useMemo<Menu[]>(() => {
         return [
-            { title: lang("โปรไฟล์", "Profile"), href: "profile", icon: <Ionicons name="person" size={24} color="black" /> },
-            { title: lang("การตั้งค่า", "Setting"), href: "setting", icon: <FontAwesome name="gear" size={24} color="black" /> },
+            {
+                title: lang("โปรไฟล์", "Profile"),
+                href: "profile",
+                icon: <Ionicons name="person" size={24} color="black" />,
+            },
+            {
+                title: lang("การตั้งค่า", "Setting"),
+                href: "setting",
+                icon: <FontAwesome name="gear" size={24} color="black" />,
+            },
             {
                 title: lang("ออกจากระบบ", "Logout"),
                 customOnPress: showAlertLogout,
@@ -64,10 +76,16 @@ export default function Account() {
             const response = await api.post("/auth/logout");
             switch (response.status) {
                 case 200:
-                    Alert.alert(lang("ออกจากระบบเสร็จสิ้น","Logout successfully"));
+                    Alert.alert(lang("ออกจากระบบเสร็จสิ้น", "Logout successfully"));
                     break;
                 case 401:
-                    Alert.alert(lang("เกิดข้อผิดพลาด","Error"), lang("ออกจากระบบโดยไม่ได้ลบอุปกรณ์ออกจากฐานข้อมูล","Logout without removing this device from the database"));
+                    Alert.alert(
+                        lang("เกิดข้อผิดพลาด", "Error"),
+                        lang(
+                            "ออกจากระบบโดยไม่ได้ลบอุปกรณ์ออกจากฐานข้อมูล",
+                            "Logout without removing this device from the database"
+                        )
+                    );
                     break;
                 default:
                     Alert.alert("Something went wrong...", JSON.stringify(response));
@@ -93,15 +111,18 @@ export default function Account() {
     return (
         <View
             style={{
-                flex: 1,
+                backgroundColor: color.base,
             }}
         >
-            <FlatList data={data} renderItem={({ item }) => <Item menu={item} />} showsVerticalScrollIndicator={false} />
+            <FlatList
+                data={data}
+                renderItem={({ item }) => <Item menu={item} />}
+                showsVerticalScrollIndicator={false}
+            />
             {isLoading && <LoadingView />}
         </View>
     );
 }
-const screenHeight = Dimensions.get("screen").height;
 const style = StyleSheet.create({
     itemContainer: {
         height: 75,

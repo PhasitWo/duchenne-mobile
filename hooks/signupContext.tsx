@@ -9,7 +9,6 @@ export type SignupData = {
     email: string;
 };
 
-
 const SignupContext = createContext<{ signupData: SignupData; setSignupData: (signupData: SignupData) => void }>({
     signupData: { hn: "", firstName: "", middleName: "", lastName: "", phone: "", email: "" },
     setSignupData: () => null,

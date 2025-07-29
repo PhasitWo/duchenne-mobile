@@ -2,7 +2,6 @@ import { AppointmentProvider } from "@/hooks/appointmentContext";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Appointment from "@/pages/appointment/appointment";
 import ViewAppointment from "@/pages/appointment/viewAppointment";
-import HeaderRight from "@/components/HeaderRight";
 import Header from "@/components/navigation/Header";
 import { useLanguage } from "@/hooks/useLanguage";
 export type StackParamList = {
@@ -28,7 +27,10 @@ export default function AppointmentStack() {
                 <Stack.Screen
                     name="viewAppointment"
                     component={ViewAppointment}
-                    options={{ title: lang("การนัดหมาย", "Appointment"), header: (props) => <Header {...props} /> }}
+                    options={{
+                        title: lang("การนัดหมาย", "Appointment"),
+                        header: (props) => <Header {...props} />,
+                    }}
                 />
             </Stack.Navigator>
         </AppointmentProvider>

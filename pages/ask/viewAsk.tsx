@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Alert, Pressable } from "react-native";
-import { darkGrey } from "@/constants/Colors";
+import { color, darkGrey } from "@/constants/Colors";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useState, useEffect } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -155,6 +155,7 @@ const style = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: "center",
+        backgroundColor: color.base
     },
     questionContainer: {
         width: "100%",

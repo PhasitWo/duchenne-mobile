@@ -1,6 +1,5 @@
 import { useContext, createContext, useEffect, type PropsWithChildren, useReducer, useMemo } from "react";
-import { AuthActionEnum, AuthState } from "./authReducer";
-import authReducer from "./authReducer";
+import authReducer, { AuthActionEnum, AuthState } from "./authReducer";
 import * as SecureStore from "expo-secure-store";
 import { SecureStoreKey } from "@/constants/SecureStorageKey";
 import useTutorial from "./useTutorial";
@@ -14,7 +13,11 @@ const initialState: AuthState = {
     userToken: null,
 };
 
-const AuthContext = createContext<{ authState: AuthState; loginDispatch: LoginDispatch; logoutDispatch: LogoutDispatch }>({
+const AuthContext = createContext<{
+    authState: AuthState;
+    loginDispatch: LoginDispatch;
+    logoutDispatch: LogoutDispatch;
+}>({
     authState: { isLoading: true, isSignin: false, userToken: null },
     loginDispatch: async (data) => {},
     logoutDispatch: () => null,
@@ -26,8 +29,11 @@ export function useAuthContext() {
 }
 export function AuthProvider({ children }: PropsWithChildren) {
     const [authState, dispatch] = useReducer(authReducer, initialState);
-    const {setShowAppointmentTutorial, setShowAskTutorial} = useTutorial()
-    const { loginDispatch, logoutDispatch } = useMemo<{ loginDispatch: LoginDispatch; logoutDispatch: LogoutDispatch }>(
+    const { setShowAppointmentTutorial, setShowAskTutorial } = useTutorial();
+    const { loginDispatch, logoutDispatch } = useMemo<{
+        loginDispatch: LoginDispatch;
+        logoutDispatch: LogoutDispatch;
+    }>(
         () => ({
             loginDispatch: async (userToken) => {
                 await SecureStore.setItemAsync(SecureStoreKey.USER_TOKEN, userToken);
@@ -56,7 +62,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ authState: authState, loginDispatch: loginDispatch, logoutDispatch: logoutDispatch }}>
+        <AuthContext.Provider
+            value={{
+                authState: authState,
+                loginDispatch: loginDispatch,
+                logoutDispatch: logoutDispatch,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );

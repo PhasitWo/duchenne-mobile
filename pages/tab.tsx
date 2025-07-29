@@ -1,32 +1,38 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { Colors } from "@/constants/Colors";
+import { color } from "@/constants/Colors";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import HeaderRight from "@/components/HeaderRight";
 import Header from "@/components/navigation/Header";
-import Content from "@/pages/content/content";
 import AddAppointment from "@/pages/appointment/addAppointment";
 import AccountStack from "@/pages/account/_stack";
 import AppointmentStack from "@/pages/appointment/_stack";
 import AskStack from "@/pages/ask/_stack";
 import { useLanguage } from "@/hooks/useLanguage";
-import { Platform, Pressable, TouchableOpacity } from "react-native";
+import { Platform, Pressable, View } from "react-native";
 import ContentStack from "./content/_stack";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Tab = createBottomTabNavigator();
 
 export default function Tabs() {
-    const colorScheme = useColorScheme();
     const { lang } = useLanguage();
+    const insets = useSafeAreaInsets();
     return (
         <Tab.Navigator
             screenOptions={{
-                tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-                tabBarStyle: { height: Platform.OS == "ios" ? 120 : 100 },
+                tabBarActiveTintColor: color.tint,
+                tabBarStyle: { height: Platform.OS == "ios" ? 120 : insets.bottom + 80 },
                 tabBarLabelPosition: "below-icon",
                 tabBarLabelStyle: { fontSize: 12, marginTop: 5, width: 100 },
-                tabBarButton: (props) => <Pressable {...props} android_ripple={null} />,
-                tabBarIconStyle: { width: "auto", height: 50, overflow: "visible", backgroundColor: "red" },
+                tabBarButton: ({ ref, ...props }) => (
+                    <Pressable ref={ref as React.RefObject<View>} {...props} android_ripple={null} />
+                ),
+                tabBarIconStyle: {
+                    width: "auto",
+                    height: 50,
+                    overflow: "visible",
+                    backgroundColor: "red",
+                },
                 tabBarHideOnKeyboard: true,
                 tabBarItemStyle: { overflow: "visible" },
                 animation: "fade",
@@ -38,7 +44,7 @@ export default function Tabs() {
                 name="content"
                 component={ContentStack}
                 options={{
-                    title: lang("ศูนย์เรียนรู้", "Learn"),
+                    title: lang("ศูนย์เรียนรู้", "Learning"),
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon name={focused ? "bulb" : "bulb-outline"} color={color} />
@@ -69,11 +75,15 @@ export default function Tabs() {
                         //     href="/(tabs)/addAppointment"
                         //     style={{ transform: "translateY(-20px)" }}
                         // >
-                        <TabBarIcon name="add-circle-sharp" size={80} color={"#26fbd4"} />
+                        <TabBarIcon name="add-circle-sharp" size={80} color={color.tint} />
                         /* </Link> */
                     ),
                     // unmountOnBlur: true, // force fetching data
-                    tabBarIconStyle: { width: 80, height: 80, transform: "translateY(-25px)" },
+                    tabBarIconStyle: {
+                        width: 80,
+                        height: 80,
+                        transform: "translateY(-25px)",
+                    },
                     tabBarLabelStyle: { display: "none" },
                 }}
             />
@@ -81,7 +91,7 @@ export default function Tabs() {
                 name="ask"
                 component={AskStack}
                 options={{
-                    title: lang("ถามคุณหมอ", "Ask"),
+                    title: lang("ปรึกษาแพทย์", "Ask"),
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon

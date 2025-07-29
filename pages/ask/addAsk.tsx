@@ -1,10 +1,9 @@
-import { View, TextInput, Text, StyleSheet, Alert } from "react-native";
+import { View, TextInput, Text, StyleSheet, Alert, KeyboardAvoidingView, ScrollView } from "react-native";
 import CustomButton from "@/components/CustomButton";
-import { darkGrey, tint } from "@/constants/Colors";
+import { color, darkGrey, tint } from "@/constants/Colors";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useState, useEffect } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import dayjs from "dayjs";
 import { useApiContext } from "@/hooks/apiContext";
 import { useAuthContext } from "@/hooks/authContext";
 import { AxiosError } from "axios";
@@ -31,8 +30,16 @@ export default function AddAsk({ navigation }: props) {
                         "Are you sure to discard them and leave the screen?"
                     ),
                     [
-                        { text: lang("อยู่ต่อ", "Stay"), style: "cancel", onPress: () => {} },
-                        { text: lang("ออก", "Discard"), style: "destructive", onPress: () => navigation.dispatch(e.data.action) },
+                        {
+                            text: lang("อยู่ต่อ", "Stay"),
+                            style: "cancel",
+                            onPress: () => {},
+                        },
+                        {
+                            text: lang("ออก", "Discard"),
+                            style: "destructive",
+                            onPress: () => navigation.dispatch(e.data.action),
+                        },
                     ]
                 );
             }),
@@ -95,37 +102,46 @@ export default function AddAsk({ navigation }: props) {
     }
 
     return (
-        <View style={style.container}>
-            <View style={style.topicContainer}>
-                <Text style={[{ color: topic.length == 0 ? "red" : "black" }, style.label]}>
-                    {lang("หัวข้อ  ", "Topic  ")}
-                    <Count current={topic.length} max={50} />
-                </Text>
-                <TextInput style={style.topicInput} value={topic} onChangeText={handleTopicChange} editable={!isLoading} />
-            </View>
-            <View style={style.bodyContainer}>
-                <Text style={[{ color: question.length == 0 ? "red" : "black" }, style.label]}>
-                    {lang("คำถาม  ", "Question  ")}
-                    <Count current={question.length} max={700} />
-                </Text>
-                <TextInput
-                    style={style.bodyInput}
-                    multiline
-                    submitBehavior="blurAndSubmit"
-                    returnKeyType="done"
-                    value={question}
-                    onChangeText={handleQuestionChange}
-                    editable={!isLoading}
-                />
-            </View>
-            <CustomButton
-                normalColor={tint}
-                pressedColor={darkGrey}
-                title={lang("ส่ง", "submit")}
-                onPress={showSubmitAlert}
-                showLoading={isLoading}
-            />
-        </View>
+        <KeyboardAvoidingView style={style.container} behavior="padding">
+            <ScrollView style={{ width: "100%" }}>
+                <View style={style.topicContainer}>
+                    <Text style={[{ color: topic.length == 0 ? "red" : "black" }, style.label]}>
+                        {lang("หัวข้อ  ", "Topic  ")}
+                        <Count current={topic.length} max={50} />
+                    </Text>
+                    <TextInput
+                        style={style.topicInput}
+                        value={topic}
+                        onChangeText={handleTopicChange}
+                        editable={!isLoading}
+                    />
+                </View>
+                <View style={style.bodyContainer}>
+                    <Text style={[{ color: question.length == 0 ? "red" : "black" }, style.label]}>
+                        {lang("คำถาม  ", "Question  ")}
+                        <Count current={question.length} max={700} />
+                    </Text>
+                    <TextInput
+                        style={style.bodyInput}
+                        multiline
+                        submitBehavior="blurAndSubmit"
+                        returnKeyType="done"
+                        value={question}
+                        onChangeText={handleQuestionChange}
+                        editable={!isLoading}
+                    />
+                </View>
+                <View style={{ alignItems: "center" }}>
+                    <CustomButton
+                        normalColor={tint}
+                        pressedColor={darkGrey}
+                        title={lang("ส่ง", "submit")}
+                        onPress={showSubmitAlert}
+                        showLoading={isLoading}
+                    />
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -136,6 +152,7 @@ const style = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: "center",
+        backgroundColor: color.base
     },
     topicContainer: {
         width: "100%",
@@ -154,6 +171,7 @@ const style = StyleSheet.create({
         marginTop: 5,
         height: 400,
         backgroundColor: "white",
+        filter: "drop-shadow(0px 4px 3px rgba(0,0,0,0.1))",
     },
     bodyInput: {
         marginTop: 20,

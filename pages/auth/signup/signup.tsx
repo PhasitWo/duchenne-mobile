@@ -66,7 +66,10 @@ export default function Signup({ navigation }: Props) {
         if (emptyField) {
             Alert.alert(
                 lang("เกิดข้อผิดพลาด", "Error"),
-                lang(`ขาดข้อมูล : ${fieldMap[emptyField][currentLang]}`, `missing : ${fieldMap[emptyField][currentLang]}`)
+                lang(
+                    `ขาดข้อมูล : ${fieldMap[emptyField][currentLang]}`,
+                    `missing : ${fieldMap[emptyField][currentLang]}`
+                )
             );
             return;
         }

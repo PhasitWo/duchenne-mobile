@@ -5,14 +5,12 @@ import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiContentModel } from "@/model/model";
 import { useAuthContext } from "@/hooks/authContext";
-import { useLanguage } from "@/hooks/useLanguage";
-import dayjs from "dayjs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ContentStackParamList } from "./_stack";
+import { color } from "@/constants/Colors";
 
 type props = NativeStackScreenProps<ContentStackParamList, "index">;
 export default function Content({ navigation }: props) {
-    const { currentLang } = useLanguage();
     const [isLoading, setIsLoading] = useState(true);
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
@@ -50,9 +48,16 @@ export default function Content({ navigation }: props) {
     };
 
     return (
-        <View style={{ justifyContent: "center", alignItems: "center", flex: 1 }}>
+        <View
+            style={{
+                justifyContent: "center",
+                alignItems: "center",
+                flex: 1,
+                backgroundColor: color.base,
+            }}
+        >
             <ScrollView
-                contentContainerStyle={{ alignItems: "center" }}
+                contentContainerStyle={{ alignItems: "center", paddingBottom: 20 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetch} />}
             >
@@ -60,10 +65,15 @@ export default function Content({ navigation }: props) {
                     <Card
                         key={k}
                         title={v.title}
-                        bodyText={dayjs(1000 * v.createAt)
-                            .locale(currentLang)
-                            .format("D MMMM YYYY")}
-                        onPress={() => navigation.navigate("viewContent", { id: String(v.id) })}
+                        imageURL={v.coverImageURL || undefined}
+                        // bodyText={dayjs(1000 * v.createAt)
+                        //     .locale(currentLang)
+                        //     .format("D MMMM YYYY")}
+                        onPress={() =>
+                            navigation.navigate("viewContent", {
+                                id: String(v.id),
+                            })
+                        }
                     />
                 ))}
             </ScrollView>

@@ -1,12 +1,10 @@
-import { View, Text, Pressable, StyleSheet, Dimensions } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import { useCallback, useEffect, useState } from "react";
+import { View, Text, Pressable, StyleSheet, Alert } from "react-native";
+import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import { useCallback, useState } from "react";
 import dayjs from "dayjs";
-import { darkGrey, tint, darkTint } from "@/constants/Colors";
+import { darkGrey, tint, darkTint, color } from "@/constants/Colors";
 import CustomButton from "@/components/CustomButton";
 import { Dropdown } from "react-native-element-dropdown";
-import { Alert } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthContext } from "@/hooks/authContext";
@@ -20,10 +18,6 @@ type DropdownList = {
     label: string;
     value: string;
 };
-const mockup = [
-    { label: "Dr.Earth Bindai", value: "Dr.Earth Bindai" },
-    { label: "Dr.Ploy Jinjai", value: "Dr.Ploy Jinjai" },
-];
 
 export default function AddAppointment() {
     const [date, setDate] = useState<Date>(dayjs().toDate());
@@ -43,7 +37,6 @@ export default function AddAppointment() {
             const response = await api.get<any, AxiosResponse<ApiDoctorModel[], any>, any>("/api/doctor");
             switch (response.status) {
                 case 200:
-                    console.log(response.data)
                     setDoctorList(
                         response.data.map((v) => ({
                             label: `${v.firstName} ${v.middleName ?? ""} ${v.lastName} ${v.specialist !== null ? `(${v.specialist})` : ""}`,
@@ -83,7 +76,10 @@ export default function AddAppointment() {
     function showSaveAlert() {
         // validate input
         if (selected === "") {
-            Alert.alert(lang("เกิดข้อผิดพลาด", "Error"), lang("กรุณาเลือกคุณหมอ", "Please select a doctor from the list"));
+            Alert.alert(
+                lang("เกิดข้อผิดพลาด", "Error"),
+                lang("กรุณาเลือกแพทย์", "Please select a doctor from the list")
+            );
             return;
         }
         // validate that selected time is after today date and time
@@ -112,7 +108,10 @@ export default function AddAppointment() {
     async function handleSave() {
         try {
             setIsLoading(true);
-            const response = await api.post("/api/appointment", { date: dayjs(date).unix(), doctorId: parseInt(selected) });
+            const response = await api.post("/api/appointment", {
+                date: dayjs(date).unix(),
+                doctorId: parseInt(selected),
+            });
             switch (response.status) {
                 case 201:
                     Alert.alert(lang("บันทึกนัดหมายสำเร็จแล้ว", "The appointment has been scheduled"), undefined);
@@ -225,6 +224,7 @@ const style = StyleSheet.create({
     container: {
         alignItems: "center",
         flex: 1,
+        backgroundColor: color.base,
     },
     dateTime: {
         width: "100%",

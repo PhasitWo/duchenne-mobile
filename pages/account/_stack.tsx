@@ -4,6 +4,7 @@ import Header from "@/components/navigation/Header";
 import Profile from "./profile";
 import SettingStack from "./setting/_stack";
 import { useLanguage } from "@/hooks/useLanguage";
+import { color } from "@/constants/Colors";
 
 export type StackParamList = {
     index: undefined;
@@ -16,7 +17,7 @@ const Stack = createNativeStackNavigator<StackParamList>();
 export default function AccountStack() {
     const { lang } = useLanguage();
     return (
-        <Stack.Navigator screenOptions={{}}>
+        <Stack.Navigator screenOptions={{ contentStyle: { backgroundColor: color.base } }}>
             <Stack.Screen
                 name="index"
                 component={Account}
@@ -28,7 +29,10 @@ export default function AccountStack() {
             <Stack.Screen
                 name="profile"
                 component={Profile}
-                options={{ title: lang("โปรไฟล์", "Profile"), header: (props) => <Header {...props} /> }}
+                options={{
+                    title: lang("โปรไฟล์", "Profile"),
+                    header: (props) => <Header {...props} />,
+                }}
             />
             <Stack.Screen name="setting" component={SettingStack} options={{ headerShown: false }} />
         </Stack.Navigator>

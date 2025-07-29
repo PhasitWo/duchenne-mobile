@@ -28,7 +28,7 @@ export default function QuestionCard({ questionTopic, ...rest }: { questionTopic
             </View>
             <Text>
                 {questionTopic.hasReply
-                    ? lang("คุณหมอตอบกลับแล้ว", "A doctor replied")
+                    ? lang("แพทย์ตอบกลับแล้ว", "A doctor replied")
                     : lang("ไม่มีการตอบกลับ", "No reply")}
             </Text>
         </Pressable>
@@ -37,11 +37,12 @@ export default function QuestionCard({ questionTopic, ...rest }: { questionTopic
 
 const style = StyleSheet.create({
     container: {
-        borderRadius: 30,
-        width: 360,
+        borderRadius: 15,
+        width: 350,
         height: 120,
-        marginTop: 10,
+        marginTop: 20,
         padding: 25,
+        filter: "drop-shadow(0px 4px 3px rgba(0,0,0,0.1))",
     },
     title: {
         fontWeight: "bold",

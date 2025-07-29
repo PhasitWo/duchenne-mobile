@@ -1,7 +1,6 @@
-import { Text, View, FlatList, StyleSheet, Dimensions, Pressable, Alert } from "react-native";
+import { Text, View, FlatList, StyleSheet, Pressable, Alert } from "react-native";
 import { darkGrey } from "@/constants/Colors";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
 import type { ApiPatientModel } from "@/model/model";
 import { useApiContext } from "@/hooks/apiContext";
@@ -15,7 +14,10 @@ const Item = ({ info }: { info: Info }) => {
     return (
         <Pressable
             style={({ pressed }) => [
-                { backgroundColor: pressed ? darkGrey : "white", borderTopWidth: info.border ? 1 : 0 },
+                {
+                    backgroundColor: pressed ? darkGrey : "white",
+                    borderTopWidth: info.border ? 1 : 0,
+                },
                 style.itemContainer,
             ]}
         >
@@ -36,8 +38,10 @@ export default function Profile() {
             { title: lang("ชื่อกลาง", "Middle Name"), value: userInfo?.middleName ?? "-" },
             { title: lang("นามสกุล", "Last Name"), value: userInfo?.lastName },
             { title: lang("รหัส HN", "HN Number"), value: userInfo?.hn },
-            { title: lang("อีเมล", "Email"), value: userInfo?.email },
-            { title: lang("เบอร์โทรศัพท์", "Phone Number"), value: userInfo?.phone },
+            { title: lang("อีเมล", "Email"), value: userInfo?.email ?? "-" },
+            { title: lang("เบอร์โทรศัพท์", "Phone Number"), value: userInfo?.phone ?? "-" },
+            { title: lang("น้ำหนัก", "Weight"), value: userInfo?.weight ?? "-" },
+            { title: lang("ส่วนสูง", "Height"), value: userInfo?.height ?? "-" },
         ];
     }, [currentLang, userInfo]);
 

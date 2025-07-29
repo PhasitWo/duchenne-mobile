@@ -1,26 +1,18 @@
-import { View, Text, Pressable, StyleSheet, Dimensions, Alert } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import { View, Text, Pressable, StyleSheet, Alert } from "react-native";
+import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
-import { darkGrey, tint, darkTint } from "@/constants/Colors";
-import { Dropdown } from "react-native-element-dropdown";
+import { darkGrey } from "@/constants/Colors";
 import CustomButton from "@/components/CustomButton";
 import { useAppointmentContext } from "@/hooks/appointmentContext";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { type StackParamList } from "./_stack";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useApiContext } from "@/hooks/apiContext";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError } from "axios";
 import { useAuthContext } from "@/hooks/authContext";
 
 type mode = "date" | "time";
-
-const mockup = [
-    { label: "Dr.Earth Bindai", value: "Dr.Earth Bindai" },
-    { label: "Dr.Ploy Jinjai", value: "Dr.Ploy Jinjai" },
-    { label: "Dr.Spiderman", value: "Dr.Spiderman" },
-];
 
 type Props = NativeStackScreenProps<StackParamList, "viewAppointment">;
 
@@ -134,7 +126,6 @@ export default function ViewAppointment({ route, navigation }: Props) {
     );
 }
 
-const screenHeight = Dimensions.get("screen").height;
 const style = StyleSheet.create({
     container: {
         alignItems: "center",

@@ -1,8 +1,4 @@
-import dayjs from "dayjs";
 import type { NotificationRequestInput } from "expo-notifications";
-import * as Notifications from "expo-notifications";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AsyncStorageKey } from "@/constants/AsyncStorageKey";
 
 export type localNotification = { identifier: string } & NotificationRequestInput;
 export type localAppointment = {

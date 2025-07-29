@@ -2,7 +2,7 @@ import { Text, View, ScrollView, StyleSheet, Pressable, RefreshControl } from "r
 import { useState, useMemo, useCallback, useEffect } from "react";
 import Calendar from "@/components/Calendar";
 import AppointmentCard from "@/components/AppointmentCard";
-import { grey, darkGrey } from "@/constants/Colors";
+import { grey, darkGrey, color } from "@/constants/Colors";
 import dayjs from "dayjs";
 import { useAppointmentContext } from "@/hooks/appointmentContext";
 import { StackParamList } from "./_stack";
@@ -25,9 +25,9 @@ export default function Appointment({ navigation }: props) {
         const { getShowAppointmentTutorial, setShowAppointmentTutorial } = useTutorial();
         getShowAppointmentTutorial().then((value) => setShowTutorial(value));
         setTimeout(() => {
-            setShowTutorial(false)
-            setShowAppointmentTutorial(false)
-        }, 5200)
+            setShowTutorial(false);
+            setShowAppointmentTutorial(false);
+        }, 5200);
     }, []);
     // fetch data on focus
     useFocusEffect(
@@ -64,6 +64,7 @@ export default function Appointment({ navigation }: props) {
         <View
             style={{
                 alignItems: "center",
+                backgroundColor: color.base,
             }}
         >
             {showTutorial && <SwipeHand from={250} to={500} />}
@@ -110,6 +111,7 @@ const style = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "row",
+        filter: "drop-shadow(0px 4px 3px rgba(0,0,0,0.1))",
     },
     head: {
         width: "42%",
@@ -123,10 +125,11 @@ const style = StyleSheet.create({
         borderTopLeftRadius: 40,
         borderTopRightRadius: 40,
         width: "90%",
-        height: "68%",
+        height: "69%",
         backgroundColor: "white",
         padding: "3%",
         marginTop: 10,
+        filter: "drop-shadow(0px 4px 3px rgba(0,0,0,0.1))",
     },
     bodyContainer: {
         width: "100%",

@@ -1,5 +1,4 @@
 import { useContext, createContext, useEffect, type PropsWithChildren, useState } from "react";
-import type { appointment } from "@/components/AppointmentCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AsyncStorageKey } from "@/constants/AsyncStorageKey";
 import "dayjs/locale/th.js";
@@ -34,7 +33,7 @@ export function LanguageProvider({ children }: PropsWithChildren) {
             }
             setCurrentLang(res as Language);
         } catch (err) {
-            console.log("Can't get lang from AsyncStorage");
+            console.log("Can't get lang from AsyncStorage", err);
         }
     };
     // hook function
@@ -47,7 +46,7 @@ export function LanguageProvider({ children }: PropsWithChildren) {
             await AsyncStorage.setItem(AsyncStorageKey.language, language);
             setCurrentLang(language);
         } catch (err) {
-            console.log("Can't save lang to AsyncStorage");
+            console.log("Can't save lang to AsyncStorage", err);
         }
     };
     return (

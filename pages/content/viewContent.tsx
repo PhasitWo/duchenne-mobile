@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ContentStackParamList } from "./_stack";
-import { Text, StyleSheet, View, Alert } from "react-native";
+import { StyleSheet, View, Alert } from "react-native";
 import { WebView } from "react-native-webview";
 import { useEffect, useState } from "react";
 import { ApiContentModel } from "@/model/model";
@@ -19,7 +19,9 @@ export default function ViewContent({ navigation, route }: props) {
 
     const fetch = async () => {
         try {
-            const response = await api.get<any, AxiosResponse<ApiContentModel, any>, any>(`/api/content/${route.params.id}`);
+            const response = await api.get<any, AxiosResponse<ApiContentModel, any>, any>(
+                `/api/content/${route.params.id}`
+            );
             switch (response.status) {
                 case 200:
                     setContent(response.data);
@@ -37,27 +39,29 @@ export default function ViewContent({ navigation, route }: props) {
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
             }
-            navigation.navigate("index")
+            navigation.navigate("index");
         }
     };
     return (
         <View style={style.container}>
             <View style={style.contentContainer}>
-                {content ? <WebView originWhitelist={["*"]} source={{ html: header + content.body }} /> : <LoadingView />}
+                {content ? (
+                    <WebView originWhitelist={["*"]} source={{ html: header + content.body }} />
+                ) : (
+                    <LoadingView />
+                )}
             </View>
         </View>
     );
 }
 
 const style = StyleSheet.create({
-    container: {
-   
-    },
+    container: {},
     contentContainer: {
         backgroundColor: "white",
         width: "100%",
         minHeight: "100%",
-        paddingBottom: 50
+        paddingBottom: 50,
     },
 });
 
@@ -97,4 +101,3 @@ const header = `
 function logoutDispatch() {
     throw new Error("Function not implemented.");
 }
-

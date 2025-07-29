@@ -22,7 +22,12 @@ const engRegex = /^[A-Za-z0-9]*$/;
 
 export default function SetPassword() {
     const [password, setPassword] = useState<Password>({ password: "", confirmPassword: "", hide: true });
-    const [condition, setCondition] = useState<Condition>({ length: false, lowerCase: false, upperCase: false, numeric: false });
+    const [condition, setCondition] = useState<Condition>({
+        length: false,
+        lowerCase: false,
+        upperCase: false,
+        numeric: false,
+    });
     const { lang } = useLanguage();
 
     const conditionCheck = (text: string) => {
@@ -49,7 +54,10 @@ export default function SetPassword() {
             return;
         }
         if (password.password !== password.confirmPassword) {
-            Alert.alert(lang("เกิดข้อผิดพลาด", "Error"), lang("รหัสผ่านไม่ตรงกัน", "The password confirmation do not match."));
+            Alert.alert(
+                lang("เกิดข้อผิดพลาด", "Error"),
+                lang("รหัสผ่านไม่ตรงกัน", "The password confirmation do not match.")
+            );
             return;
         }
         // TODO POST TO SERVER
@@ -80,7 +88,10 @@ export default function SetPassword() {
             </View>
             <View>
                 <Text style={{ color: condition.length ? "green" : "red" }}>
-                    {lang("รหัสผ่านต้องมีความยาวอย่างน้อย 8-20 ตัวอักษร", "Passwords must be between 8-20 characters in length")}
+                    {lang(
+                        "รหัสผ่านต้องมีความยาวอย่างน้อย 8-20 ตัวอักษร",
+                        "Passwords must be between 8-20 characters in length"
+                    )}
                 </Text>
                 <Text style={{ color: condition.lowerCase ? "green" : "red" }}>
                     {lang("ต้องมีตัวพิมพ์เล็กอย่างน้อย 1 ตัวอักษร [a-z]", "a minimum of 1 lower case letter [a-z]")}
@@ -103,11 +114,6 @@ export default function SetPassword() {
     );
 }
 
-function hasLowerCase(text: string) {
-    for (let i = 0; i < text.length; i++) {}
-}
-
-const placeholderColor = darkGrey;
 const style = StyleSheet.create({
     formContainer: {
         flex: 1,

@@ -1,0 +1,6 @@
+# Ignore artifacts:
+dist
+android
+.expo
+# Ignore dependencies
+node_modules

@@ -1,7 +1,4 @@
-import { AppointmentProvider } from "@/hooks/appointmentContext";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Appointment from "@/pages/appointment/appointment";
-import ViewAppointment from "@/pages/appointment/viewAppointment";
 import Ask from "./ask";
 import ViewAsk from "./viewAsk";
 import Header from "@/components/navigation/Header";
@@ -21,7 +18,7 @@ export default function AskStack() {
                 name="index"
                 component={Ask}
                 options={{
-                    title: lang("ถามคุณหมอ", "Ask"),
+                    title: lang("ปรึกษาแพทย์", "Consult"),
                     header: (props) => <Header {...props} showBackButton={false} />,
                 }}
             />

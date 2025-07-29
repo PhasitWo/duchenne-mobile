@@ -1,7 +1,7 @@
 import { View, Alert, StyleSheet, Pressable, Text, FlatList, RefreshControl } from "react-native";
 import QuestionCard, { QuestionTopic } from "@/components/QuestionCard";
 import { useLanguage } from "@/hooks/useLanguage";
-import { darkGrey } from "@/constants/Colors";
+import { color, darkGrey } from "@/constants/Colors";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AskStackParamList } from "./_stack";
 import { useCallback, useEffect, useState } from "react";
@@ -16,7 +16,7 @@ import useTutorial from "@/hooks/useTutorial";
 type props = NativeStackScreenProps<AskStackParamList, "index">;
 export default function Ask({ navigation }: props) {
     const [topicList, setTopicList] = useState<QuestionTopic[]>([]);
-    const [showTutorial, setShowTutorial] = useState(false)
+    const [showTutorial, setShowTutorial] = useState(false);
     const { lang, currentLang } = useLanguage();
     const [isLoading, setIsLoading] = useState(true);
     const { api } = useApiContext();
@@ -60,7 +60,7 @@ export default function Ask({ navigation }: props) {
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
             }
-            setTopicList([])
+            setTopicList([]);
         } finally {
             setIsLoading(false);
         }
@@ -83,7 +83,11 @@ export default function Ask({ navigation }: props) {
                 renderItem={({ item }) => (
                     <QuestionCard
                         questionTopic={item}
-                        onPress={() => navigation.navigate("viewAsk", { id: item.id as number })}
+                        onPress={() =>
+                            navigation.navigate("viewAsk", {
+                                id: item.id as number,
+                            })
+                        }
                     />
                 )}
                 showsVerticalScrollIndicator={false}
@@ -100,7 +104,7 @@ export default function Ask({ navigation }: props) {
 }
 
 const style = StyleSheet.create({
-    container: { justifyContent: "center", alignItems: "center", flex: 1 },
+    container: { justifyContent: "center", alignItems: "center", flex: 1, backgroundColor: color.base },
     button: {
         height: 50,
         width: "auto",
@@ -111,12 +115,12 @@ const style = StyleSheet.create({
         bottom: 40,
         right: 20,
         shadowRadius: 8,
-        shadowColor: "#26fbd4",
+        shadowColor: color.tint,
         shadowOpacity: 1,
         elevation: 8,
         alignItems: "center",
         justifyContent: "center",
-        borderColor: "#26fbd4",
+        borderColor: color.tint,
         borderWidth: 1,
     },
 });

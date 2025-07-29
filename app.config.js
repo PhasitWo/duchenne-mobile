@@ -27,6 +27,7 @@ module.exports = {
             hidden: false,
         },
         googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? "./google-services.json",
+        edgeToEdgeEnabled: true,
     },
     web: {
         bundler: "metro",

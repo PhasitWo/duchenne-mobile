@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import CalendarDate from "./Calendar.date";
 import dayjs from "dayjs";
 import { useLanguage } from "@/hooks/useLanguage";
 
-export default function Calendar({ markedDateKey }: { markedDateKey: Array<number> }) {
+export default function Calendar({ markedDateKey }: { markedDateKey: number[] }) {
     const days = [];
     for (let i = 0; i < 7; i++) {
         days.push(dayjs().add(i, "day"));

@@ -8,14 +8,13 @@ import Header from "@/components/navigation/Header";
 import * as SplashScreen from "expo-splash-screen";
 import { useAuthContext } from "./hooks/authContext";
 import AddAsk from "./pages/ask/addAsk";
-import ForgotPassword from "./pages/auth/forgotPassword";
+import Contact from "./pages/auth/contact";
 import type { LoginData } from "@/pages/auth/login";
-
 
 export type AppStackParamList = {
     tab: undefined;
     login: undefined | LoginData;
-    forgotPassword: undefined;
+    contact: undefined;
     signup: undefined;
     notification: undefined;
     addAsk: undefined;
@@ -32,17 +31,26 @@ export default function App() {
     }
     return (
         <Stack.Navigator
-            screenOptions={{ header: (props) => <Header {...props} showNotification={false} showBackButton={false} /> }}
+            screenOptions={{
+                header: (props) => <Header {...props} showNotification={false} showBackButton={false} />,
+            }}
         >
             {authState.userToken === null ? (
                 <>
-                    <Stack.Screen name="login" component={Login} options={{ title: lang("ลงชื่อเข้าใช้", "Login") }} />
+                    <Stack.Screen
+                        name="login"
+                        component={Login}
+                        options={{
+                            title: lang("ลงชื่อเข้าใช้", "Login"),
+                            header: (props) => <Header {...props} showNotification={false} showBackButton={false} showLangSwitch />,
+                        }}
+                    />
                     <Stack.Screen name="signup" component={SignupStack} options={{ headerShown: false }} />
                     <Stack.Screen
-                        name="forgotPassword"
-                        component={ForgotPassword}
+                        name="contact"
+                        component={Contact}
                         options={{
-                            title: lang("ลืมรหัสผ่าน", "Forgot Password"),
+                            title: lang("ติดต่อเจ้าหน้าที่", "Contact"),
                             header: (props) => <Header {...props} showNotification={false} />,
                         }}
                     />
@@ -54,14 +62,17 @@ export default function App() {
                         name="notification"
                         component={Notification}
                         options={{
-                            title: lang("การแจ้งเตือน","Notifications"),
+                            title: lang("การแจ้งเตือน", "Notifications"),
                             header: (props) => <Header {...props} showNotification={false} />,
                         }}
                     />
                     <Stack.Screen
                         name="addAsk"
                         component={AddAsk}
-                        options={{ title: lang("ส่งคำถาม", "New Question"), header: (props) => <Header {...props} /> }}
+                        options={{
+                            title: lang("ส่งคำถาม", "New Question"),
+                            header: (props) => <Header {...props} />,
+                        }}
                     />
                 </>
             )}
