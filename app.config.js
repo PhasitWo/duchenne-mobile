@@ -1,5 +1,5 @@
 module.exports = {
-    name: "duchenne-mobile",
+    name: "DMD We Care",
     slug: "duchenne-mobile",
     version: "1.0.0",
     orientation: "portrait",
@@ -34,7 +34,19 @@ module.exports = {
         output: "static",
         favicon: "./assets/images/favicon.png",
     },
-    plugins: ["expo-router", "expo-secure-store", "expo-font"],
+    plugins: [
+        "expo-router",
+        "expo-secure-store",
+        "expo-font",
+        [
+            "expo-splash-screen",
+            {
+                backgroundColor: "#ffffffff",
+                image: "./assets/images/splash.png",
+                imageWidth: 200,
+            },
+        ],
+    ],
     experiments: {
         typedRoutes: true,
     },
