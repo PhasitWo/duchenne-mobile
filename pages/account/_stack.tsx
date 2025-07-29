@@ -5,11 +5,15 @@ import Profile from "./profile";
 import SettingStack from "./setting/_stack";
 import { useLanguage } from "@/hooks/useLanguage";
 import { color } from "@/constants/Colors";
+import Medicine from "./medicine";
+import Vaccine from "./vaccine";
 
 export type StackParamList = {
     index: undefined;
     profile: undefined;
     setting: undefined;
+    medicine: undefined;
+    vaccine: undefined;
 };
 
 const Stack = createNativeStackNavigator<StackParamList>();
@@ -31,6 +35,22 @@ export default function AccountStack() {
                 component={Profile}
                 options={{
                     title: lang("โปรไฟล์", "Profile"),
+                    header: (props) => <Header {...props} />,
+                }}
+            />
+            <Stack.Screen
+                name="medicine"
+                component={Medicine}
+                options={{
+                    title: lang("ยาประจำตัว", "Prescription Medicine"),
+                    header: (props) => <Header {...props} />,
+                }}
+            />
+            <Stack.Screen
+                name="vaccine"
+                component={Vaccine}
+                options={{
+                    title: lang("ประวัติการฉีดวัคซีน", "Vaccination"),
                     header: (props) => <Header {...props} />,
                 }}
             />

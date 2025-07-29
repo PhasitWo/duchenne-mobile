@@ -1,14 +1,22 @@
 import { useState, useEffect, ReactElement } from "react";
 import { useLanguage, type Language as Lang } from "@/hooks/useLanguage";
 import { darkGrey } from "@/constants/Colors";
-import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 import { Pressable, View, Text, StyleSheet, FlatList, Image } from "react-native";
 
 type LangItemProps = { title: string; value: Lang; icon: ReactElement };
 
 const data: LangItemProps[] = [
-    { title: "ไทย", value: "th", icon:  <Image source={require("@/assets/images/flags/th.png")} style={{width: 30, height: 30}} /> },
-    { title: "English", value: "en", icon: <Image source={require("@/assets/images/flags/en.png")} style={{width: 30, height: 30}} /> },
+    {
+        title: "ไทย",
+        value: "th",
+        icon: <Image source={require("@/assets/images/flags/th.png")} style={{ width: 30, height: 30 }} />,
+    },
+    {
+        title: "English",
+        value: "en",
+        icon: <Image source={require("@/assets/images/flags/en.png")} style={{ width: 30, height: 30 }} />,
+    },
 ];
 
 const Item = ({ lang, selected, pressFunc }: { lang: LangItemProps; selected: boolean; pressFunc: Function }) => {

@@ -1,6 +1,6 @@
 import { View, ScrollView, Alert, RefreshControl } from "react-native";
 import Card from "@/components/Card";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiContentModel } from "@/model/model";
@@ -8,6 +8,7 @@ import { useAuthContext } from "@/hooks/authContext";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ContentStackParamList } from "./_stack";
 import { color } from "@/constants/Colors";
+import { useFocusEffect } from "@react-navigation/native";
 
 type props = NativeStackScreenProps<ContentStackParamList, "index">;
 export default function Content({ navigation }: props) {
@@ -20,7 +21,14 @@ export default function Content({ navigation }: props) {
         fetch();
     }, []);
 
+    useFocusEffect(
+        useCallback(() => {
+            fetch();
+        }, [])
+    );
+
     const fetch = async () => {
+        if (contents.length > 0) return;
         setIsLoading(true);
         try {
             const response = await api.get<any, AxiosResponse<ApiContentModel[], any>, any>("/api/content?isPublished");

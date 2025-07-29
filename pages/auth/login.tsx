@@ -12,7 +12,6 @@ import {
 import { useRef, useState, useCallback } from "react";
 import CustomButton from "@/components/CustomButton";
 import { color, darkGrey } from "@/constants/Colors";
-import ChangeLangText from "@/components/ChangeLangText";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthContext } from "@/hooks/authContext";
 import { AxiosError, AxiosResponse } from "axios";

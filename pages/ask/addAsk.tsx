@@ -152,7 +152,7 @@ const style = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: "center",
-        backgroundColor: color.base
+        backgroundColor: color.base,
     },
     topicContainer: {
         width: "100%",

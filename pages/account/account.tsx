@@ -9,6 +9,7 @@ import { useAuthContext } from "@/hooks/authContext";
 import LoadingView from "@/components/LoadingView";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError } from "axios";
+import Fontisto from "@expo/vector-icons/Fontisto";
 
 type Menu = { title: string; icon: ReactElement; href?: string | undefined; customOnPress?: Function };
 
@@ -46,6 +47,16 @@ export default function Account() {
                 title: lang("โปรไฟล์", "Profile"),
                 href: "profile",
                 icon: <Ionicons name="person" size={24} color="black" />,
+            },
+            {
+                title: lang("ยาประจำตัว", "Prescription Medicine"),
+                href: "medicine",
+                icon: <Fontisto name="drug-pack" size={24} color="black" />,
+            },
+            {
+                title: lang("ประวัติการฉีดวัคซีน", "Vaccination"),
+                href: "vaccine",
+                icon: <Fontisto name="injection-syringe" size={24} color="black" />,
             },
             {
                 title: lang("การตั้งค่า", "Setting"),

@@ -11,18 +11,25 @@ type props = {
     options: any;
     showBackButton?: boolean;
     showNotification?: boolean;
-    showLangSwitch?:boolean;
+    showLangSwitch?: boolean;
     route: any;
 };
 
-export default function Header({ navigation, options, route, showBackButton = true, showNotification = true, showLangSwitch = false }: props) {
+export default function Header({
+    navigation,
+    options,
+    route,
+    showBackButton = true,
+    showNotification = true,
+    showLangSwitch = false,
+}: props) {
     return (
         <View style={style.container}>
             <StatusBar translucent={true} style="dark" />
             <Text style={style.title}>{options.title ?? route.name}</Text>
             {showNotification && <HeaderRight style={style.headerRight} />}
             {showBackButton && <HeaderLeft navigation={navigation} style={style.headerLeft} />}
-            {showLangSwitch && <ChangeLangText style={[style.headerRight, {marginRight: 20}]} />}
+            {showLangSwitch && <ChangeLangText style={[style.headerRight, { marginRight: 20 }]} />}
         </View>
     );
 }

@@ -42,7 +42,9 @@ export default function App() {
                         component={Login}
                         options={{
                             title: lang("ลงชื่อเข้าใช้", "Login"),
-                            header: (props) => <Header {...props} showNotification={false} showBackButton={false} showLangSwitch />,
+                            header: (props) => (
+                                <Header {...props} showNotification={false} showBackButton={false} showLangSwitch />
+                            ),
                         }}
                     />
                     <Stack.Screen name="signup" component={SignupStack} options={{ headerShown: false }} />
