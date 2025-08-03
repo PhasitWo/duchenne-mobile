@@ -66,13 +66,6 @@ export default function Login({ route, navigation }: Props) {
             finalStatus = status;
         }
         if (finalStatus !== "granted") {
-            if (Platform.OS == "android")
-                Alert.alert(lang("กรุณาเปิดการแจ้งเตือนของแอป", "Require notification permission"), undefined, [
-                    {
-                        text: "Ok",
-                        onPress: openNotificationSetting,
-                    },
-                ]);
             return false;
         }
         return true;
@@ -91,7 +84,13 @@ export default function Login({ route, navigation }: Props) {
                 }
             }
             // notification permission
-            if (!(await getNotificationPermission())) return;
+            if (!(await getNotificationPermission()))
+                Alert.alert(lang("กรุณาเปิดการแจ้งเตือนของแอป", "Require notification permission"), undefined, [
+                    {
+                        text: "Ok",
+                        onPress: openNotificationSetting,
+                    },
+                ]);
             // EXPO TOKEN
             let expoToken = await getExpoToken();
             if (!expoToken) {

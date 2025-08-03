@@ -10,6 +10,7 @@ import { useAuthContext } from "./hooks/authContext";
 import AddAsk from "./pages/ask/addAsk";
 import Contact from "./pages/auth/contact";
 import type { LoginData } from "@/pages/auth/login";
+import { useEffect } from "react";
 
 export type AppStackParamList = {
     tab: undefined;
@@ -20,15 +21,17 @@ export type AppStackParamList = {
     addAsk: undefined;
 };
 const Stack = createNativeStackNavigator<AppStackParamList>();
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
 
 export default function App() {
     const { lang } = useLanguage();
     const { authState } = useAuthContext();
-    if (!authState.isLoading) {
-        setTimeout(SplashScreen.hideAsync, 300);
-    }
+
+    useEffect(() => {
+        if (!authState.isLoading) {
+            setTimeout(SplashScreen.hideAsync, 300);
+        }
+    }, [authState]);
+
     return (
         <Stack.Navigator
             screenOptions={{

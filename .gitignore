@@ -21,5 +21,7 @@ expo-env.d.ts
 
 android/
 
+ios
+
 .env
 google-services.json

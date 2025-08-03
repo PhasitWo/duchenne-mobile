@@ -9,6 +9,7 @@ import { Platform } from "react-native";
 import * as Device from "expo-device";
 import App from "./app";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import * as SplashScreen from "expo-splash-screen";
 
 registerRootComponent(main);
 
@@ -21,6 +22,9 @@ Notifications.setNotificationHandler({
         shouldShowList: false,
     }),
 });
+
+// Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync();
 
 export default function main() {
     useEffect(() => {

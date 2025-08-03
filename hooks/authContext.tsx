@@ -50,12 +50,16 @@ export function AuthProvider({ children }: PropsWithChildren) {
     );
 
     const restoreToken = async () => {
-        console.log("start restoring token");
-        const result = await SecureStore.getItemAsync(SecureStoreKey.USER_TOKEN);
-        console.log("restore => " + result);
-        dispatch({ type: AuthActionEnum.RESTORE, userToken: result });
-        console.log("restoring end");
-        console.log(process.env.EXPO_PUBLIC_API_URL);
+        let result = null;
+        try {
+            console.log("start restoring token");
+            result = await SecureStore.getItemAsync(SecureStoreKey.USER_TOKEN);
+            console.log("restore => " + result);
+        } catch (err) {
+            alert(`Error restoring token: ${err}`);
+        } finally {
+            dispatch({ type: AuthActionEnum.RESTORE, userToken: result });
+        }
     };
     useEffect(() => {
         restoreToken();

@@ -13,6 +13,10 @@ module.exports = {
     },
     ios: {
         supportsTablet: true,
+        bundleIdentifier: "com.care.duchennemobile",
+        config: {
+            usesNonExemptEncryption: false,
+        },
     },
     android: {
         adaptiveIcon: {
@@ -41,7 +45,7 @@ module.exports = {
         [
             "expo-splash-screen",
             {
-                backgroundColor: "#ffffffff",
+                backgroundColor: "#ffffff",
                 image: "./assets/images/splash.png",
                 imageWidth: 200,
             },
