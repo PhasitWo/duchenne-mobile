@@ -26,7 +26,6 @@
     "dayjs": "^1.11.13",
     "eas-cli": "^16.17.3",
     "expo": "53.0.20",
-    "expo-calendar": "~14.1.4",
     "expo-constants": "~17.1.6",
     "expo-dev-client": "~5.2.4",
     "expo-device": "^7.0.1",
