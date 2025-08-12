@@ -9,7 +9,6 @@ type LogoutDispatch = () => void;
 
 const initialState: AuthState = {
     isLoading: true,
-    isSignin: false,
     userToken: null,
 };
 
@@ -18,7 +17,7 @@ const AuthContext = createContext<{
     loginDispatch: LoginDispatch;
     logoutDispatch: LogoutDispatch;
 }>({
-    authState: { isLoading: true, isSignin: false, userToken: null },
+    authState: { isLoading: true, userToken: null },
     loginDispatch: async (data) => {},
     logoutDispatch: () => null,
 });

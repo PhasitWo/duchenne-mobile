@@ -2,8 +2,8 @@ import useTutorial from "@/hooks/useTutorial";
 import { useEffect, useState } from "react";
 import SwipeHand from "./SwipeHand";
 
-type Props = {from: number; to: number}
-export default function Tutorial(props:Props) {
+type Props = { from: number; to: number };
+export default function Tutorial(props: Props) {
     const [showTutorial, setShowTutorial] = useState(false);
     // tutorial onmount
     useEffect(() => {

@@ -106,7 +106,7 @@ export default function Tabs() {
                 name="Account"
                 component={AccountStack}
                 options={{
-                    title:t("account.title"),
+                    title: t("account.title"),
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon name={focused ? "person" : "person-outline"} color={color} />

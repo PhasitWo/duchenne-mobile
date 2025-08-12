@@ -12,6 +12,7 @@ module.exports = defineConfig([
             "react-hooks/exhaustive-deps": "off",
             "react/display-name": "off",
             "react-hooks/rules-of-hooks": "off",
+            "import/no-named-as-default-member": "off",
             "prettier/prettier": ["error", {}, { usePrettierrc: true }],
         },
         plugins: {

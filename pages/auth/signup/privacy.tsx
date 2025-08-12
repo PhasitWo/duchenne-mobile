@@ -1,11 +1,11 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Text, View } from "react-native";
 import { SignupStackParamList } from "./_stack";
-import { useTranslation } from "react-i18next";
+// import { useTranslation } from "react-i18next";
 
 type Props = NativeStackScreenProps<SignupStackParamList, "privacy">;
 export default function Privacy({ navigation }: Props) {
-    const { t } = useTranslation();
+    // const { t } = useTranslation();
     return (
         <View style={{ flex: 1, backgroundColor: "white", padding: 20 }}>
             <Text>

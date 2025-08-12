@@ -9,11 +9,11 @@ export default function Calendar({ markedDateKey }: { markedDateKey: number[] })
         days.push(dayjs().add(i, "day"));
     }
     const { currentLang } = useLanguage();
-    const currentMonth = dayjs().locale(currentLang).format("MMMM YYYY")
+    const currentMonth = dayjs().locale(currentLang).format("MMMM YYYY");
     return (
         <View style={style.container}>
             <Text>{currentMonth}</Text>
-            <View style={{flexDirection: "row"}}>
+            <View style={{ flexDirection: "row" }}>
                 {days.map((v, k) => (
                     <CalendarDate
                         key={k}
@@ -36,7 +36,7 @@ const style = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "column",
-        gap: 5
+        gap: 5,
     },
     stroke: {
         backgroundColor: "white",

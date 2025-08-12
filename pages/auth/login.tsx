@@ -12,7 +12,6 @@ import {
 import { useRef, useState, useCallback } from "react";
 import CustomButton from "@/components/CustomButton";
 import { color, darkGrey } from "@/constants/Colors";
-import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthContext } from "@/hooks/authContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { useApiContext } from "@/hooks/apiContext";
@@ -167,6 +166,7 @@ export default function Login({ route, navigation }: Props) {
                         editable={!isLoading}
                         placeholder={warning.pin ? warningText : undefined}
                         placeholderTextColor="red"
+                        maxLength={6}
                     />
                 </View>
                 <View style={style.forgotPasswordContainer}>
@@ -189,7 +189,11 @@ export default function Login({ route, navigation }: Props) {
                 />
                 <Text style={style.signup}>
                     {t("login.no_account") + " "}
-                    <Text style={style.signupLink} onPress={() => navigation.navigate("signupStack")} disabled={isLoading}>
+                    <Text
+                        style={style.signupLink}
+                        onPress={() => navigation.navigate("signupStack")}
+                        disabled={isLoading}
+                    >
                         {t("login.signup")}
                     </Text>
                 </Text>
@@ -224,7 +228,7 @@ const style = StyleSheet.create({
         borderBottomWidth: 1,
         margin: 5,
         padding: 5,
-        color: "black"
+        color: "black",
     },
     signup: { marginTop: 20 },
     signupLink: {

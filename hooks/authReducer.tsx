@@ -11,7 +11,6 @@ export type AuthAction = {
 
 export type AuthState = {
     isLoading: boolean;
-    isSignin: boolean;
     userToken: string | null;
 };
 
@@ -21,19 +20,16 @@ export default function authReducer(prevState: AuthState, action: AuthAction): A
             return {
                 ...prevState,
                 isLoading: false,
-                isSignin: true,
                 userToken: action.userToken as string | null,
             };
         case AuthActionEnum.LOGIN:
             return {
                 ...prevState,
-                isSignin: true,
                 userToken: action.userToken as string,
             };
         case AuthActionEnum.LOGOUT:
             return {
                 ...prevState,
-                isSignin: false,
                 userToken: null,
             };
         default:

@@ -32,7 +32,7 @@ const Item = ({ info }: { info: Info }) => {
 
 export default function Profile() {
     const { currentLang } = useLanguage();
-    const { t }= useTranslation() ;
+    const { t } = useTranslation();
     const [userInfo, setUserInfo] = useState<ApiPatientModel>();
     const data = useMemo<Info[]>(() => {
         return [

@@ -1,6 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Header from "@/components/navigation/Header";
-import { useLanguage } from "@/hooks/useLanguage";
 import Signup from "./signup";
 import { SignupProvider } from "@/hooks/signupContext";
 import { LoginData } from "../login";

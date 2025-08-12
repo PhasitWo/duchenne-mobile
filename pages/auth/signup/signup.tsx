@@ -13,7 +13,6 @@ import {
 import { useRef, useState } from "react";
 import CustomButton from "@/components/CustomButton";
 import { color, darkGrey } from "@/constants/Colors";
-import { useLanguage } from "@/hooks/useLanguage";
 import type { SignupStackParamList } from "./_stack";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useApiContext } from "@/hooks/apiContext";
@@ -44,7 +43,7 @@ export default function Signup({ navigation }: Props) {
     const [confirmPin, setConfirmPin] = useState("");
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
-    const insets = useSafeAreaInsets()
+    const insets = useSafeAreaInsets();
     const firstName_ref = useRef<TextInput>(null);
     const middleName_ref = useRef<TextInput>(null);
     const lastName_ref = useRef<TextInput>(null);
@@ -89,7 +88,7 @@ export default function Signup({ navigation }: Props) {
         try {
             const response = await apiNoAuth.post("/auth/signup", signupData, { timeout: 5000 });
             switch (response.status) {
-                case 200:
+                case 201:
                     Alert.alert(t("signup.alert.200"));
                     navigation.navigate("login", {
                         hn: signupData.hn,
@@ -119,7 +118,10 @@ export default function Signup({ navigation }: Props) {
     }
     return (
         <KeyboardAvoidingView style={{ backgroundColor: "white", flex: 1 }} behavior="padding">
-            <ScrollView contentContainerStyle={[style.formContainer, {paddingBottom: insets.bottom}]} keyboardShouldPersistTaps="handled">
+            <ScrollView
+                contentContainerStyle={[style.formContainer, { paddingBottom: insets.bottom }]}
+                keyboardShouldPersistTaps="handled"
+            >
                 <View style={style.inputContainer}>
                     <Text style={style.label}>
                         HN

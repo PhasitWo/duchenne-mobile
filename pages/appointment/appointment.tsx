@@ -1,5 +1,5 @@
 import { Text, View, ScrollView, StyleSheet, Pressable, RefreshControl } from "react-native";
-import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import Calendar from "@/components/Calendar";
 import AppointmentCard from "@/components/AppointmentCard";
 import { grey, darkGrey, color } from "@/constants/Colors";
@@ -8,8 +8,6 @@ import { useAppointmentContext } from "@/hooks/appointmentContext";
 import { StackParamList } from "./_stack";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useFocusEffect } from "@react-navigation/native";
-import SwipeHand from "@/components/SwipeHand";
-import useTutorial from "@/hooks/useTutorial";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/hooks/useLanguage";
 import Tutorial from "@/components/Tutorial";
@@ -63,7 +61,7 @@ export default function Appointment({ navigation }: props) {
                 backgroundColor: color.base,
             }}
         >
-            <Tutorial from={250} to={500}/>
+            <Tutorial from={250} to={500} />
             <Calendar markedDateKey={markedDateKey} />
             <View style={style.headContainer}>
                 <Pressable
