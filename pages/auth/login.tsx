@@ -49,7 +49,9 @@ export default function Login({ route, navigation }: Props) {
     useFocusEffect(
         useCallback(() => {
             if (route.params) setData(route.params);
-            getLastLoginHN().then((v) => setData({ ...data, hn: v }));
+            getLastLoginHN().then((v) => {
+                if (v) setData({ ...data, hn: v });
+            });
         }, [route.params])
     );
 
