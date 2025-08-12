@@ -7,11 +7,13 @@ import { ApiContentModel } from "@/model/model";
 import LoadingView from "@/components/LoadingView";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError, AxiosResponse } from "axios";
+import { useTranslation } from "react-i18next";
 
 type props = NativeStackScreenProps<ContentStackParamList, "viewContent">;
 export default function ViewContent({ navigation, route }: props) {
     const [content, setContent] = useState<ApiContentModel | null>(null);
     const { api } = useApiContext();
+    const { t } = useTranslation();
 
     useEffect(() => {
         fetch();
@@ -27,7 +29,7 @@ export default function ViewContent({ navigation, route }: props) {
                     setContent(response.data);
                     break;
                 case 401:
-                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    Alert.alert(t("common.alert.error"), t("common.alert.401"));
                     logoutDispatch();
                     break;
                 default:

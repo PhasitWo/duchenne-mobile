@@ -77,7 +77,7 @@ export default function AddAsk({ navigation }: props) {
                     navigation.navigate("tab", { screen: "ask" });
                     break;
                 case 401:
-                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    Alert.alert(t("common.alert.error"), t("common.alert.401"));
                     logoutDispatch();
                     break;
                 default:

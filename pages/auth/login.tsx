@@ -40,7 +40,7 @@ export default function Login({ route, navigation }: Props) {
     const [warning, setWarning] = useState<Warning>({ hn: false, pin: false });
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { t } = useTranslation();
-    const { loginDispatch } = useAuthContext();
+    const { loginDispatch, getLastLoginHN } = useAuthContext();
 
     const pin_ref = useRef<TextInput>(null);
     const warningText = t("login.warn_require_field");
@@ -49,6 +49,7 @@ export default function Login({ route, navigation }: Props) {
     useFocusEffect(
         useCallback(() => {
             if (route.params) setData(route.params);
+            getLastLoginHN().then((v) => setData({ ...data, hn: v }));
         }, [route.params])
     );
 
@@ -92,10 +93,11 @@ export default function Login({ route, navigation }: Props) {
                 return;
             }
             // POST
+            const hn = data.hn.trim();
             const response = await apiNoAuth.post<any, AxiosResponse<ApiLoginResponse, any>, any>(
                 "/auth/login",
                 {
-                    hn: data.hn.trim(),
+                    hn: hn,
                     pin: data.pin,
                     deviceName: Device.deviceName ? Device.deviceName : "Unknown Device",
                     expoToken: expoToken,
@@ -104,7 +106,7 @@ export default function Login({ route, navigation }: Props) {
             );
             switch (response.status) {
                 case 200:
-                    loginDispatch(response.data.token);
+                    loginDispatch(response.data.token, hn);
                     break;
                 case 401:
                     Alert.alert(t("common.alert.error"), t("login.alert.invalid_cred"));

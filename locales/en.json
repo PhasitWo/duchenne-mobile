@@ -10,7 +10,8 @@
             "delete": "Delete",
             "stay": "Stay",
             "discard": "Discard",
-            "sure": "Are you sure?"
+            "sure": "Are you sure?",
+            "401": "Unauthorized. Please, login"
         }
     },
     "login": {

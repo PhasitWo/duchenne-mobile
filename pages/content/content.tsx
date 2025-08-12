@@ -9,6 +9,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ContentStackParamList } from "./_stack";
 import { color } from "@/constants/Colors";
 import { useFocusEffect } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 type props = NativeStackScreenProps<ContentStackParamList, "index">;
 export default function Content({ navigation }: props) {
@@ -17,6 +18,7 @@ export default function Content({ navigation }: props) {
     const { logoutDispatch } = useAuthContext();
     const [contents, setContents] = useState<ApiContentModel[]>([]);
     const scrollViewRef = useRef<ScrollView>(null);
+    const { t } = useTranslation();
 
     useEffect(() => {
         fetch();
@@ -39,7 +41,7 @@ export default function Content({ navigation }: props) {
                     setContents(response.data);
                     break;
                 case 401:
-                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    Alert.alert(t("common.alert.error"), t("common.alert.401"));
                     logoutDispatch();
                     break;
                 default:

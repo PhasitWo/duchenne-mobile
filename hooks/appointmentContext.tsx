@@ -6,6 +6,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { ApiAppointmentModel } from "@/model/model";
 import { Alert } from "react-native";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 const AppointmentContext = createContext<{
     apmntList: appointment[];
@@ -26,6 +27,7 @@ export function useAppointmentContext() {
 export function AppointmentProvider({ children }: PropsWithChildren) {
     const [apmntList, setApmtList] = useState<appointment[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { t } = useTranslation();
 
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
@@ -46,7 +48,7 @@ export function AppointmentProvider({ children }: PropsWithChildren) {
                     );
                     break;
                 case 401:
-                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    Alert.alert(t("common.alert.error"), t("common.alert.401"));
                     logoutDispatch();
                     break;
                 default:

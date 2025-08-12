@@ -3,9 +3,12 @@ import authReducer, { AuthActionEnum, AuthState } from "./authReducer";
 import * as SecureStore from "expo-secure-store";
 import { SecureStoreKey } from "@/constants/SecureStorageKey";
 import useTutorial from "./useTutorial";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AsyncStorageKey } from "@/constants/AsyncStorageKey";
 
-type LoginDispatch = (userToken: string) => Promise<void>;
+type LoginDispatch = (userToken: string, hn: string) => Promise<void>;
 type LogoutDispatch = () => void;
+type GetLastLoginHN = () => Promise<string>;
 
 const initialState: AuthState = {
     isLoading: true,
@@ -16,10 +19,12 @@ const AuthContext = createContext<{
     authState: AuthState;
     loginDispatch: LoginDispatch;
     logoutDispatch: LogoutDispatch;
+    getLastLoginHN: GetLastLoginHN;
 }>({
     authState: { isLoading: true, userToken: null },
-    loginDispatch: async (data) => {},
+    loginDispatch: async () => {},
     logoutDispatch: () => null,
+    getLastLoginHN: async () => "",
 });
 
 export function useAuthContext() {
@@ -29,12 +34,14 @@ export function useAuthContext() {
 export function AuthProvider({ children }: PropsWithChildren) {
     const [authState, dispatch] = useReducer(authReducer, initialState);
     const { setShowAppointmentTutorial, setShowAskTutorial } = useTutorial();
-    const { loginDispatch, logoutDispatch } = useMemo<{
+    const { loginDispatch, logoutDispatch, getLastLoginHN } = useMemo<{
         loginDispatch: LoginDispatch;
         logoutDispatch: LogoutDispatch;
+        getLastLoginHN: GetLastLoginHN;
     }>(
         () => ({
-            loginDispatch: async (userToken) => {
+            loginDispatch: async (userToken, hn) => {
+                if (hn) await AsyncStorage.setItem(AsyncStorageKey.lastLoginHN, hn);
                 await SecureStore.setItemAsync(SecureStoreKey.USER_TOKEN, userToken);
                 setShowAppointmentTutorial(true);
                 setShowAskTutorial(true);
@@ -43,6 +50,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
             logoutDispatch: async () => {
                 await SecureStore.deleteItemAsync(SecureStoreKey.USER_TOKEN);
                 dispatch({ type: AuthActionEnum.LOGOUT });
+            },
+            getLastLoginHN: async () => {
+                const hn = await AsyncStorage.getItem(AsyncStorageKey.lastLoginHN);
+                await AsyncStorage.removeItem(AsyncStorageKey.lastLoginHN);
+                return hn ?? "";
             },
         }),
         []
@@ -70,6 +82,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
                 authState: authState,
                 loginDispatch: loginDispatch,
                 logoutDispatch: logoutDispatch,
+                getLastLoginHN: getLastLoginHN,
             }}
         >
             {children}
