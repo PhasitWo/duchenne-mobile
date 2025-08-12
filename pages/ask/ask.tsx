@@ -1,38 +1,35 @@
-import { View, Alert, StyleSheet, Pressable, Text, FlatList, RefreshControl } from "react-native";
+import { View, Alert, StyleSheet, Pressable, Text, RefreshControl, ScrollView } from "react-native";
 import QuestionCard, { QuestionTopic } from "@/components/QuestionCard";
 import { useLanguage } from "@/hooks/useLanguage";
 import { color, darkGrey } from "@/constants/Colors";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AskStackParamList } from "./_stack";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { useAuthContext } from "@/hooks/authContext";
 import { ApiQuestionTopicModel } from "@/model/model";
 import { useFocusEffect } from "@react-navigation/native";
-import SwipeHand from "@/components/SwipeHand";
-import useTutorial from "@/hooks/useTutorial";
 import { useTranslation } from "react-i18next";
+import Tutorial from "@/components/Tutorial";
 
 type props = NativeStackScreenProps<AskStackParamList, "index">;
 export default function Ask({ navigation }: props) {
     const [topicList, setTopicList] = useState<QuestionTopic[]>([]);
-    const [showTutorial, setShowTutorial] = useState(false);
     const { currentLang } = useLanguage();
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(true);
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
+    const scrollViewRef = useRef<ScrollView>(null);
 
-    // tutorial onmount
-    useEffect(() => {
-        const { getShowAskTutorial, setShowAskTutorial } = useTutorial();
-        getShowAskTutorial().then((value) => setShowTutorial(value));
-        setTimeout(() => {
-            setShowTutorial(false);
-            setShowAskTutorial(false);
-        }, 5200);
-    }, []);
+    // fetch data on focus
+    useFocusEffect(
+        useCallback(() => {
+            fetch();
+            scrollViewRef.current?.scrollTo({ y: 0, animated: false });
+        }, [currentLang])
+    );
 
     const fetch = async () => {
         setIsLoading(true);
@@ -68,33 +65,28 @@ export default function Ask({ navigation }: props) {
         }
     };
 
-    // fetch data on focus
-    useFocusEffect(
-        useCallback(() => {
-            fetch();
-        }, [currentLang])
-    );
-
     return (
         <View style={style.container}>
-            {showTutorial && <SwipeHand from={50} to={350} />}
+            <Tutorial from={50} to={350} />
             {topicList.length == 0 && <Text style={{ marginTop: 10 }}>{t("common.no_data")}</Text>}
-            <FlatList
-                contentContainerStyle={{ paddingBottom: 150 }}
-                data={topicList}
-                renderItem={({ item }) => (
+            <ScrollView
+                ref={scrollViewRef}
+                contentContainerStyle={{ alignItems: "center", paddingBottom: 20 }}
+                showsVerticalScrollIndicator={false}
+                refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetch} />}
+            >
+                {topicList.map((v, k) => (
                     <QuestionCard
-                        questionTopic={item}
+                        key={k}
+                        questionTopic={v}
                         onPress={() =>
                             navigation.navigate("viewAsk", {
-                                id: item.id as number,
+                                id: v.id as number,
                             })
                         }
                     />
-                )}
-                showsVerticalScrollIndicator={false}
-                refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetch} />}
-            />
+                ))}
+            </ScrollView>
             <Pressable
                 style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.button]}
                 onPress={() => navigation.navigate("addAsk" as never)}

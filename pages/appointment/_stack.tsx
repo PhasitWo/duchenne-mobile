@@ -30,6 +30,7 @@ export default function AppointmentStack() {
                     options={{
                         title: t("appointment.title"),
                         header: (props) => <Header {...props} />,
+                        
                     }}
                 />
             </Stack.Navigator>

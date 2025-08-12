@@ -224,6 +224,7 @@ const style = StyleSheet.create({
         borderBottomWidth: 1,
         margin: 5,
         padding: 5,
+        color: "black"
     },
     signup: { marginTop: 20 },
     signupLink: {

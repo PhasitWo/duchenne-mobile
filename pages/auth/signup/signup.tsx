@@ -19,6 +19,8 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError } from "axios";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 export type SignupData = {
     hn: string;
     firstName: string;
@@ -40,10 +42,9 @@ export default function Signup({ navigation }: Props) {
         pin: "",
     });
     const [confirmPin, setConfirmPin] = useState("");
-    const { currentLang } = useLanguage();
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
-
+    const insets = useSafeAreaInsets()
     const firstName_ref = useRef<TextInput>(null);
     const middleName_ref = useRef<TextInput>(null);
     const lastName_ref = useRef<TextInput>(null);
@@ -118,7 +119,7 @@ export default function Signup({ navigation }: Props) {
     }
     return (
         <KeyboardAvoidingView style={{ backgroundColor: "white", flex: 1 }} behavior="padding">
-            <ScrollView contentContainerStyle={style.formContainer} keyboardShouldPersistTaps="handled">
+            <ScrollView contentContainerStyle={[style.formContainer, {paddingBottom: insets.bottom}]} keyboardShouldPersistTaps="handled">
                 <View style={style.inputContainer}>
                     <Text style={style.label}>
                         HN
@@ -285,8 +286,6 @@ const style = StyleSheet.create({
         justifyContent: "flex-start",
         alignItems: "center",
         backgroundColor: "white",
-        paddingTop: 50,
-        paddingBottom: 50,
     },
     inputContainer: {
         width: 350,
@@ -306,6 +305,7 @@ const style = StyleSheet.create({
         borderColor: darkGrey,
         margin: 5,
         padding: 5,
+        color: "black",
     },
     lang: {
         position: "absolute",

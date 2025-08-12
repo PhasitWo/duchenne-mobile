@@ -1,6 +1,6 @@
 import { View, ScrollView, Alert, RefreshControl } from "react-native";
 import Card from "@/components/Card";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiContentModel } from "@/model/model";
@@ -16,6 +16,7 @@ export default function Content({ navigation }: props) {
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
     const [contents, setContents] = useState<ApiContentModel[]>([]);
+    const scrollViewRef = useRef<ScrollView>(null);
 
     useEffect(() => {
         fetch();
@@ -24,7 +25,8 @@ export default function Content({ navigation }: props) {
     useFocusEffect(
         useCallback(() => {
             fetch();
-        }, [])
+            scrollViewRef.current?.scrollTo({ y: 0, animated: false });
+        }, [contents])
     );
 
     const fetch = async () => {
@@ -65,6 +67,7 @@ export default function Content({ navigation }: props) {
             }}
         >
             <ScrollView
+                ref={scrollViewRef}
                 contentContainerStyle={{ alignItems: "center", paddingBottom: 20 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetch} />}

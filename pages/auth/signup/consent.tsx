@@ -9,7 +9,7 @@ type Props = NativeStackScreenProps<SignupStackParamList, "index">;
 export default function Consent({ navigation }: Props) {
     const { t } = useTranslation();
     return (
-        <View style={{ flex: 1, backgroundColor: "white", padding: 20 }}>
+        <View style={{ flex: 1, backgroundColor: "white", padding: 20, alignItems: "center" }}>
             <Text>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
                 dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
@@ -18,7 +18,7 @@ export default function Consent({ navigation }: Props) {
                 deserunt mollit anim id est laborum
             </Text>
             <Text>
-                ท่านสามารถอ่านข้อมูลอย่างละเอียดได้ที่
+                ท่านสามารถอ่านข้อมูลอย่างละเอียดได้ที่{" "}
                 <Text style={{ color: "blue" }} onPress={() => navigation.navigate("privacy")}>
                     ประกาศความเป็นส่วนตัว
                 </Text>

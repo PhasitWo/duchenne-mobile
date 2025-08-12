@@ -1,5 +1,5 @@
 import { Text, View, ScrollView, StyleSheet, Pressable, RefreshControl } from "react-native";
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import Calendar from "@/components/Calendar";
 import AppointmentCard from "@/components/AppointmentCard";
 import { grey, darkGrey, color } from "@/constants/Colors";
@@ -12,29 +12,22 @@ import SwipeHand from "@/components/SwipeHand";
 import useTutorial from "@/hooks/useTutorial";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/hooks/useLanguage";
+import Tutorial from "@/components/Tutorial";
 
 type props = NativeStackScreenProps<StackParamList, "index">;
 
 export default function Appointment({ navigation }: props) {
     const [incomingSelected, setIncomingSelected] = useState(true);
-    const [showTutorial, setShowTutorial] = useState(false);
     const { apmntList, isLoading, fetch } = useAppointmentContext();
     const { currentLang } = useLanguage();
     const { t } = useTranslation();
+    const scrollViewRef = useRef<ScrollView>(null);
     const now = dayjs();
-    // tutorial onmount
-    useEffect(() => {
-        const { getShowAppointmentTutorial, setShowAppointmentTutorial } = useTutorial();
-        getShowAppointmentTutorial().then((value) => setShowTutorial(value));
-        setTimeout(() => {
-            setShowTutorial(false);
-            setShowAppointmentTutorial(false);
-        }, 5200);
-    }, []);
     // fetch data on focus
     useFocusEffect(
         useCallback(() => {
             fetch();
+            scrollViewRef.current?.scrollTo({ y: 0, animated: false });
         }, [])
     );
     // compute calendar component data ,normalize to dayOfMonth:00:00:00
@@ -70,7 +63,7 @@ export default function Appointment({ navigation }: props) {
                 backgroundColor: color.base,
             }}
         >
-            {showTutorial && <SwipeHand from={250} to={500} />}
+            <Tutorial from={250} to={500}/>
             <Calendar markedDateKey={markedDateKey} />
             <View style={style.headContainer}>
                 <Pressable
@@ -92,6 +85,7 @@ export default function Appointment({ navigation }: props) {
             </View>
             <View style={style.bodyBackground}>
                 <ScrollView
+                    ref={scrollViewRef}
                     style={style.bodyContainer}
                     contentContainerStyle={style.bodyContentContainer}
                     showsVerticalScrollIndicator={false}
