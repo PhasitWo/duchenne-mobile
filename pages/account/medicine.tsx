@@ -6,11 +6,11 @@ import { AxiosError, AxiosResponse } from "axios";
 import { useAuthContext } from "@/hooks/authContext";
 import LoadingView from "@/components/LoadingView";
 import MedicineCard from "@/components/MedicineCard";
-import { useLanguage } from "@/hooks/useLanguage";
+import { useTranslation } from "react-i18next";
 
 export default function Medicine() {
     const [data, setData] = useState<Med[] | null>([]);
-    const { lang } = useLanguage();
+    const { t } = useTranslation();
 
     // fetch
     const [isLoading, setIsLoading] = useState(true);
@@ -48,9 +48,7 @@ export default function Medicine() {
 
     return (
         <View>
-            {data?.length === 0 && (
-                <Text style={{ marginTop: 10, alignSelf: "center" }}>{lang("ไม่พบข้อมูล", "No data")}</Text>
-            )}
+            {data?.length === 0 && <Text style={{ marginTop: 10, alignSelf: "center" }}>{t("common.no_data")}</Text>}
             <FlatList
                 contentContainerStyle={{ alignItems: "center" }}
                 data={data}

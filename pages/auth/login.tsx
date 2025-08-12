@@ -26,30 +26,25 @@ import * as Linking from "expo-linking";
 import { startActivityAsync, ActivityAction } from "expo-intent-launcher";
 import * as Application from "expo-application";
 import { getExpoToken } from "@/hooks/useDeviceInfo";
-
-type Warning = {
-    hn: boolean;
-    firstName: boolean;
-    lastName: boolean;
-};
+import { useTranslation } from "react-i18next";
 
 export type LoginData = {
     hn: string;
-    firstName: string;
-    lastName: string;
+    pin: string;
 };
+
+type Warning = Record<keyof LoginData, boolean>;
 
 type Props = NativeStackScreenProps<AppStackParamList, "login">;
 export default function Login({ route, navigation }: Props) {
-    const [data, setData] = useState<LoginData>({ hn: "", firstName: "", lastName: "" });
-    const [warning, setWarning] = useState<Warning>({ hn: false, firstName: false, lastName: false });
+    const [data, setData] = useState<LoginData>({ hn: "", pin: "" });
+    const [warning, setWarning] = useState<Warning>({ hn: false, pin: false });
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const { lang } = useLanguage();
+    const { t } = useTranslation();
     const { loginDispatch } = useAuthContext();
 
-    const firstName_ref = useRef<TextInput>(null);
-    const lastName_ref = useRef<TextInput>(null);
-    const warningText = lang("กรุณากรอกข้อมูล", "This field is required");
+    const pin_ref = useRef<TextInput>(null);
+    const warningText = t("login.warn_require_field");
 
     // route param is used once, when the screen is focused
     useFocusEffect(
@@ -85,7 +80,7 @@ export default function Login({ route, navigation }: Props) {
             }
             // notification permission
             if (!(await getNotificationPermission()))
-                Alert.alert(lang("กรุณาเปิดการแจ้งเตือนของแอป", "Require notification permission"), undefined, [
+                Alert.alert(t("common.alert.error"), t("login.alert.require_noti_perm"), [
                     {
                         text: "Ok",
                         onPress: openNotificationSetting,
@@ -94,12 +89,7 @@ export default function Login({ route, navigation }: Props) {
             // EXPO TOKEN
             let expoToken = await getExpoToken();
             if (!expoToken) {
-                Alert.alert(
-                    lang(
-                        "ไม่สามารถเชื่อมต่อ Expo ได้\nกรุณาเช็คการเชื่อมต่อกับอินเทอร์เน็ต",
-                        "Can't get expo token, check your internet connection"
-                    )
-                );
+                Alert.alert(t("common.alert.error"), t("login.alert.expo_error"));
                 return;
             }
             // POST
@@ -107,8 +97,7 @@ export default function Login({ route, navigation }: Props) {
                 "/auth/login",
                 {
                     hn: data.hn.trim(),
-                    firstName: data.firstName.trim(),
-                    lastName: data.lastName.trim(),
+                    pin: data.pin,
                     deviceName: Device.deviceName ? Device.deviceName : "Unknown Device",
                     expoToken: expoToken,
                 },
@@ -119,13 +108,10 @@ export default function Login({ route, navigation }: Props) {
                     loginDispatch(response.data.token);
                     break;
                 case 401:
-                    Alert.alert(lang("เกิดข้อผิดพลาด", "Error"), lang("ข้อมูลไม่ถูกต้อง", "Invalid credentials"));
+                    Alert.alert(t("common.alert.error"), t("login.alert.invalid_cred"));
                     break;
                 case 403:
-                    Alert.alert(
-                        lang("เกิดข้อผิดพลาด", "Error"),
-                        lang(`HN: ${data.hn} ยังไม่ได้ลงทะเบียน`, `Unverified Account HN: ${data.hn}`)
-                    );
+                    Alert.alert(t("common.alert.error"), t("login.alert.unverified_account", { hn: data.hn }));
                     break;
                 default:
                     Alert.alert("Something went wrong...", JSON.stringify(response));
@@ -133,10 +119,7 @@ export default function Login({ route, navigation }: Props) {
         } catch (err) {
             if (err instanceof AxiosError) {
                 if (err.status == 404) {
-                    Alert.alert(
-                        lang("เกิดข้อผิดพลาด", "Error"),
-                        lang(`ไม่มี HN: ${data.hn} ในฐานข้อมูล`, `HN: ${data.hn} is not found in the database`)
-                    );
+                    Alert.alert(t("common.alert.error"), t("login.alert.404", { hn: data.hn }));
                     return;
                 }
                 Alert.alert("Request Error", `${err.message ?? ""} ${err.code}`);
@@ -149,7 +132,7 @@ export default function Login({ route, navigation }: Props) {
     }
     return (
         <KeyboardAvoidingView style={style.formContainer} behavior="padding">
-            <ScrollView contentContainerStyle={{ alignItems: "center" }}>
+            <ScrollView contentContainerStyle={{ alignItems: "center" }} keyboardShouldPersistTaps="handled">
                 <Image source={require("@/assets/images/logo.png")} style={{ width: 200, height: 200 }}></Image>
                 <View style={style.inputContainer}>
                     <Text style={[style.label, { color: warning.hn ? "red" : "black" }]}>HN</Text>
@@ -160,7 +143,7 @@ export default function Login({ route, navigation }: Props) {
                             setWarning({ ...warning, hn: false });
                             setData({ ...data, hn: text });
                         }}
-                        onSubmitEditing={() => firstName_ref.current?.focus()}
+                        onSubmitEditing={() => pin_ref.current?.focus()}
                         returnKeyType="next"
                         editable={!isLoading}
                         placeholder={warning.hn ? warningText : undefined}
@@ -169,39 +152,20 @@ export default function Login({ route, navigation }: Props) {
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={[style.label, { color: warning.firstName ? "red" : "black" }]}>
-                        {lang("ชื่อจริง", "First Name")}
-                    </Text>
+                    <Text style={[style.label, { color: warning.pin ? "red" : "black" }]}>{t("login.password")}</Text>
                     <TextInput
-                        ref={firstName_ref}
-                        style={[style.input, { borderColor: warning.firstName ? "red" : darkGrey }]}
-                        value={data.firstName}
+                        ref={pin_ref}
+                        style={[style.input, { borderColor: warning.pin ? "red" : darkGrey }]}
+                        value={data.pin}
                         onChangeText={(text) => {
-                            setWarning({ ...warning, firstName: false });
-                            setData({ ...data, firstName: text });
+                            setWarning({ ...warning, pin: false });
+                            setData({ ...data, pin: text });
                         }}
-                        onSubmitEditing={() => lastName_ref.current?.focus()}
-                        returnKeyType="next"
+                        secureTextEntry
+                        keyboardType="number-pad"
+                        returnKeyType="done"
                         editable={!isLoading}
-                        placeholder={warning.firstName ? warningText : undefined}
-                        placeholderTextColor="red"
-                        submitBehavior="submit"
-                    />
-                </View>
-                <View style={style.inputContainer}>
-                    <Text style={[style.label, { color: warning.lastName ? "red" : "black" }]}>
-                        {lang("นามสกุล", "Last Name")}
-                    </Text>
-                    <TextInput
-                        ref={lastName_ref}
-                        style={[style.input, { borderColor: warning.lastName ? "red" : darkGrey }]}
-                        value={data.lastName}
-                        onChangeText={(text) => {
-                            setWarning({ ...warning, lastName: false });
-                            setData({ ...data, lastName: text });
-                        }}
-                        editable={!isLoading}
-                        placeholder={warning.lastName ? warningText : undefined}
+                        placeholder={warning.pin ? warningText : undefined}
                         placeholderTextColor="red"
                     />
                 </View>
@@ -211,11 +175,11 @@ export default function Login({ route, navigation }: Props) {
                         onPress={() => navigation.navigate("contact" as never)}
                         disabled={isLoading}
                     >
-                        {lang("ลืมรหัสผ่าน?", "Forgot password?")}
+                        {t("login.forgot")}
                     </Text>
                 </View>
                 <CustomButton
-                    title={lang("เข้าสู่ระบบ", "Log in")}
+                    title={t("login.login")}
                     normalColor={color.tint}
                     pressedColor={darkGrey}
                     style={{ height: 60, borderRadius: 10, marginTop: 30 }}
@@ -224,21 +188,11 @@ export default function Login({ route, navigation }: Props) {
                     showLoading={isLoading}
                 />
                 <Text style={style.signup}>
-                    {lang("ยังไม่มีบัญชี? ", "Don't have an account? ")}
-                    <Text
-                        style={style.signupLink}
-                        onPress={() => navigation.navigate("contact" as never)}
-                        disabled={isLoading}
-                    >
-                        {lang("ลงทะเบียน", "Sign up")}
+                    {t("login.no_account") + " "}
+                    <Text style={style.signupLink} onPress={() => navigation.navigate("signupStack")} disabled={isLoading}>
+                        {t("login.signup")}
                     </Text>
                 </Text>
-                {/* <Text
-                onPress={() => setData({ hn: "test3", firstName: "fn3", lastName: "ln3" })}
-                style={{ bottom: -100, color: "whitesmoke" }}
-            >
-                DEV
-            </Text> */}
             </ScrollView>
         </KeyboardAvoidingView>
     );

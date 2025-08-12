@@ -1,8 +1,6 @@
-import { useLanguage } from "@/hooks/useLanguage";
 import { View, Text } from "react-native";
 
 export default function Contact() {
-    const { lang } = useLanguage();
     return (
         <View
             style={{
@@ -12,9 +10,7 @@ export default function Contact() {
                 alignItems: "center",
             }}
         >
-            <Text>{lang("ติดต่อ", "Contact")}</Text>
-            <Text>test@email.com</Text>
-            <Text>0111111111</Text>
+            <Text>dmdwecare2025@gmail.com</Text>
         </View>
     );
 }

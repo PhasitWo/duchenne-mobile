@@ -2,8 +2,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Header from "@/components/navigation/Header";
 import Setting from "./setting";
 import Language from "./language";
-import { useLanguage } from "@/hooks/useLanguage";
 import { color } from "@/constants/Colors";
+import { useTranslation } from "react-i18next";
 
 export type StackParamList = {
     index: undefined;
@@ -13,14 +13,14 @@ export type StackParamList = {
 const Stack = createNativeStackNavigator<StackParamList>();
 
 export default function SettingStack() {
-    const { lang } = useLanguage();
+    const { t } = useTranslation();
     return (
         <Stack.Navigator screenOptions={{ contentStyle: { backgroundColor: color.base } }}>
             <Stack.Screen
                 name="index"
                 component={Setting}
                 options={{
-                    title: lang("การตั้งค่า", "Setting"),
+                    title: t("setting.title"),
                     header: (props) => <Header {...props} />,
                 }}
             />
@@ -28,7 +28,7 @@ export default function SettingStack() {
                 name="language"
                 component={Language}
                 options={{
-                    title: lang("เลือกภาษา", "Select Language"),
+                    title: t("language.title"),
                     header: (props) => <Header {...props} />,
                 }}
             />

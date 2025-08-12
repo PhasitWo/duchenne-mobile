@@ -2,6 +2,7 @@ import { useContext, createContext, useEffect, type PropsWithChildren, useState 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AsyncStorageKey } from "@/constants/AsyncStorageKey";
 import "dayjs/locale/th.js";
+import i18n from "@/locales/i18n";
 
 export type Language = "th" | "en";
 type LangFunc = (thaiString: string, engString: string) => string;
@@ -45,6 +46,7 @@ export function LanguageProvider({ children }: PropsWithChildren) {
         try {
             await AsyncStorage.setItem(AsyncStorageKey.language, language);
             setCurrentLang(language);
+            i18n.changeLanguage(language);
         } catch (err) {
             console.log("Can't save lang to AsyncStorage", err);
         }

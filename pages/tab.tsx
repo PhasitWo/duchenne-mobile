@@ -7,15 +7,15 @@ import AddAppointment from "@/pages/appointment/addAppointment";
 import AccountStack from "@/pages/account/_stack";
 import AppointmentStack from "@/pages/appointment/_stack";
 import AskStack from "@/pages/ask/_stack";
-import { useLanguage } from "@/hooks/useLanguage";
 import { Platform, Pressable, View } from "react-native";
 import ContentStack from "./content/_stack";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 const Tab = createBottomTabNavigator();
 
 export default function Tabs() {
-    const { lang } = useLanguage();
+    const { t } = useTranslation();
     const insets = useSafeAreaInsets();
     return (
         <Tab.Navigator
@@ -44,7 +44,7 @@ export default function Tabs() {
                 name="content"
                 component={ContentStack}
                 options={{
-                    title: lang("ศูนย์เรียนรู้", "Learning"),
+                    title: t("content.title"),
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon name={focused ? "bulb" : "bulb-outline"} color={color} />
@@ -55,7 +55,7 @@ export default function Tabs() {
                 name="appointment"
                 component={AppointmentStack}
                 options={{
-                    title: lang("การนัดหมาย", "Appointment"),
+                    title: t("appointment.title"),
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon name={focused ? "calendar" : "calendar-outline"} color={color} />
@@ -68,7 +68,7 @@ export default function Tabs() {
                 name="addAppointment"
                 component={AddAppointment}
                 options={{
-                    title: lang("เพิ่มนัดหมาย", "Add Appointment"),
+                    title: t("addAppointment.title"),
                     headerShown: true,
                     tabBarIcon: () => (
                         // <Link
@@ -91,7 +91,7 @@ export default function Tabs() {
                 name="ask"
                 component={AskStack}
                 options={{
-                    title: lang("ปรึกษาแพทย์", "Ask"),
+                    title: t("ask.title"),
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon
@@ -106,7 +106,7 @@ export default function Tabs() {
                 name="Account"
                 component={AccountStack}
                 options={{
-                    title: lang("บัญชี", "Account"),
+                    title:t("account.title"),
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon name={focused ? "person" : "person-outline"} color={color} />

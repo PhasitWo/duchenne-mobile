@@ -1,12 +1,12 @@
-import { useLanguage } from "@/hooks/useLanguage";
 import { Medicine } from "@/model/model";
 import { stringToHslColor } from "@/utility/convert";
+import { useTranslation } from "react-i18next";
 import { Text, StyleSheet, Pressable, PressableProps, View } from "react-native";
 
 export type MedicineCardProps = { data: Medicine };
 
 export default function MedicineCard({ data, ...rest }: MedicineCardProps & PressableProps) {
-    const { lang } = useLanguage();
+    const { t } = useTranslation();
     return (
         <Pressable {...rest} style={style.container}>
             <View
@@ -19,13 +19,13 @@ export default function MedicineCard({ data, ...rest }: MedicineCardProps & Pres
             />
             <View style={style.content}>
                 <Text style={style.title}>{data.medicineName ?? "-"}</Text>
-                <Text style={style.head}>{lang("ขนาด", "Dose")}</Text>
+                <Text style={style.head}>{t("medicineCard.dose")}</Text>
                 <Text style={style.body}>{data.dose ?? "-"}</Text>
-                <Text style={style.head}>{lang("จำนวนยา", "Quantity")}</Text>
+                <Text style={style.head}>{t("medicineCard.quantity")}</Text>
                 <Text style={style.body}>{data.quantity ?? "-"}</Text>
-                <Text style={style.head}>{lang("ความถี่", "Frequency")}</Text>
+                <Text style={style.head}>{t("medicineCard.frequency")}</Text>
                 <Text style={style.body}>{data.frequencyPerDay ?? "-"}</Text>
-                <Text style={style.head}>{lang("วิธีใช้", "Instruction")}</Text>
+                <Text style={style.head}>{t("medicineCard.instruction")}</Text>
                 <Text style={style.body}>{data.instruction ?? "-"}</Text>
             </View>
         </Pressable>

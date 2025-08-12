@@ -13,6 +13,7 @@ import { useAuthContext } from "@/hooks/authContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiQuestionModel } from "@/model/model";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useTranslation } from "react-i18next";
 
 type Question = {
     createAt: Dayjs | null;
@@ -28,7 +29,8 @@ type Answer = {
 
 type props = NativeStackScreenProps<AskStackParamList, "viewAsk">;
 export default function ViewAsk({ navigation, route }: props) {
-    const { lang, currentLang } = useLanguage();
+    const { currentLang } = useLanguage();
+    const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [question, setQuestion] = useState<Question>({
         createAt: null,
@@ -42,9 +44,9 @@ export default function ViewAsk({ navigation, route }: props) {
 
     function showDeleteAlert() {
         Alert.alert(
-            lang("คุณแน่ใจหรือไม่", "Are you sure?"),
-            lang("คุณกำลังลบคำถามนี้", "You are deleting this question"),
-            [{ text: "Delete", onPress: handleDelete }, { text: "Cancel" }],
+            t("common.alert.sure"),
+            t("viewAsk.delete"),
+            [{ text: t("common.alert.delete"), onPress: handleDelete }, { text: t("common.alert.cancel") }],
             { cancelable: true }
         );
     }
@@ -55,7 +57,7 @@ export default function ViewAsk({ navigation, route }: props) {
             const response = await api.delete("/api/question/" + id);
             switch (response.status) {
                 case 204:
-                    Alert.alert("", lang("ลบคำถามแล้ว", "Deleted successfully"));
+                    Alert.alert("", t("viewAsk.alert.204"));
                     navigation.navigate("index");
                     break;
                 case 401:

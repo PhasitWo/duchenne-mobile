@@ -2,12 +2,14 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { VaccineHistory } from "@/model/model";
 import { stringToHslColor } from "@/utility/convert";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 import { Text, StyleSheet, Pressable, PressableProps, View } from "react-native";
 
 export type VaccineCardProps = { data: VaccineHistory };
 
 export default function VaccineCard({ data, ...rest }: VaccineCardProps & PressableProps) {
-    const { lang, currentLang } = useLanguage();
+    const { currentLang } = useLanguage();
+    const { t } = useTranslation();
     return (
         <Pressable {...rest} style={style.container}>
             <View
@@ -20,11 +22,15 @@ export default function VaccineCard({ data, ...rest }: VaccineCardProps & Pressa
             />
             <View style={style.content}>
                 <Text style={style.title}>{data.vaccineName ?? "-"}</Text>
-                <Text style={style.head}>{lang("สถานที่", "Location")}</Text>
+                <Text style={style.head}>{t("vaccineCard.location")}</Text>
                 <Text style={style.body}>{data.vaccineLocation ?? "-"}</Text>
-                <Text style={style.head}>{lang("วันที่", "Date")}</Text>
-                <Text style={style.body}>{dayjs(data.vaccineAt).locale(currentLang).format("D MMMM YYYY")}</Text>
-                <Text style={style.head}>{lang("ผลข้างเคียง", "Complication")}</Text>
+                <Text style={style.head}>{t("vaccineCard.date")}</Text>
+                <Text style={style.body}>
+                    {dayjs(data.vaccineAt * 1000)
+                        .locale(currentLang)
+                        .format("D MMMM YYYY")}
+                </Text>
+                <Text style={style.head}>{t("vaccineCard.complication")}</Text>
                 <Text style={style.body}>{data.complication ?? "-"}</Text>
             </View>
         </Pressable>

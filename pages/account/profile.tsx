@@ -7,6 +7,7 @@ import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { useAuthContext } from "@/hooks/authContext";
 import LoadingView from "@/components/LoadingView";
+import { useTranslation } from "react-i18next";
 
 type Info = { title: string; value: string | number | undefined; border?: boolean };
 
@@ -30,18 +31,19 @@ const Item = ({ info }: { info: Info }) => {
 };
 
 export default function Profile() {
-    const { lang, currentLang } = useLanguage();
+    const { currentLang } = useLanguage();
+    const { t }= useTranslation() ;
     const [userInfo, setUserInfo] = useState<ApiPatientModel>();
     const data = useMemo<Info[]>(() => {
         return [
-            { title: lang("ชื่อ", "First Name"), value: userInfo?.firstName },
-            { title: lang("ชื่อกลาง", "Middle Name"), value: userInfo?.middleName ?? "-" },
-            { title: lang("นามสกุล", "Last Name"), value: userInfo?.lastName },
-            { title: lang("รหัส HN", "HN Number"), value: userInfo?.hn },
-            { title: lang("อีเมล", "Email"), value: userInfo?.email ?? "-" },
-            { title: lang("เบอร์โทรศัพท์", "Phone Number"), value: userInfo?.phone ?? "-" },
-            { title: lang("น้ำหนัก", "Weight"), value: userInfo?.weight ?? "-" },
-            { title: lang("ส่วนสูง", "Height"), value: userInfo?.height ?? "-" },
+            { title: t("profile.firstName"), value: userInfo?.firstName },
+            { title: t("profile.middleName"), value: userInfo?.middleName ?? "-" },
+            { title: t("profile.lastName"), value: userInfo?.lastName },
+            { title: t("profile.hn"), value: userInfo?.hn },
+            { title: t("profile.email"), value: userInfo?.email ?? "-" },
+            { title: t("profile.phone"), value: userInfo?.phone ?? "-" },
+            { title: t("profile.weight"), value: userInfo?.weight ?? "-" },
+            { title: t("profile.height"), value: userInfo?.height ?? "-" },
         ];
     }, [currentLang, userInfo]);
 

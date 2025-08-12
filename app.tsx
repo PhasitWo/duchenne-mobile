@@ -1,7 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Notification from "@/pages/notification";
 import Tabs from "@/pages/tab";
-import { useLanguage } from "@/hooks/useLanguage";
 import SignupStack from "@/pages/auth/signup/_stack";
 import Login from "@/pages/auth/login";
 import Header from "@/components/navigation/Header";
@@ -11,19 +10,20 @@ import AddAsk from "./pages/ask/addAsk";
 import Contact from "./pages/auth/contact";
 import type { LoginData } from "@/pages/auth/login";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 export type AppStackParamList = {
     tab: undefined;
     login: undefined | LoginData;
     contact: undefined;
-    signup: undefined;
+    signupStack: undefined;
     notification: undefined;
     addAsk: undefined;
 };
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
 export default function App() {
-    const { lang } = useLanguage();
+    const { t } = useTranslation();
     const { authState } = useAuthContext();
 
     useEffect(() => {
@@ -44,18 +44,18 @@ export default function App() {
                         name="login"
                         component={Login}
                         options={{
-                            title: lang("ลงชื่อเข้าใช้", "Login"),
+                            title: t("login.title"),
                             header: (props) => (
                                 <Header {...props} showNotification={false} showBackButton={false} showLangSwitch />
                             ),
                         }}
                     />
-                    <Stack.Screen name="signup" component={SignupStack} options={{ headerShown: false }} />
+                    <Stack.Screen name="signupStack" component={SignupStack} options={{ headerShown: false }} />
                     <Stack.Screen
                         name="contact"
                         component={Contact}
                         options={{
-                            title: lang("ติดต่อเจ้าหน้าที่", "Contact"),
+                            title: t("contact.title"),
                             header: (props) => <Header {...props} showNotification={false} />,
                         }}
                     />
@@ -67,7 +67,7 @@ export default function App() {
                         name="notification"
                         component={Notification}
                         options={{
-                            title: lang("การแจ้งเตือน", "Notifications"),
+                            title: t("notification.title"),
                             header: (props) => <Header {...props} showNotification={false} />,
                         }}
                     />
@@ -75,7 +75,7 @@ export default function App() {
                         name="addAsk"
                         component={AddAsk}
                         options={{
-                            title: lang("ส่งคำถาม", "New Question"),
+                            title: t("addAsk.title"),
                             header: (props) => <Header {...props} />,
                         }}
                     />

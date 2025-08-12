@@ -1,0 +1,182 @@
+{
+    "common": {
+        "no_data": "No data",
+        "save": "Save",
+        "submit": "Submit",
+        "alert": {
+            "error": "Error",
+            "cancel": "Cancel",
+            "confirm": "Confirm",
+            "delete": "Delete",
+            "stay": "Stay",
+            "discard": "Discard",
+            "sure": "Are you sure?"
+        }
+    },
+    "login": {
+        "title": "Login",
+        "password": "Pin Code",
+        "forgot": "Forgot Password?",
+        "no_account": "Don't have an account?",
+        "signup": "Sign Up",
+        "login": "Log in",
+        "warn_require_field": "This field is required",
+        "alert": {
+            "require_noti_perm": "Require notification permission",
+            "expo_error": "Can't get expo token, check your internet connection",
+            "invalid_cred": "Invalid credentials",
+            "unverified_account": "Unverified Account HN: {{hn}}",
+            "404": "HN: {{hn}} is not found in the database"
+        }
+    },
+    "contact": {
+        "title": "Contact"
+    },
+    "notification": {
+        "title": "Notifications",
+        "device_name": "Device Name",
+        "login_at": "Login at",
+        "topic1": "Why I don't receive any notifications?",
+        "topic2": "These are possible reasons:",
+        "factor1": "1. Your device is not an active device for receiving push notifications. Only '3' devices that recently logged in will receive push notifications.",
+        "make_active": "Make this device receive notification",
+        "factor2": "2. App's notification permission is disabled (please enable it in the setting)",
+        "factor3": "3. Battery Optimization is turn on for this app (in some android device)",
+        "factor4": "4. This app is put in the 'sleeping app' list (in some android device)"
+    },
+    "consent": {
+        "title": "Terms and Privacy",
+        "accept": "Accept"
+    },
+    "privacy": {
+        "title": "Privacy Notice"
+    },
+    "signup": {
+        "title": "Sign Up",
+        "signup": "Sign up",
+        "missing": "missing",
+        "hn": "HN",
+        "firstName": "First Name (in Thai)",
+        "middleName": "Middle Name (in Thai)",
+        "lastName": "Last Name (in Thai)",
+        "phone": "Phone Number",
+        "email": "Email",
+        "pin": "6-digit Pin Code",
+        "confirm_pin": "Confirm Pin Code",
+        "alert": {
+            "invalid_email": "Invalid email address",
+            "require_digit_pin": "Require 6 digit pin code",
+            "pin_mismatched": "Confirm Pin Code is mismatched",
+            "200": "Registration completed!",
+            "401": "Invalid credentials",
+            "409": "The account with this HN has already been verified",
+            "404": "No account with HN: {{hn}}"
+        }
+    },
+    "content": {
+        "title": "Learning"
+    },
+    "appointment": {
+        "title": "Appointment",
+        "incoming": "Incoming",
+        "history": "History"
+    },
+    "addAppointment": {
+        "title": "Add Appointment",
+        "select_doctor": "Select Doctor",
+        "alert": {
+            "select_doctor": "Please select a doctor from the list",
+            "invalid_date": "Invalid Time or Date",
+            "select_future": "Please select a future time",
+            "verify": "Please, verify these information",
+            "201": "The appointment has been scheduled",
+            "201_body": "Please, wait for approval"
+        }
+    },
+    "viewAppointment": {
+        "delete": "Delete",
+        "alert": {
+            "204": "Deleted successfully"
+        }
+    },
+    "ask": {
+        "title": "Ask",
+        "submit": "+ New Question"
+    },
+    "addAsk": {
+        "title": "New Question",
+        "topic": "Topic  ",
+        "question": "Question  ",
+        "alert": {
+            "discard": "Discard Question?",
+            "discard_body": "Are you sure to discard them and leave the screen?",
+            "empty_topic": "Topic cannot be empty.",
+            "empty_question": "Question cannot be empty.",
+            "201": "The question has been submitted"
+        }
+    },
+    "viewAsk": {
+        "title": "Your Question",
+        "delete": "You are deleting this question.",
+        "alert": {
+            "204": "Deleted successfully"
+        }
+    },
+    "account": {
+        "title": "Account",
+        "menu": {
+            "profile": "Profile",
+            "medicine": "Prescription Medicine",
+            "vaccine": "Vaccination",
+            "setting": "Setting",
+            "logout": "Logout"
+        },
+        "alert": {
+            "logging_out": "You're trying to log out",
+            "logout": "Log out",
+            "200": "Logout successfully",
+            "401": "Logout without removing this device from the database"
+        }
+    },
+    "profile": {
+        "hn": "HN Number",
+        "firstName": "First Name",
+        "middleName": "Middle Name",
+        "lastName": "Last Name",
+        "phone": "Phone Number",
+        "email": "Email",
+        "weight": "Weight",
+        "height": "Height"
+    },
+    "setting": {
+        "title": "Setting",
+        "menu": {
+            "language": "Select Language"
+        }
+    },
+    "language": {
+        "title": "Select Language"
+    },
+    "appointmentCard": {
+        "approved": "Approved",
+        "pending": "Pending"
+    },
+    "questionCard": {
+        "replied": "A doctor replied",
+        "no_reply": "No reply"
+    },
+    "medicineCard": {
+        "dose": "Dose",
+        "quantity": "Quantity",
+        "frequency": "Frequency",
+        "instruction": "Instruction"
+    },
+    "vaccineCard": {
+        "location": "Location",
+        "date": "Date",
+        "complication": "Complication"
+    },
+    "swipeHand": {
+        "pull": "Swipe to Refresh"
+    }
+}

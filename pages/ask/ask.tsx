@@ -12,12 +12,14 @@ import { ApiQuestionTopicModel } from "@/model/model";
 import { useFocusEffect } from "@react-navigation/native";
 import SwipeHand from "@/components/SwipeHand";
 import useTutorial from "@/hooks/useTutorial";
+import { useTranslation } from "react-i18next";
 
 type props = NativeStackScreenProps<AskStackParamList, "index">;
 export default function Ask({ navigation }: props) {
     const [topicList, setTopicList] = useState<QuestionTopic[]>([]);
     const [showTutorial, setShowTutorial] = useState(false);
-    const { lang, currentLang } = useLanguage();
+    const { currentLang } = useLanguage();
+    const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(true);
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
@@ -76,7 +78,7 @@ export default function Ask({ navigation }: props) {
     return (
         <View style={style.container}>
             {showTutorial && <SwipeHand from={50} to={350} />}
-            {topicList.length == 0 && <Text style={{ marginTop: 10 }}>{lang("ไม่มีคำถาม", "No Question")}</Text>}
+            {topicList.length == 0 && <Text style={{ marginTop: 10 }}>{t("common.no_data")}</Text>}
             <FlatList
                 contentContainerStyle={{ paddingBottom: 150 }}
                 data={topicList}
@@ -97,7 +99,7 @@ export default function Ask({ navigation }: props) {
                 style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.button]}
                 onPress={() => navigation.navigate("addAsk" as never)}
             >
-                <Text>{lang("+ ส่งคำถาม", "+ New Question")}</Text>
+                <Text>{t("ask.submit")}</Text>
             </Pressable>
         </View>
     );
@@ -114,10 +116,10 @@ const style = StyleSheet.create({
         position: "absolute",
         bottom: 40,
         right: 20,
-        shadowRadius: 8,
+        shadowRadius: 4,
         shadowColor: color.tint,
         shadowOpacity: 1,
-        elevation: 8,
+        elevation: 5,
         alignItems: "center",
         justifyContent: "center",
         borderColor: color.tint,

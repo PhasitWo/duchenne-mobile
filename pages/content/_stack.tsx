@@ -1,8 +1,8 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Header from "@/components/navigation/Header";
-import { useLanguage } from "@/hooks/useLanguage";
 import Content from "./content";
 import ViewContent from "./viewContent";
+import { useTranslation } from "react-i18next";
 export type ContentStackParamList = {
     index: undefined;
     viewContent: { id: string };
@@ -11,14 +11,14 @@ export type ContentStackParamList = {
 const Stack = createNativeStackNavigator<ContentStackParamList>();
 
 export default function ContentStack() {
-    const { lang } = useLanguage();
+    const { t } = useTranslation();
     return (
         <Stack.Navigator>
             <Stack.Screen
                 name="index"
                 component={Content}
                 options={{
-                    title: lang("ศูนย์เรียนรู้", "Learn"),
+                    title: t("content.title"),
                     header: (props) => <Header {...props} showBackButton={false} />,
                 }}
             />
@@ -26,7 +26,7 @@ export default function ContentStack() {
                 name="viewContent"
                 component={ViewContent}
                 options={{
-                    title: lang("ศูนย์เรียนรู้", "Learn"),
+                    title: t("content.title"),
                     header: (props) => <Header {...props} />,
                 }}
             />

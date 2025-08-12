@@ -5,6 +5,7 @@ import { type ReactElement } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 type SettingItem = { title: string; icon: ReactElement; href: string | undefined };
 
@@ -24,11 +25,12 @@ const Item = ({ setting }: { setting: SettingItem }) => {
 };
 
 export default function Setting() {
-    const { lang, currentLang } = useLanguage();
+    const { currentLang } = useLanguage();
+    const { t } = useTranslation();
     const data = useMemo<SettingItem[]>(() => {
         return [
             {
-                title: lang("เลือกภาษา", "Select Language"),
+                title: t("setting.menu.language"),
                 href: "language",
                 icon: <MaterialIcons name="language" size={24} color="black" />,
             },

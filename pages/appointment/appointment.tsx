@@ -7,10 +7,11 @@ import dayjs from "dayjs";
 import { useAppointmentContext } from "@/hooks/appointmentContext";
 import { StackParamList } from "./_stack";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useLanguage } from "@/hooks/useLanguage";
 import { useFocusEffect } from "@react-navigation/native";
 import SwipeHand from "@/components/SwipeHand";
 import useTutorial from "@/hooks/useTutorial";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/hooks/useLanguage";
 
 type props = NativeStackScreenProps<StackParamList, "index">;
 
@@ -18,7 +19,8 @@ export default function Appointment({ navigation }: props) {
     const [incomingSelected, setIncomingSelected] = useState(true);
     const [showTutorial, setShowTutorial] = useState(false);
     const { apmntList, isLoading, fetch } = useAppointmentContext();
-    const { lang } = useLanguage();
+    const { currentLang } = useLanguage();
+    const { t } = useTranslation();
     const now = dayjs();
     // tutorial onmount
     useEffect(() => {
@@ -41,6 +43,7 @@ export default function Appointment({ navigation }: props) {
 
         const normalizedNow = dayjs().hour(0).minute(0).second(0);
         for (let apmt of apmntList) {
+            if (apmt.approveAt === null) continue;
             if (apmt.dateTime.isBefore(now)) continue;
             let diff = apmt.dateTime.hour(0).minute(0).second(0).diff(normalizedNow, "day", true);
             res.push(Math.ceil(diff));
@@ -58,7 +61,7 @@ export default function Appointment({ navigation }: props) {
                     onPress={() => incomingSelected && navigation.navigate("viewAppointment", { id: String(v.id) })}
                 />
             ));
-    }, [apmntList, incomingSelected, isLoading]);
+    }, [apmntList, incomingSelected, isLoading, currentLang]);
 
     return (
         <View
@@ -75,7 +78,7 @@ export default function Appointment({ navigation }: props) {
                     onPress={() => setIncomingSelected(true)}
                 >
                     <View>
-                        <Text>{lang("กำลังมาถึง", "Incoming")}</Text>
+                        <Text>{t("appointment.incoming")}</Text>
                     </View>
                 </Pressable>
                 <Pressable
@@ -83,7 +86,7 @@ export default function Appointment({ navigation }: props) {
                     onPress={() => setIncomingSelected(false)}
                 >
                     <View>
-                        <Text>{lang("ประวัติ", "History")}</Text>
+                        <Text>{t("appointment.history")}</Text>
                     </View>
                 </Pressable>
             </View>
@@ -94,7 +97,7 @@ export default function Appointment({ navigation }: props) {
                     showsVerticalScrollIndicator={false}
                     refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetch} />}
                 >
-                    {display.length > 0 ? display : <Text>{lang("ไม่มีนัดหมาย", "No Appointment")}</Text>}
+                    {display.length > 0 ? display : <Text>{t("common.no_data")}</Text>}
                 </ScrollView>
             </View>
         </View>

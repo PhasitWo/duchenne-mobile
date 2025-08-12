@@ -11,6 +11,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError } from "axios";
 import { useAuthContext } from "@/hooks/authContext";
+import { useTranslation } from "react-i18next";
 
 type mode = "date" | "time";
 
@@ -23,16 +24,17 @@ export default function ViewAppointment({ route, navigation }: Props) {
     const [selected, setSelected] = useState<string>("");
     const [show, setShow] = useState(false);
     const { apmntList, fetch } = useAppointmentContext();
-    const { lang, currentLang } = useLanguage();
+    const { currentLang } = useLanguage();
+    const { t } = useTranslation();
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
 
     const [isLoading, setIsLoading] = useState(false);
     function showDeleteAlert() {
         Alert.alert(
-            lang("คุณแน่ใจหรือไม่", "Are you sure?"),
+            t("common.alert.sure"),
             undefined,
-            [{ text: lang("ลบ", "Delete"), onPress: handleDelete }, { text: lang("ยกเลิก", "Cancel") }],
+            [{ text: t("common.alert.delete"), onPress: handleDelete }, { text: t("common.alert.cancel") }],
             { cancelable: true }
         );
     }
@@ -43,7 +45,7 @@ export default function ViewAppointment({ route, navigation }: Props) {
             switch (response.status) {
                 case 204:
                     fetch();
-                    Alert.alert("", lang("ลบนัดหมายแล้ว", "Deleted successfully"));
+                    Alert.alert("", t("viewAppointment.alert.204"));
                     navigation.navigate("index");
                     break;
                 case 401:
@@ -114,7 +116,7 @@ export default function ViewAppointment({ route, navigation }: Props) {
                 />
             )}
             <CustomButton
-                title={lang("ลบนัดหมาย", "Delete")}
+                title={t("viewAppointment.delete")}
                 normalColor={isLoading ? darkGrey : "lightsalmon"}
                 onPress={showDeleteAlert}
                 pressedColor={darkGrey}

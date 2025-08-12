@@ -1,5 +1,5 @@
-import { useLanguage } from "@/hooks/useLanguage";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useTranslation } from "react-i18next";
 import { Text } from "react-native";
 import Animated, { withTiming, useAnimatedStyle, Easing, withSequence, withRepeat } from "react-native-reanimated";
 const config = {
@@ -8,7 +8,7 @@ const config = {
 };
 
 export default function SwipeHand({ from, to }: { from: number; to: number }) {
-    const { lang } = useLanguage();
+    const { t } = useTranslation();
     const style = useAnimatedStyle(() => {
         return {
             top: withRepeat(withSequence(withTiming(from, config), withTiming(to, config)), -1, true),
@@ -34,7 +34,7 @@ export default function SwipeHand({ from, to }: { from: number; to: number }) {
         >
             <MaterialCommunityIcons name="gesture-swipe-down" size={60} color="black" />
             <Text style={{ marginTop: 10, backgroundColor: "white", borderRadius: 40, padding: 10 }}>
-                {lang("ดึงลงเพื่อ refresh", "Swipe to Refresh")}
+                {t("swipeHand.pull")}
             </Text>
         </Animated.View>
     );

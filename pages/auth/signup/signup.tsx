@@ -1,44 +1,47 @@
-import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, ScrollView, Alert } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TextInput,
+    KeyboardAvoidingView,
+    ScrollView,
+    Alert,
+    InputAccessoryView,
+    Button,
+    Platform,
+} from "react-native";
 import { useRef, useState } from "react";
 import CustomButton from "@/components/CustomButton";
-import { darkGrey } from "@/constants/Colors";
+import { color, darkGrey } from "@/constants/Colors";
 import { useLanguage } from "@/hooks/useLanguage";
-import { SignupData, useSignupContext } from "@/hooks/signupContext";
 import type { SignupStackParamList } from "./_stack";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError } from "axios";
-
-const fieldMap = {
-    hn: {
-        en: "HN",
-        th: "เลข HN",
-    },
-    firstName: {
-        en: "First Name",
-        th: "ชื่อจริง",
-    },
-    middleName: {
-        en: "Middle Name",
-        th: "ชื่อกลาง",
-    },
-    lastName: {
-        en: "Last Name",
-        th: "นามสกุล",
-    },
-    phone: {
-        en: "Phone Number",
-        th: "เบอร์โทรศัพท์",
-    },
-    email: {
-        en: "Email",
-        th: "อีเมล",
-    },
+import { useTranslation } from "react-i18next";
+export type SignupData = {
+    hn: string;
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    phone: string;
+    email: string;
+    pin: string;
 };
-type Props = NativeStackScreenProps<SignupStackParamList, "index">;
+type Props = NativeStackScreenProps<SignupStackParamList, "signup">;
 export default function Signup({ navigation }: Props) {
-    const { signupData, setSignupData } = useSignupContext();
-    const { lang, currentLang } = useLanguage();
+    const [signupData, setSignupData] = useState<SignupData>({
+        hn: "",
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        pin: "",
+    });
+    const [confirmPin, setConfirmPin] = useState("");
+    const { currentLang } = useLanguage();
+    const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
 
     const firstName_ref = useRef<TextInput>(null);
@@ -46,9 +49,11 @@ export default function Signup({ navigation }: Props) {
     const lastName_ref = useRef<TextInput>(null);
     const phone_ref = useRef<TextInput>(null);
     const email_ref = useRef<TextInput>(null);
+    const pin_ref = useRef<TextInput>(null);
+    const cf_pin_ref = useRef<TextInput>(null);
 
     function validateFields(): keyof SignupData | null {
-        const EXCEPTIONFIELDS = ["middleName"];
+        const EXCEPTIONFIELDS = ["middleName", "email"];
         let key: keyof SignupData;
         for (key in signupData) {
             signupData[key] = signupData[key].trim(); // trim all inputs
@@ -60,21 +65,22 @@ export default function Signup({ navigation }: Props) {
 
     const { apiNoAuth } = useApiContext();
     async function handleSignup() {
-        console.log(signupData);
         // validate field
         const emptyField = validateFields();
         if (emptyField) {
-            Alert.alert(
-                lang("เกิดข้อผิดพลาด", "Error"),
-                lang(
-                    `ขาดข้อมูล : ${fieldMap[emptyField][currentLang]}`,
-                    `missing : ${fieldMap[emptyField][currentLang]}`
-                )
-            );
+            Alert.alert(t("common.alert.error"), t("signup.missing") + ": " + t(`signup.${emptyField}`));
             return;
         }
-        if (!signupData.email.includes("@")) {
-            Alert.alert(lang("เกิดข้อผิดพลาด", "Error"), lang("อีเมลไม่ถูกต้อง", "Invalid email address"));
+        if (signupData.email && !signupData.email.includes("@")) {
+            Alert.alert(t("common.alert.error"), t("signup.alert.invalid_email"));
+            return;
+        }
+        if (signupData.pin.length < 6 || confirmPin.length < 6) {
+            Alert.alert(t("common.alert.error"), t("signup.alert.require_digit_pin"));
+            return;
+        }
+        if (signupData.pin !== confirmPin) {
+            Alert.alert(t("common.alert.error"), t("signup.alert.pin_mismatched"));
             return;
         }
         // check signup data in server
@@ -83,27 +89,17 @@ export default function Signup({ navigation }: Props) {
             const response = await apiNoAuth.post("/auth/signup", signupData, { timeout: 5000 });
             switch (response.status) {
                 case 200:
-                    Alert.alert(lang("ลงทะเบียนเสร็จสิ้น!", "Registration completed!"));
+                    Alert.alert(t("signup.alert.200"));
                     navigation.navigate("login", {
                         hn: signupData.hn,
-                        firstName: signupData.firstName,
-                        lastName: signupData.lastName,
+                        pin: "",
                     });
                     break;
                 case 401:
-                    Alert.alert(
-                        lang("เกิดข้อผิดพลาด", "Error"),
-                        lang(
-                            "ข้อมูลไม่ถูกต้อง (ชื่อ หรือ ชื่อกลาง หรือ นามสกุล)",
-                            "Invalid credentials (first name or middle name or last name)"
-                        )
-                    );
+                    Alert.alert(t("common.alert.error"), t("signup.alert.401"));
                     break;
                 case 409:
-                    Alert.alert(
-                        lang("เกิดข้อผิดพลาด", "Error"),
-                        lang("บัญชีนี้ได้ลงทะเบียนแล้ว", "The account with this HN has already been verified")
-                    );
+                    Alert.alert(t("common.alert.error"), t("signup.alert.409"));
                     break;
                 default:
                     Alert.alert("Something went wrong...", JSON.stringify(response));
@@ -111,10 +107,7 @@ export default function Signup({ navigation }: Props) {
         } catch (err) {
             if (err instanceof AxiosError) {
                 if (err.status === 404)
-                    Alert.alert(
-                        lang("เกิดข้อผิดพลาด", "Error"),
-                        lang(`ไม่มีบัญชีที่มีรหัส HN : ${signupData.hn}`, `No account with HN: ${signupData.hn}`)
-                    );
+                    Alert.alert(t("common.alert.error"), t("signup.alert.404", { hn: signupData.hn }));
                 else Alert.alert("Request Error", `${err.message ?? ""} ${JSON.stringify(err.response)}`);
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
@@ -125,7 +118,7 @@ export default function Signup({ navigation }: Props) {
     }
     return (
         <KeyboardAvoidingView style={{ backgroundColor: "white", flex: 1 }} behavior="padding">
-            <ScrollView contentContainerStyle={style.formContainer}>
+            <ScrollView contentContainerStyle={style.formContainer} keyboardShouldPersistTaps="handled">
                 <View style={style.inputContainer}>
                     <Text style={style.label}>
                         HN
@@ -138,13 +131,13 @@ export default function Signup({ navigation }: Props) {
                         onChangeText={(text) => setSignupData({ ...signupData, hn: text })}
                         onSubmitEditing={() => firstName_ref.current?.focus()}
                         submitBehavior="submit"
-                        // keyboardType="number-pad"
+                        returnKeyType="next"
                         editable={!isLoading}
                     />
                 </View>
                 <View style={style.inputContainer}>
                     <Text style={style.label}>
-                        {lang("ชื่อจริง", "First Name (in Thai)")}
+                        {t("signup.firstName")}
                         <Asterisk />
                     </Text>
                     <TextInput
@@ -155,11 +148,12 @@ export default function Signup({ navigation }: Props) {
                         onChangeText={(text) => setSignupData({ ...signupData, firstName: text })}
                         onSubmitEditing={() => middleName_ref.current?.focus()}
                         submitBehavior="submit"
+                        returnKeyType="next"
                         editable={!isLoading}
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>{lang("ชื่อกลาง", "Middle Name (in Thai)")}</Text>
+                    <Text style={style.label}>{t("signup.middleName")}</Text>
                     <TextInput
                         ref={middleName_ref}
                         style={style.input}
@@ -168,12 +162,13 @@ export default function Signup({ navigation }: Props) {
                         onChangeText={(text) => setSignupData({ ...signupData, middleName: text })}
                         onSubmitEditing={() => lastName_ref.current?.focus()}
                         submitBehavior="submit"
+                        returnKeyType="next"
                         editable={!isLoading}
                     />
                 </View>
                 <View style={style.inputContainer}>
                     <Text style={style.label}>
-                        {lang("นามสกุล", "Last Name (in Thai)")}
+                        {t("signup.lastName")}
                         <Asterisk />
                     </Text>
                     <TextInput
@@ -184,15 +179,17 @@ export default function Signup({ navigation }: Props) {
                         onChangeText={(text) => setSignupData({ ...signupData, lastName: text })}
                         onSubmitEditing={() => phone_ref.current?.focus()}
                         submitBehavior="submit"
+                        returnKeyType="next"
                         editable={!isLoading}
                     />
                 </View>
                 <View style={style.inputContainer}>
                     <Text style={style.label}>
-                        {lang("เบอร์โทรศัพท์", "Phone Number")}
+                        {t("signup.phone")}
                         <Asterisk />
                     </Text>
                     <TextInput
+                        inputAccessoryViewID="phone"
                         ref={phone_ref}
                         style={style.input}
                         placeholderTextColor={placeholderColor}
@@ -201,29 +198,79 @@ export default function Signup({ navigation }: Props) {
                         onSubmitEditing={() => email_ref.current?.focus()}
                         submitBehavior="submit"
                         keyboardType="number-pad"
+                        returnKeyType="next"
                         editable={!isLoading}
                     />
+                    {Platform.OS === "ios" && (
+                        <InputAccessoryView nativeID="phone" backgroundColor="whitesmoke">
+                            <Button onPress={() => email_ref.current?.focus()} title="Next" />
+                        </InputAccessoryView>
+                    )}
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>
-                        {lang("อีเมล", "Email")}
-                        <Asterisk />
-                    </Text>
+                    <Text style={style.label}>{t("signup.email")}</Text>
                     <TextInput
                         ref={email_ref}
                         style={style.input}
                         value={signupData.email}
                         onChangeText={(text) => setSignupData({ ...signupData, email: text })}
+                        onSubmitEditing={() => pin_ref.current?.focus()}
                         keyboardType="email-address"
                         placeholderTextColor={placeholderColor}
+                        returnKeyType="next"
+                        editable={!isLoading}
+                    />
+                </View>
+                <View style={style.inputContainer}>
+                    <Text style={style.label}>
+                        {t("signup.pin")}
+                        <Asterisk />
+                    </Text>
+                    <TextInput
+                        ref={pin_ref}
+                        inputAccessoryViewID="pin"
+                        maxLength={6}
+                        style={style.input}
+                        placeholderTextColor={placeholderColor}
+                        value={signupData.pin}
+                        onChangeText={(text) => setSignupData({ ...signupData, pin: text })}
+                        onSubmitEditing={() => cf_pin_ref.current?.focus()}
+                        submitBehavior="submit"
+                        keyboardType="number-pad"
+                        returnKeyType="next"
+                        secureTextEntry
+                        editable={!isLoading}
+                    />
+                    {Platform.OS === "ios" && (
+                        <InputAccessoryView nativeID="pin" backgroundColor="whitesmoke">
+                            <Button onPress={() => cf_pin_ref.current?.focus()} title="Next" />
+                        </InputAccessoryView>
+                    )}
+                </View>
+                <View style={style.inputContainer}>
+                    <Text style={style.label}>
+                        {t("signup.confirm_pin")}
+                        <Asterisk />
+                    </Text>
+                    <TextInput
+                        ref={cf_pin_ref}
+                        maxLength={6}
+                        style={style.input}
+                        placeholderTextColor={placeholderColor}
+                        value={confirmPin}
+                        onChangeText={(text) => setConfirmPin(text)}
+                        submitBehavior="blurAndSubmit"
+                        keyboardType="number-pad"
+                        returnKeyType="done"
+                        secureTextEntry
                         editable={!isLoading}
                     />
                 </View>
                 <CustomButton
-                    title={lang("ลงทะเบียน", "Sign up")}
-                    normalColor="#78ffe6"
+                    title={t("signup.signup")}
+                    normalColor={color.tint}
                     pressedColor={darkGrey}
-                    style={{ height: 60, borderRadius: 10, marginTop: 50 }}
+                    style={{ height: 60, borderRadius: 10, marginTop: 10 }}
                     onPress={handleSignup}
                     showLoading={isLoading}
                 />
@@ -239,6 +286,7 @@ const style = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "white",
         paddingTop: 50,
+        paddingBottom: 50,
     },
     inputContainer: {
         width: 350,
