@@ -47,6 +47,13 @@ const style = StyleSheet.create({
         overflow: "hidden",
         display: "flex",
         filter: "drop-shadow(2px 4px 3px rgba(0,0,0,0.1))",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
     },
     content: {
         padding: 25,

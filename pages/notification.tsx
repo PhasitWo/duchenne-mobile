@@ -101,12 +101,13 @@ export default function Notification() {
         return ({ device }: { device: ApiDeviceModel }) => {
             return (
                 <View style={style.itemContainer}>
-                    <FontAwesome style={{ flex: 1, textAlign: "right" }} name="circle" size={12} color="green" />
-                    <Text style={{ flex: 11, textAlign: "left", paddingLeft: 20 }}>
+                    <Text style={{ flex: 1, textAlign: "center" }}>
+                        <FontAwesome name="circle" size={12} color="green" />
+                        {"  "}
                         {device.deviceName}
                         {device.id === deviceId && "(Your device)"}
                     </Text>
-                    <Text style={{ flex: 9, textAlign: "left" }}>
+                    <Text style={{ flex: 1, textAlign: "center" }}>
                         {dayjs(device.loginAt * 1000).format("D/MM/YYYY HH:mm ")}
                     </Text>
                 </View>
@@ -121,8 +122,8 @@ export default function Notification() {
     return (
         <View style={style.container}>
             <View style={style.itemContainer}>
-                <Text style={{ flex: 8, textAlign: "center" }}>{t("notification.device_name")}</Text>
-                <Text style={{ flex: 12, textAlign: "center" }}>{t("notification.login_at")}</Text>
+                <Text style={{ flex: 1, textAlign: "center" }}>{t("notification.device_name")}</Text>
+                <Text style={{ flex: 1, textAlign: "center" }}>{t("notification.login_at")}</Text>
             </View>
             <View>
                 <FlatList
@@ -166,5 +167,6 @@ const style = StyleSheet.create({
         alignItems: "center",
         paddingLeft: 10,
         flexDirection: "row",
+        width: "100%",
     },
 });
