@@ -16,11 +16,12 @@
     },
     "login": {
         "title": "Login",
-        "password": "Pin Code",
+        "password": "6-digit Pin Code",
         "forgot": "Forgot Password?",
         "no_account": "Don't have an account?",
         "signup": "Sign Up",
         "login": "Log in",
+        "lock": "Try again in {{second}} seconds",
         "warn_require_field": "This field is required",
         "alert": {
             "require_noti_perm": "Require notification permission",
