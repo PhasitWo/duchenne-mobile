@@ -1,4 +1,4 @@
-import { View, ScrollView, Alert, RefreshControl } from "react-native";
+import { View, ScrollView, Alert, RefreshControl, Text } from "react-native";
 import Card from "@/components/Card";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useApiContext } from "@/hooks/apiContext";
@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 
 type props = NativeStackScreenProps<ContentStackParamList, "index">;
 export default function Content({ navigation }: props) {
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
     const [contents, setContents] = useState<ApiContentModel[]>([]);
@@ -74,6 +74,7 @@ export default function Content({ navigation }: props) {
                 showsVerticalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetch} />}
             >
+                {contents.length === 0 && <Text style={{ marginTop: 10 }}>{t("common.no_data")}</Text>}
                 {contents.map((v, k) => (
                     <Card
                         key={k}

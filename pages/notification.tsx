@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 export default function Notification() {
     const [data, setData] = useState<ApiDeviceModel[]>([]);
     const [deviceId, setDeviceId] = useState(-1);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const { logoutDispatch, authState } = useAuthContext();
     const { api } = useApiContext();
     const { currentLang } = useLanguage();
@@ -27,8 +27,8 @@ export default function Notification() {
     const { loginDispatch } = useAuthContext();
     const { setShowAppointmentTutorial, setShowAskTutorial } = useTutorial();
     const fetch = async () => {
+        setIsLoading(true);
         try {
-            setIsLoading(true);
             const response = await api.get<any, AxiosResponse<ApiDeviceModel[], any>, any>("/api/device");
             switch (response.status) {
                 case 200:

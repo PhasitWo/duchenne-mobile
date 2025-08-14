@@ -53,10 +53,11 @@ export default function Profile() {
     }, [currentLang, userInfo]);
 
     // fetch
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
     const fetch = async () => {
+        setIsLoading(true);
         try {
             const response = await api.get<any, AxiosResponse<ApiPatientModel, any>, any>("/api/profile");
             switch (response.status) {

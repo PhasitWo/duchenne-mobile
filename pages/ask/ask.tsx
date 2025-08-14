@@ -18,7 +18,7 @@ export default function Ask({ navigation }: props) {
     const [topicList, setTopicList] = useState<QuestionTopic[]>([]);
     const { currentLang } = useLanguage();
     const { t } = useTranslation();
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
     const scrollViewRef = useRef<ScrollView>(null);
@@ -68,7 +68,7 @@ export default function Ask({ navigation }: props) {
     return (
         <View style={style.container}>
             <Tutorial from={50} to={350} />
-            {topicList.length == 0 && <Text style={{ marginTop: 10 }}>{t("common.no_data")}</Text>}
+            {topicList.length === 0 && <Text style={{ marginTop: 10 }}>{t("common.no_data")}</Text>}
             <ScrollView
                 ref={scrollViewRef}
                 contentContainerStyle={{ alignItems: "center", paddingBottom: 20 }}

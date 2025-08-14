@@ -13,10 +13,11 @@ export default function Vaccine() {
     const { t } = useTranslation();
 
     // fetch
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
     const fetch = async () => {
+        setIsLoading(true);
         try {
             const response = await api.get<any, AxiosResponse<ApiPatientModel, any>, any>("/api/profile");
             switch (response.status) {
@@ -48,7 +49,9 @@ export default function Vaccine() {
 
     return (
         <View>
-            {data?.length === 0 && <Text style={{ marginTop: 10, alignSelf: "center" }}>{t("common.no_data")}</Text>}
+            {(data === null || data?.length === 0) && (
+                <Text style={{ marginTop: 10, alignSelf: "center" }}>{t("common.no_data")}</Text>
+            )}
             <FlatList
                 contentContainerStyle={{ alignItems: "center" }}
                 data={data}

@@ -26,7 +26,7 @@ export function useAppointmentContext() {
 }
 export function AppointmentProvider({ children }: PropsWithChildren) {
     const [apmntList, setApmtList] = useState<appointment[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const { t } = useTranslation();
 
     const { api } = useApiContext();

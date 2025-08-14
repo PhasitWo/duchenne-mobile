@@ -31,7 +31,7 @@ export default function Signup3({ navigation }: Props) {
     const cf_pin_ref = useRef<TextInput>(null);
     const { apiNoAuth } = useApiContext();
 
-    async function handleNext() {
+    async function handleSubmit() {
         // validate field
         const emptyField = validateFields(["pin"]);
         if (emptyField) {
@@ -134,7 +134,8 @@ export default function Signup3({ navigation }: Props) {
                     normalColor={color.tint}
                     pressedColor={darkGrey}
                     style={{ height: 60, borderRadius: 10, marginTop: 10 }}
-                    onPress={handleNext}
+                    onPress={handleSubmit}
+                    showLoading={isLoading}
                 />
             </ScrollView>
         </KeyboardAvoidingView>
