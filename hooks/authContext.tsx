@@ -1,23 +1,30 @@
 import { useContext, createContext, useEffect, type PropsWithChildren, useReducer, useMemo } from "react";
-import { AuthActionEnum, AuthState } from "./authReducer";
-import authReducer from "./authReducer";
+import authReducer, { AuthActionEnum, AuthState } from "./authReducer";
 import * as SecureStore from "expo-secure-store";
 import { SecureStoreKey } from "@/constants/SecureStorageKey";
 import useTutorial from "./useTutorial";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AsyncStorageKey } from "@/constants/AsyncStorageKey";
 
-type LoginDispatch = (userToken: string) => Promise<void>;
+type LoginDispatch = (userToken: string, hn?: string) => Promise<void>;
 type LogoutDispatch = () => void;
+type GetLastLoginHN = () => Promise<string>;
 
 const initialState: AuthState = {
     isLoading: true,
-    isSignin: false,
     userToken: null,
 };
 
-const AuthContext = createContext<{ authState: AuthState; loginDispatch: LoginDispatch; logoutDispatch: LogoutDispatch }>({
-    authState: { isLoading: true, isSignin: false, userToken: null },
-    loginDispatch: async (data) => {},
+const AuthContext = createContext<{
+    authState: AuthState;
+    loginDispatch: LoginDispatch;
+    logoutDispatch: LogoutDispatch;
+    getLastLoginHN: GetLastLoginHN;
+}>({
+    authState: { isLoading: true, userToken: null },
+    loginDispatch: async () => {},
     logoutDispatch: () => null,
+    getLastLoginHN: async () => "",
 });
 
 export function useAuthContext() {
@@ -26,10 +33,15 @@ export function useAuthContext() {
 }
 export function AuthProvider({ children }: PropsWithChildren) {
     const [authState, dispatch] = useReducer(authReducer, initialState);
-    const {setShowAppointmentTutorial, setShowAskTutorial} = useTutorial()
-    const { loginDispatch, logoutDispatch } = useMemo<{ loginDispatch: LoginDispatch; logoutDispatch: LogoutDispatch }>(
+    const { setShowAppointmentTutorial, setShowAskTutorial } = useTutorial();
+    const { loginDispatch, logoutDispatch, getLastLoginHN } = useMemo<{
+        loginDispatch: LoginDispatch;
+        logoutDispatch: LogoutDispatch;
+        getLastLoginHN: GetLastLoginHN;
+    }>(
         () => ({
-            loginDispatch: async (userToken) => {
+            loginDispatch: async (userToken, hn) => {
+                if (hn) await AsyncStorage.setItem(AsyncStorageKey.lastLoginHN, hn);
                 await SecureStore.setItemAsync(SecureStoreKey.USER_TOKEN, userToken);
                 setShowAppointmentTutorial(true);
                 setShowAskTutorial(true);
@@ -39,24 +51,40 @@ export function AuthProvider({ children }: PropsWithChildren) {
                 await SecureStore.deleteItemAsync(SecureStoreKey.USER_TOKEN);
                 dispatch({ type: AuthActionEnum.LOGOUT });
             },
+            getLastLoginHN: async () => {
+                const hn = await AsyncStorage.getItem(AsyncStorageKey.lastLoginHN);
+                await AsyncStorage.removeItem(AsyncStorageKey.lastLoginHN);
+                return hn ?? "";
+            },
         }),
         []
     );
 
     const restoreToken = async () => {
-        console.log("start restoring token");
-        const result = await SecureStore.getItemAsync(SecureStoreKey.USER_TOKEN);
-        console.log("restore => " + result);
-        dispatch({ type: AuthActionEnum.RESTORE, userToken: result });
-        console.log("restoring end");
-        console.log(process.env.EXPO_PUBLIC_API_URL);
+        let result = null;
+        try {
+            console.log("start restoring token");
+            result = await SecureStore.getItemAsync(SecureStoreKey.USER_TOKEN);
+            console.log("restore => " + result);
+        } catch (err) {
+            alert(`Error restoring token: ${err}`);
+        } finally {
+            dispatch({ type: AuthActionEnum.RESTORE, userToken: result });
+        }
     };
     useEffect(() => {
         restoreToken();
     }, []);
 
     return (
-        <AuthContext.Provider value={{ authState: authState, loginDispatch: loginDispatch, logoutDispatch: logoutDispatch }}>
+        <AuthContext.Provider
+            value={{
+                authState: authState,
+                loginDispatch: loginDispatch,
+                logoutDispatch: logoutDispatch,
+                getLastLoginHN: getLastLoginHN,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );

@@ -2,16 +2,34 @@ import { View, Text, StyleSheet } from "react-native";
 import HeaderRight from "@/components/HeaderRight";
 import HeaderLeft from "../HeaderLeft";
 import { StatusBar } from "expo-status-bar";
-const headerHeight = 100;
-type props = { title?: string, navigation: any, options: any, showBackButton? : boolean, showNotification? : boolean ,route:any };
+import ChangeLangText from "../ChangeLangText";
 
-export default function Header({ navigation, options, route, showBackButton = true, showNotification = true }: props) {
+const headerHeight = 100;
+type props = {
+    title?: string;
+    navigation: any;
+    options: any;
+    showBackButton?: boolean;
+    showNotification?: boolean;
+    showLangSwitch?: boolean;
+    route: any;
+};
+
+export default function Header({
+    navigation,
+    options,
+    route,
+    showBackButton = true,
+    showNotification = true,
+    showLangSwitch = false,
+}: props) {
     return (
         <View style={style.container}>
-            <StatusBar backgroundColor="#ffffff" translucent={true} style="dark"/>
+            <StatusBar translucent={true} style="dark" />
             <Text style={style.title}>{options.title ?? route.name}</Text>
             {showNotification && <HeaderRight style={style.headerRight} />}
             {showBackButton && <HeaderLeft navigation={navigation} style={style.headerLeft} />}
+            {showLangSwitch && <ChangeLangText style={[style.headerRight, { marginRight: 20 }]} />}
         </View>
     );
 }

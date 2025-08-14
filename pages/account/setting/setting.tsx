@@ -1,14 +1,15 @@
-import { Text, View, FlatList, StyleSheet, Dimensions, Pressable } from "react-native";
+import { Text, View, FlatList, StyleSheet, Pressable } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { darkGrey } from "@/constants/Colors";
 import { type ReactElement } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
-type Setting = { title: string; icon: ReactElement; href: string | undefined };
+type SettingItem = { title: string; icon: ReactElement; href: string | undefined };
 
-const Item = ({ setting }: { setting: Setting }) => {
+const Item = ({ setting }: { setting: SettingItem }) => {
     const navigation = useNavigation();
     return (
         <Pressable
@@ -24,27 +25,27 @@ const Item = ({ setting }: { setting: Setting }) => {
 };
 
 export default function Setting() {
-    const { lang, currentLang } = useLanguage();
-    const data = useMemo<Setting[]>(() => {
+    const { currentLang } = useLanguage();
+    const { t } = useTranslation();
+    const data = useMemo<SettingItem[]>(() => {
         return [
             {
-                title: lang("เลือกภาษา", "Select Language"),
+                title: t("setting.menu.language"),
                 href: "language",
                 icon: <MaterialIcons name="language" size={24} color="black" />,
             },
         ];
     }, [currentLang]);
     return (
-        <View
-            style={{
-                flex: 1,
-            }}
-        >
-            <FlatList data={data} renderItem={({ item }) => <Item setting={item} />} showsVerticalScrollIndicator={false} />
+        <View>
+            <FlatList
+                data={data}
+                renderItem={({ item }) => <Item setting={item} />}
+                showsVerticalScrollIndicator={false}
+            />
         </View>
     );
 }
-const screenHeight = Dimensions.get("screen").height;
 const style = StyleSheet.create({
     itemContainer: {
         height: 75,

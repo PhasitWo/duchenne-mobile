@@ -1,29 +1,23 @@
-import { View, Text, Pressable, StyleSheet, Dimensions } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import { useCallback, useEffect, useState } from "react";
+import { View, Text, Pressable, StyleSheet, Alert, Platform } from "react-native";
+import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import { useCallback, useState } from "react";
 import dayjs from "dayjs";
-import { darkGrey, tint, darkTint } from "@/constants/Colors";
+import { darkGrey, tint, darkTint, color } from "@/constants/Colors";
 import CustomButton from "@/components/CustomButton";
 import { Dropdown } from "react-native-element-dropdown";
-import { Alert } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthContext } from "@/hooks/authContext";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiDoctorModel } from "@/model/model";
 import LoadingView from "@/components/LoadingView";
+import { useTranslation } from "react-i18next";
 
 type mode = "date" | "time";
 type DropdownList = {
     label: string;
     value: string;
 };
-const mockup = [
-    { label: "Dr.Earth Bindai", value: "Dr.Earth Bindai" },
-    { label: "Dr.Ploy Jinjai", value: "Dr.Ploy Jinjai" },
-];
 
 export default function AddAppointment() {
     const [date, setDate] = useState<Date>(dayjs().toDate());
@@ -33,9 +27,9 @@ export default function AddAppointment() {
     const [selected, setSelected] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const navigation = useNavigation();
-    const { lang } = useLanguage();
     const { logoutDispatch } = useAuthContext();
     const { api } = useApiContext();
+    const { t } = useTranslation();
     // fetch doctor data
     async function fetchDoctor() {
         setIsLoading(true);
@@ -45,13 +39,13 @@ export default function AddAppointment() {
                 case 200:
                     setDoctorList(
                         response.data.map((v) => ({
-                            label: `${v.firstName} ${v.middleName ?? ""} ${v.lastName}`,
+                            label: `${v.firstName} ${v.middleName ?? ""} ${v.lastName} ${v.specialist !== null ? `(${v.specialist})` : ""}`,
                             value: `${v.id}`,
                         }))
                     );
                     break;
                 case 401:
-                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    Alert.alert(t("common.alert.error"), t("common.alert.401"));
                     logoutDispatch();
                     break;
                 default:
@@ -82,27 +76,24 @@ export default function AddAppointment() {
     function showSaveAlert() {
         // validate input
         if (selected === "") {
-            Alert.alert(lang("เกิดข้อผิดพลาด", "Error"), lang("กรุณาเลือกคุณหมอ", "Please select a doctor from the list"));
+            Alert.alert(t("common.alert.error"), t("addAppointment.alert.select_doctor"));
             return;
         }
         // validate that selected time is after today date and time
         if (dayjs(date).isBefore(dayjs())) {
-            Alert.alert(
-                lang("เวลาไม่ถูกต้อง", "Invalid Time or Date"),
-                lang("กรุณาเลือกเวลาในอนาคต", "Please select a future time")
-            );
+            Alert.alert(t("addAppointment.alert.invalid_date"), t("addAppointment.alert.select_future"));
             return;
         }
         Alert.alert(
-            lang("ตรวจสอบข้อมูล", "Please, verify these information"),
+            t("addAppointment.alert.verify"),
             `${doctorList.find((v) => v.value == selected)?.label}\n${date.toLocaleString()}`,
             [
                 {
-                    text: lang("ยืนยัน", "Confirm"),
+                    text: t("common.alert.confirm"),
                     onPress: handleSave,
                 },
                 {
-                    text: lang("ยกเลิก", "Cancel"),
+                    text: t("common.alert.cancel"),
                 },
             ]
         );
@@ -111,21 +102,21 @@ export default function AddAppointment() {
     async function handleSave() {
         try {
             setIsLoading(true);
-            const response = await api.post("/api/appointment", { date: dayjs(date).unix(), doctorId: parseInt(selected) });
+            const response = await api.post("/api/appointment", {
+                date: dayjs(date).unix(),
+                doctorId: parseInt(selected),
+            });
             switch (response.status) {
                 case 201:
-                    Alert.alert(lang("บันทึกนัดหมายสำเร็จแล้ว", "The appointment has been scheduled"), undefined);
+                    Alert.alert(t("addAppointment.alert.201"), t("addAppointment.alert.201_body"));
                     navigation.navigate("appointment" as never);
                     break;
                 case 401:
-                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    Alert.alert(t("common.alert.error"), t("common.alert.401"));
                     logoutDispatch();
                     break;
                 case 422:
-                    Alert.alert(
-                        lang("เวลาไม่ถูกต้อง", "Invalid Time or Date"),
-                        lang("กรุณาเลือกเวลาในอนาคต", "Please select a future time")
-                    );
+                    Alert.alert(t("addAppointment.alert.invalid_date"), t("addAppointment.alert.select_future"));
                     break;
                 default:
                     Alert.alert("Something went wrong...", JSON.stringify(response));
@@ -141,7 +132,7 @@ export default function AddAppointment() {
         }
     }
 
-    const onChange = (event: DateTimePickerEvent, selectedDate: Date | undefined) => {
+    const onChange = (_: DateTimePickerEvent, selectedDate: Date | undefined) => {
         const currentDate = selectedDate;
         if (currentDate) {
             setShow(false);
@@ -181,7 +172,7 @@ export default function AddAppointment() {
                 onChange={(item) => setSelected(item.value)}
                 value={selected}
                 search
-                placeholder={lang("เลือกคุณหมอ", "Select Doctor")}
+                placeholder={t("addAppointment.select_doctor")}
                 disable={isLoading}
             />
             <Pressable
@@ -203,29 +194,29 @@ export default function AddAppointment() {
                     testID="dateTimePicker"
                     value={date}
                     mode={mode}
+                    display={Platform.OS == "ios" ? "spinner" : "default"}
                     is24Hour={true}
                     onChange={onChange}
                     minimumDate={dayjs().toDate()}
+                    themeVariant="light"
                 />
             )}
-
             <CustomButton
-                title={lang("บันทึก", "Save")}
+                title={t("common.save")}
                 normalColor={tint}
                 pressedColor={darkTint}
                 onPress={showSaveAlert}
                 showLoading={isLoading}
             />
-            <Text>selected: {date.toLocaleString()}</Text>
         </View>
     );
 }
 
-const screenHeight = Dimensions.get("screen").height;
 const style = StyleSheet.create({
     container: {
         alignItems: "center",
         flex: 1,
+        backgroundColor: color.base,
     },
     dateTime: {
         width: "100%",

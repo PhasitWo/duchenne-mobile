@@ -1,13 +1,14 @@
-import { Text, View, FlatList, StyleSheet, Dimensions, Pressable, Alert } from "react-native";
+import { Text, View, FlatList, StyleSheet, Pressable, Alert } from "react-native";
 import { darkGrey } from "@/constants/Colors";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
 import type { ApiPatientModel } from "@/model/model";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { useAuthContext } from "@/hooks/authContext";
 import LoadingView from "@/components/LoadingView";
+import { useTranslation } from "react-i18next";
+import dayjs from "dayjs";
 
 type Info = { title: string; value: string | number | undefined; border?: boolean };
 
@@ -15,7 +16,10 @@ const Item = ({ info }: { info: Info }) => {
     return (
         <Pressable
             style={({ pressed }) => [
-                { backgroundColor: pressed ? darkGrey : "white", borderTopWidth: info.border ? 1 : 0 },
+                {
+                    backgroundColor: pressed ? darkGrey : "white",
+                    borderTopWidth: info.border ? 1 : 0,
+                },
                 style.itemContainer,
             ]}
         >
@@ -28,24 +32,32 @@ const Item = ({ info }: { info: Info }) => {
 };
 
 export default function Profile() {
-    const { lang, currentLang } = useLanguage();
+    const { currentLang } = useLanguage();
+    const { t } = useTranslation();
     const [userInfo, setUserInfo] = useState<ApiPatientModel>();
     const data = useMemo<Info[]>(() => {
         return [
-            { title: lang("ชื่อ", "First Name"), value: userInfo?.firstName },
-            { title: lang("ชื่อกลาง", "Middle Name"), value: userInfo?.middleName ?? "-" },
-            { title: lang("นามสกุล", "Last Name"), value: userInfo?.lastName },
-            { title: lang("รหัส HN", "HN Number"), value: userInfo?.hn },
-            { title: lang("อีเมล", "Email"), value: userInfo?.email },
-            { title: lang("เบอร์โทรศัพท์", "Phone Number"), value: userInfo?.phone },
+            { title: t("profile.firstName"), value: userInfo?.firstName },
+            { title: t("profile.middleName"), value: userInfo?.middleName ?? "-" },
+            { title: t("profile.lastName"), value: userInfo?.lastName },
+            { title: t("profile.hn"), value: userInfo?.hn },
+            { title: t("profile.phone"), value: userInfo?.phone ?? "-" },
+            { title: t("profile.email"), value: userInfo?.email ?? "-" },
+            {
+                title: t("profile.birthDate"),
+                value: userInfo ? dayjs(userInfo.birthDate * 1000).format("D MMMM YYYY") : "-",
+            },
+            { title: t("profile.weight"), value: userInfo?.weight ?? "-" },
+            { title: t("profile.height"), value: userInfo?.height ?? "-" },
         ];
     }, [currentLang, userInfo]);
 
     // fetch
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
     const fetch = async () => {
+        setIsLoading(true);
         try {
             const response = await api.get<any, AxiosResponse<ApiPatientModel, any>, any>("/api/profile");
             switch (response.status) {
@@ -53,7 +65,7 @@ export default function Profile() {
                     setUserInfo(response.data);
                     break;
                 case 401:
-                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    Alert.alert(t("common.alert.error"), t("common.alert.401"));
                     logoutDispatch();
                     break;
                 default:

@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet, Alert, Pressable } from "react-native";
-import { darkGrey } from "@/constants/Colors";
-import { useLanguage } from "@/hooks/useLanguage";
+import { color, darkGrey } from "@/constants/Colors";
 import { useState, useEffect } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { Dayjs } from "dayjs";
@@ -13,6 +12,7 @@ import { useAuthContext } from "@/hooks/authContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiQuestionModel } from "@/model/model";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useTranslation } from "react-i18next";
 
 type Question = {
     createAt: Dayjs | null;
@@ -28,7 +28,7 @@ type Answer = {
 
 type props = NativeStackScreenProps<AskStackParamList, "viewAsk">;
 export default function ViewAsk({ navigation, route }: props) {
-    const { lang, currentLang } = useLanguage();
+    const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [question, setQuestion] = useState<Question>({
         createAt: null,
@@ -42,9 +42,9 @@ export default function ViewAsk({ navigation, route }: props) {
 
     function showDeleteAlert() {
         Alert.alert(
-            lang("คุณแน่ใจหรือไม่", "Are you sure?"),
-            lang("คุณกำลังลบคำถามนี้", "You are deleting this question"),
-            [{ text: "Delete", onPress: handleDelete }, { text: "Cancel" }],
+            t("common.alert.sure"),
+            t("viewAsk.delete"),
+            [{ text: t("common.alert.delete"), onPress: handleDelete }, { text: t("common.alert.cancel") }],
             { cancelable: true }
         );
     }
@@ -55,11 +55,11 @@ export default function ViewAsk({ navigation, route }: props) {
             const response = await api.delete("/api/question/" + id);
             switch (response.status) {
                 case 204:
-                    Alert.alert("", lang("ลบคำถามแล้ว", "Deleted successfully"));
+                    Alert.alert("", t("viewAsk.alert.204"));
                     navigation.navigate("index");
                     break;
                 case 401:
-                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    Alert.alert(t("common.alert.error"), t("common.alert.401"));
                     logoutDispatch();
                     break;
                 default:
@@ -96,7 +96,7 @@ export default function ViewAsk({ navigation, route }: props) {
                         });
                     break;
                 case 401:
-                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    Alert.alert(t("common.alert.error"), t("common.alert.401"));
                     logoutDispatch();
                     break;
                 default:
@@ -123,7 +123,7 @@ export default function ViewAsk({ navigation, route }: props) {
         <View style={style.container}>
             <View style={style.questionContainer}>
                 <Text style={style.boldText}>{question.topic} </Text>
-                <Text style={style.date}>{question.createAt?.locale(currentLang).format("D MMMM YYYY  HH:mm")}</Text>
+                <Text style={style.date}>{question.createAt?.format("D MMMM YYYY  HH:mm")}</Text>
                 <Text style={style.body}>{question.question}</Text>
                 <Pressable style={style.bin} onPress={showDeleteAlert}>
                     <FontAwesome name="trash-o" size={20} color="red" style={{}} />
@@ -137,9 +137,7 @@ export default function ViewAsk({ navigation, route }: props) {
                         </View>
                         <View style={style.doctorNameContainer}>
                             <Text style={style.doctorName}>{answer.doctor}</Text>
-                            <Text style={style.date}>
-                                {answer.answerAt?.locale(currentLang).format("D MMMM YYYY  HH:mm")}
-                            </Text>
+                            <Text style={style.date}>{answer.answerAt?.format("D MMMM YYYY  HH:mm")}</Text>
                         </View>
                     </View>
                     <Text style={style.body}>{answer.answer}</Text>
@@ -155,6 +153,7 @@ const style = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: "center",
+        backgroundColor: color.base,
     },
     questionContainer: {
         width: "100%",

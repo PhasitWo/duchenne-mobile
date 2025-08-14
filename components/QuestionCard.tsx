@@ -1,14 +1,14 @@
 import { Text, StyleSheet, Pressable, PressableProps, View } from "react-native";
 import { darkGrey } from "@/constants/Colors";
 import dayjs from "dayjs";
-import { useLanguage } from "@/hooks/useLanguage";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useTranslation } from "react-i18next";
 
 export type QuestionTopic = { id: number; title: string; unixTime: number; hasReply: boolean };
 
 export default function QuestionCard({ questionTopic, ...rest }: { questionTopic: QuestionTopic } & PressableProps) {
-    const { lang } = useLanguage();
+    const { t } = useTranslation();
     return (
         <Pressable
             key={questionTopic.id}
@@ -26,22 +26,26 @@ export default function QuestionCard({ questionTopic, ...rest }: { questionTopic
                     <MaterialIcons name="pending" size={15} color="salmon" />
                 )}
             </View>
-            <Text>
-                {questionTopic.hasReply
-                    ? lang("คุณหมอตอบกลับแล้ว", "A doctor replied")
-                    : lang("ไม่มีการตอบกลับ", "No reply")}
-            </Text>
+            <Text>{questionTopic.hasReply ? t("questionCard.replied") : t("questionCard.no_reply")}</Text>
         </Pressable>
     );
 }
 
 const style = StyleSheet.create({
     container: {
-        borderRadius: 30,
-        width: 360,
+        borderRadius: 15,
+        width: 350,
         height: 120,
-        marginTop: 10,
+        marginTop: 20,
         padding: 25,
+        filter: "drop-shadow(0px 4px 3px rgba(0,0,0,0.1))",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
     },
     title: {
         fontWeight: "bold",

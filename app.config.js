@@ -1,5 +1,5 @@
 module.exports = {
-    name: "duchenne-mobile",
+    name: "DMD We Care",
     slug: "duchenne-mobile",
     version: "1.0.0",
     orientation: "portrait",
@@ -13,6 +13,10 @@ module.exports = {
     },
     ios: {
         supportsTablet: true,
+        bundleIdentifier: "com.care.duchennemobile",
+        config: {
+            usesNonExemptEncryption: false,
+        },
     },
     android: {
         adaptiveIcon: {
@@ -27,13 +31,27 @@ module.exports = {
             hidden: false,
         },
         googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? "./google-services.json",
+        edgeToEdgeEnabled: true,
     },
     web: {
         bundler: "metro",
         output: "static",
         favicon: "./assets/images/favicon.png",
     },
-    plugins: ["expo-router", "expo-secure-store", "expo-font"],
+    plugins: [
+        "expo-router",
+        "expo-secure-store",
+        "expo-font",
+        ["expo-notifications"],
+        [
+            "expo-splash-screen",
+            {
+                backgroundColor: "#ffffff",
+                image: "./assets/images/splash.png",
+                imageWidth: 200,
+            },
+        ],
+    ],
     experiments: {
         typedRoutes: true,
     },

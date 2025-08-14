@@ -1,38 +1,31 @@
 import { Text, View, ScrollView, StyleSheet, Pressable, RefreshControl } from "react-native";
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import Calendar from "@/components/Calendar";
 import AppointmentCard from "@/components/AppointmentCard";
-import { grey, darkGrey } from "@/constants/Colors";
+import { grey, darkGrey, color } from "@/constants/Colors";
 import dayjs from "dayjs";
 import { useAppointmentContext } from "@/hooks/appointmentContext";
 import { StackParamList } from "./_stack";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useLanguage } from "@/hooks/useLanguage";
 import { useFocusEffect } from "@react-navigation/native";
-import SwipeHand from "@/components/SwipeHand";
-import useTutorial from "@/hooks/useTutorial";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/hooks/useLanguage";
+import Tutorial from "@/components/Tutorial";
 
 type props = NativeStackScreenProps<StackParamList, "index">;
 
 export default function Appointment({ navigation }: props) {
     const [incomingSelected, setIncomingSelected] = useState(true);
-    const [showTutorial, setShowTutorial] = useState(false);
     const { apmntList, isLoading, fetch } = useAppointmentContext();
-    const { lang } = useLanguage();
+    const { currentLang } = useLanguage();
+    const { t } = useTranslation();
+    const scrollViewRef = useRef<ScrollView>(null);
     const now = dayjs();
-    // tutorial onmount
-    useEffect(() => {
-        const { getShowAppointmentTutorial, setShowAppointmentTutorial } = useTutorial();
-        getShowAppointmentTutorial().then((value) => setShowTutorial(value));
-        setTimeout(() => {
-            setShowTutorial(false)
-            setShowAppointmentTutorial(false)
-        }, 5200)
-    }, []);
     // fetch data on focus
     useFocusEffect(
         useCallback(() => {
             fetch();
+            scrollViewRef.current?.scrollTo({ y: 0, animated: false });
         }, [])
     );
     // compute calendar component data ,normalize to dayOfMonth:00:00:00
@@ -41,6 +34,7 @@ export default function Appointment({ navigation }: props) {
 
         const normalizedNow = dayjs().hour(0).minute(0).second(0);
         for (let apmt of apmntList) {
+            if (apmt.approveAt === null) continue;
             if (apmt.dateTime.isBefore(now)) continue;
             let diff = apmt.dateTime.hour(0).minute(0).second(0).diff(normalizedNow, "day", true);
             res.push(Math.ceil(diff));
@@ -58,15 +52,16 @@ export default function Appointment({ navigation }: props) {
                     onPress={() => incomingSelected && navigation.navigate("viewAppointment", { id: String(v.id) })}
                 />
             ));
-    }, [apmntList, incomingSelected, isLoading]);
+    }, [apmntList, incomingSelected, isLoading, currentLang]);
 
     return (
         <View
             style={{
                 alignItems: "center",
+                backgroundColor: color.base,
             }}
         >
-            {showTutorial && <SwipeHand from={250} to={500} />}
+            <Tutorial from={250} to={500} />
             <Calendar markedDateKey={markedDateKey} />
             <View style={style.headContainer}>
                 <Pressable
@@ -74,7 +69,7 @@ export default function Appointment({ navigation }: props) {
                     onPress={() => setIncomingSelected(true)}
                 >
                     <View>
-                        <Text>{lang("กำลังมาถึง", "Incoming")}</Text>
+                        <Text>{t("appointment.incoming")}</Text>
                     </View>
                 </Pressable>
                 <Pressable
@@ -82,18 +77,19 @@ export default function Appointment({ navigation }: props) {
                     onPress={() => setIncomingSelected(false)}
                 >
                     <View>
-                        <Text>{lang("ประวัติ", "History")}</Text>
+                        <Text>{t("appointment.history")}</Text>
                     </View>
                 </Pressable>
             </View>
             <View style={style.bodyBackground}>
                 <ScrollView
+                    ref={scrollViewRef}
                     style={style.bodyContainer}
                     contentContainerStyle={style.bodyContentContainer}
                     showsVerticalScrollIndicator={false}
                     refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetch} />}
                 >
-                    {display.length > 0 ? display : <Text>{lang("ไม่มีนัดหมาย", "No Appointment")}</Text>}
+                    {display.length > 0 ? display : <Text>{t("common.no_data")}</Text>}
                 </ScrollView>
             </View>
         </View>
@@ -110,6 +106,7 @@ const style = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "row",
+        filter: "drop-shadow(0px 4px 3px rgba(0,0,0,0.1))",
     },
     head: {
         width: "42%",
@@ -123,10 +120,11 @@ const style = StyleSheet.create({
         borderTopLeftRadius: 40,
         borderTopRightRadius: 40,
         width: "90%",
-        height: "68%",
+        height: "69%",
         backgroundColor: "white",
         padding: "3%",
         marginTop: 10,
+        filter: "drop-shadow(0px 4px 3px rgba(0,0,0,0.1))",
     },
     bodyContainer: {
         width: "100%",

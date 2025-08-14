@@ -1,4 +1,4 @@
-import { useContext, createContext, useEffect, type PropsWithChildren, useState } from "react";
+import { useContext, createContext, type PropsWithChildren, useState } from "react";
 import type { appointment } from "@/components/AppointmentCard";
 import { useApiContext } from "./apiContext";
 import { useAuthContext } from "./authContext";
@@ -6,9 +6,10 @@ import { AxiosError, AxiosResponse } from "axios";
 import { ApiAppointmentModel } from "@/model/model";
 import { Alert } from "react-native";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 const AppointmentContext = createContext<{
-    apmntList: Array<appointment>;
+    apmntList: appointment[];
     setApmtList: Function;
     isLoading: boolean;
     fetch: () => void;
@@ -25,7 +26,8 @@ export function useAppointmentContext() {
 }
 export function AppointmentProvider({ children }: PropsWithChildren) {
     const [apmntList, setApmtList] = useState<appointment[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const { t } = useTranslation();
 
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
@@ -40,12 +42,13 @@ export function AppointmentProvider({ children }: PropsWithChildren) {
                             id: v.id,
                             dateTime: dayjs(v.date * 1000),
                             doctor: `${v.doctor.firstName} ${v.doctor.middleName ?? ""} ${v.doctor.lastName}`,
-                            approveAt: v.approveAt
+                            specialist: v.doctor.specialist,
+                            approveAt: v.approveAt,
                         }))
                     );
                     break;
                 case 401:
-                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    Alert.alert(t("common.alert.error"), t("common.alert.401"));
                     logoutDispatch();
                     break;
                 default:
@@ -57,7 +60,7 @@ export function AppointmentProvider({ children }: PropsWithChildren) {
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
             }
-            setApmtList([])
+            setApmtList([]);
         } finally {
             setIsLoading(false);
         }
@@ -68,7 +71,12 @@ export function AppointmentProvider({ children }: PropsWithChildren) {
 
     return (
         <AppointmentContext.Provider
-            value={{ apmntList: apmntList, setApmtList: setApmtList, isLoading: isLoading, fetch: fetch }}
+            value={{
+                apmntList: apmntList,
+                setApmtList: setApmtList,
+                isLoading: isLoading,
+                fetch: fetch,
+            }}
         >
             {children}
         </AppointmentContext.Provider>

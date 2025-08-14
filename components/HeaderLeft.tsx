@@ -1,7 +1,7 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Pressable, ViewStyle } from "react-native";
 import { darkGrey } from "@/constants/Colors";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
+import { ParamListBase } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type props = { navigation: NativeStackNavigationProp<ParamListBase>; style: ViewStyle };

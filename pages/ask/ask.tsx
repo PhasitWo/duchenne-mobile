@@ -1,36 +1,35 @@
-import { View, Alert, StyleSheet, Pressable, Text, FlatList, RefreshControl } from "react-native";
+import { View, Alert, StyleSheet, Pressable, Text, RefreshControl, ScrollView } from "react-native";
 import QuestionCard, { QuestionTopic } from "@/components/QuestionCard";
 import { useLanguage } from "@/hooks/useLanguage";
-import { darkGrey } from "@/constants/Colors";
+import { color, darkGrey } from "@/constants/Colors";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AskStackParamList } from "./_stack";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { useAuthContext } from "@/hooks/authContext";
 import { ApiQuestionTopicModel } from "@/model/model";
 import { useFocusEffect } from "@react-navigation/native";
-import SwipeHand from "@/components/SwipeHand";
-import useTutorial from "@/hooks/useTutorial";
+import { useTranslation } from "react-i18next";
+import Tutorial from "@/components/Tutorial";
 
 type props = NativeStackScreenProps<AskStackParamList, "index">;
 export default function Ask({ navigation }: props) {
     const [topicList, setTopicList] = useState<QuestionTopic[]>([]);
-    const [showTutorial, setShowTutorial] = useState(false)
-    const { lang, currentLang } = useLanguage();
-    const [isLoading, setIsLoading] = useState(true);
+    const { currentLang } = useLanguage();
+    const { t } = useTranslation();
+    const [isLoading, setIsLoading] = useState(false);
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
+    const scrollViewRef = useRef<ScrollView>(null);
 
-    // tutorial onmount
-    useEffect(() => {
-        const { getShowAskTutorial, setShowAskTutorial } = useTutorial();
-        getShowAskTutorial().then((value) => setShowTutorial(value));
-        setTimeout(() => {
-            setShowTutorial(false);
-            setShowAskTutorial(false);
-        }, 5200);
-    }, []);
+    // fetch data on focus
+    useFocusEffect(
+        useCallback(() => {
+            fetch();
+            scrollViewRef.current?.scrollTo({ y: 0, animated: false });
+        }, [currentLang])
+    );
 
     const fetch = async () => {
         setIsLoading(true);
@@ -48,7 +47,7 @@ export default function Ask({ navigation }: props) {
                     );
                     break;
                 case 401:
-                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    Alert.alert(t("common.alert.error"), t("common.alert.401"));
                     logoutDispatch();
                     break;
                 default:
@@ -60,47 +59,46 @@ export default function Ask({ navigation }: props) {
             } else {
                 Alert.alert("Fatal Error", `${err as Error}`);
             }
-            setTopicList([])
+            setTopicList([]);
         } finally {
             setIsLoading(false);
         }
     };
 
-    // fetch data on focus
-    useFocusEffect(
-        useCallback(() => {
-            fetch();
-        }, [currentLang])
-    );
-
     return (
         <View style={style.container}>
-            {showTutorial && <SwipeHand from={50} to={350} />}
-            {topicList.length == 0 && <Text style={{ marginTop: 10 }}>{lang("ไม่มีคำถาม", "No Question")}</Text>}
-            <FlatList
-                contentContainerStyle={{ paddingBottom: 150 }}
-                data={topicList}
-                renderItem={({ item }) => (
-                    <QuestionCard
-                        questionTopic={item}
-                        onPress={() => navigation.navigate("viewAsk", { id: item.id as number })}
-                    />
-                )}
+            <Tutorial from={50} to={350} />
+            {topicList.length === 0 && <Text style={{ marginTop: 10 }}>{t("common.no_data")}</Text>}
+            <ScrollView
+                ref={scrollViewRef}
+                contentContainerStyle={{ alignItems: "center", paddingBottom: 20 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetch} />}
-            />
+            >
+                {topicList.map((v, k) => (
+                    <QuestionCard
+                        key={k}
+                        questionTopic={v}
+                        onPress={() =>
+                            navigation.navigate("viewAsk", {
+                                id: v.id as number,
+                            })
+                        }
+                    />
+                ))}
+            </ScrollView>
             <Pressable
                 style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.button]}
                 onPress={() => navigation.navigate("addAsk" as never)}
             >
-                <Text>{lang("+ ส่งคำถาม", "+ New Question")}</Text>
+                <Text>{t("ask.submit")}</Text>
             </Pressable>
         </View>
     );
 }
 
 const style = StyleSheet.create({
-    container: { justifyContent: "center", alignItems: "center", flex: 1 },
+    container: { justifyContent: "center", alignItems: "center", flex: 1, backgroundColor: color.base },
     button: {
         height: 50,
         width: "auto",
@@ -110,13 +108,13 @@ const style = StyleSheet.create({
         position: "absolute",
         bottom: 40,
         right: 20,
-        shadowRadius: 8,
-        shadowColor: "#26fbd4",
+        shadowRadius: 4,
+        shadowColor: color.tint,
         shadowOpacity: 1,
-        elevation: 8,
+        elevation: 5,
         alignItems: "center",
         justifyContent: "center",
-        borderColor: "#26fbd4",
+        borderColor: color.tint,
         borderWidth: 1,
     },
 });

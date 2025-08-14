@@ -1,26 +1,18 @@
-import { View, Text, Pressable, StyleSheet, Dimensions, Alert } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import { View, Text, Pressable, StyleSheet, Alert } from "react-native";
+import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
-import { darkGrey, tint, darkTint } from "@/constants/Colors";
-import { Dropdown } from "react-native-element-dropdown";
+import { darkGrey } from "@/constants/Colors";
 import CustomButton from "@/components/CustomButton";
 import { useAppointmentContext } from "@/hooks/appointmentContext";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { type StackParamList } from "./_stack";
-import { useLanguage } from "@/hooks/useLanguage";
 import { useApiContext } from "@/hooks/apiContext";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError } from "axios";
 import { useAuthContext } from "@/hooks/authContext";
+import { useTranslation } from "react-i18next";
 
 type mode = "date" | "time";
-
-const mockup = [
-    { label: "Dr.Earth Bindai", value: "Dr.Earth Bindai" },
-    { label: "Dr.Ploy Jinjai", value: "Dr.Ploy Jinjai" },
-    { label: "Dr.Spiderman", value: "Dr.Spiderman" },
-];
 
 type Props = NativeStackScreenProps<StackParamList, "viewAppointment">;
 
@@ -31,16 +23,16 @@ export default function ViewAppointment({ route, navigation }: Props) {
     const [selected, setSelected] = useState<string>("");
     const [show, setShow] = useState(false);
     const { apmntList, fetch } = useAppointmentContext();
-    const { lang, currentLang } = useLanguage();
+    const { t } = useTranslation();
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
 
     const [isLoading, setIsLoading] = useState(false);
     function showDeleteAlert() {
         Alert.alert(
-            lang("คุณแน่ใจหรือไม่", "Are you sure?"),
+            t("common.alert.sure"),
             undefined,
-            [{ text: lang("ลบ", "Delete"), onPress: handleDelete }, { text: lang("ยกเลิก", "Cancel") }],
+            [{ text: t("common.alert.delete"), onPress: handleDelete }, { text: t("common.alert.cancel") }],
             { cancelable: true }
         );
     }
@@ -51,11 +43,11 @@ export default function ViewAppointment({ route, navigation }: Props) {
             switch (response.status) {
                 case 204:
                     fetch();
-                    Alert.alert("", lang("ลบนัดหมายแล้ว", "Deleted successfully"));
+                    Alert.alert("", t("viewAppointment.alert.204"));
                     navigation.navigate("index");
                     break;
                 case 401:
-                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    Alert.alert(t("common.alert.error"), t("common.alert.401"));
                     logoutDispatch();
                     break;
                 default:
@@ -106,7 +98,7 @@ export default function ViewAppointment({ route, navigation }: Props) {
                 <Text>{selected}</Text>
             </Pressable>
             <Pressable style={style.pressable} onPress={showDatepicker} disabled>
-                <Text>{dayjs(date).locale(currentLang).format("D MMMM YYYY")}</Text>
+                <Text>{dayjs(date).format("D MMMM YYYY")}</Text>
             </Pressable>
             <Pressable style={style.pressable} onPress={showTimepicker} disabled>
                 <Text>{dayjs(date).format("HH:mm")}</Text>
@@ -122,19 +114,16 @@ export default function ViewAppointment({ route, navigation }: Props) {
                 />
             )}
             <CustomButton
-                title={lang("ลบนัดหมาย", "Delete")}
+                title={t("viewAppointment.delete")}
                 normalColor={isLoading ? darkGrey : "lightsalmon"}
                 onPress={showDeleteAlert}
                 pressedColor={darkGrey}
                 showLoading={isLoading}
             />
-            <Text>selected: {date.toString()}</Text>
-            <Text>{apmntList.length}</Text>
         </View>
     );
 }
 
-const screenHeight = Dimensions.get("screen").height;
 const style = StyleSheet.create({
     container: {
         alignItems: "center",

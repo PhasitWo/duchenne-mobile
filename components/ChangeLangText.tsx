@@ -1,18 +1,23 @@
 import { useLanguage } from "@/hooks/useLanguage";
-import { Text } from "react-native";
-import { type TextStyle } from "react-native";
+import { Image, Pressable, StyleSheet } from "react-native";
+import { type PressableProps } from "react-native";
 
-export default function ChangeLangText({ style }: { style?: TextStyle }) {
+export default function ChangeLangText(props: PressableProps) {
     const { changeLang, currentLang } = useLanguage();
     return (
-        <Text style={style}>
-            <Text onPress={() => changeLang("th")} style={{ fontWeight: currentLang === "th" ? "bold" : "normal" }}>
-                ภาษาไทย
-            </Text>{" "}
-            |{" "}
-            <Text onPress={() => changeLang("en")} style={{ fontWeight: currentLang === "en" ? "bold" : "normal" }}>
-                English
-            </Text>
-        </Text>
+        <Pressable {...props} onPress={() => changeLang(currentLang === "th" ? "en" : "th")}>
+            {currentLang === "th" ? (
+                <Image source={require("@/assets/images/flags/th.png")} style={style.flag} />
+            ) : (
+                <Image source={require("@/assets/images/flags/en.png")} style={style.flag} />
+            )}
+        </Pressable>
     );
 }
+
+const style = StyleSheet.create({
+    flag: {
+        width: 30,
+        height: 30,
+    },
+});

@@ -1,17 +1,16 @@
-import { View, TextInput, Text, StyleSheet, Alert } from "react-native";
+import { View, TextInput, Text, StyleSheet, Alert, KeyboardAvoidingView, ScrollView } from "react-native";
 import CustomButton from "@/components/CustomButton";
-import { darkGrey, tint } from "@/constants/Colors";
-import { useLanguage } from "@/hooks/useLanguage";
+import { color, darkGrey, tint } from "@/constants/Colors";
 import { useState, useEffect } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import dayjs from "dayjs";
 import { useApiContext } from "@/hooks/apiContext";
 import { useAuthContext } from "@/hooks/authContext";
 import { AxiosError } from "axios";
+import { useTranslation } from "react-i18next";
 
 type props = NativeStackScreenProps<any, "addAsk">;
 export default function AddAsk({ navigation }: props) {
-    const { lang } = useLanguage();
+    const { t } = useTranslation();
     const [topic, setTopic] = useState("");
     const [question, setQuestion] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -24,17 +23,18 @@ export default function AddAsk({ navigation }: props) {
                 // no input -> don't do anything
                 if (topic.trim().length === 0 && question.trim().length === 0) return;
                 e.preventDefault();
-                Alert.alert(
-                    lang("คุณยังไม่ได้ส่งคำถาม", "Discard Question?"),
-                    lang(
-                        "แน่ใจหรือไม่ที่จะออกจากหน้านี้โดยยังไม่ได้ส่งคำถาม?",
-                        "Are you sure to discard them and leave the screen?"
-                    ),
-                    [
-                        { text: lang("อยู่ต่อ", "Stay"), style: "cancel", onPress: () => {} },
-                        { text: lang("ออก", "Discard"), style: "destructive", onPress: () => navigation.dispatch(e.data.action) },
-                    ]
-                );
+                Alert.alert(t("addAsk.alert.discard"), t("addAsk.alert.discard_body"), [
+                    {
+                        text: t("common.alert.stay"),
+                        style: "cancel",
+                        onPress: () => {},
+                    },
+                    {
+                        text: t("common.alert.discard"),
+                        style: "destructive",
+                        onPress: () => navigation.dispatch(e.data.action),
+                    },
+                ]);
             }),
         [navigation, topic, question]
     );
@@ -49,20 +49,20 @@ export default function AddAsk({ navigation }: props) {
     }
     function showSubmitAlert() {
         if (topic.trim().length === 0) {
-            Alert.alert(lang("เกิดข้อผิดพลาด", "Error"), lang("กรุณากรอกหัวข้อ", "Topic cannot be empty."));
+            Alert.alert(t("common.alert.error"), t("addAsk.alert.empty_topic"));
             return;
         }
         if (question.trim().length === 0) {
-            Alert.alert(lang("เกิดข้อผิดพลาด", "Error"), lang("กรุณากรอกคำถาม", "Question cannot be empty."));
+            Alert.alert(t("common.alert.error"), t("addAsk.alert.empty_question"));
             return;
         }
-        Alert.alert(lang("คุณแน่ใจหรือไม่", "Are you sure?"), undefined, [
+        Alert.alert(t("common.alert.sure"), undefined, [
             {
-                text: lang("ยืนยัน", "Confirm"),
+                text: t("common.alert.confirm"),
                 onPress: handleSubmit,
             },
             {
-                text: lang("ยกเลิก", "Cancel"),
+                text: t("common.alert.cancel"),
             },
         ]);
     }
@@ -73,11 +73,11 @@ export default function AddAsk({ navigation }: props) {
             const response = await api.post("/api/question", { topic: topic, question: question });
             switch (response.status) {
                 case 201:
-                    Alert.alert(lang("ส่งคำถามสำเร็จแล้ว", "The question has been submitted"), undefined);
+                    Alert.alert(t("addAsk.alert.201"), undefined);
                     navigation.navigate("tab", { screen: "ask" });
                     break;
                 case 401:
-                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    Alert.alert(t("common.alert.error"), t("common.alert.401"));
                     logoutDispatch();
                     break;
                 default:
@@ -95,37 +95,46 @@ export default function AddAsk({ navigation }: props) {
     }
 
     return (
-        <View style={style.container}>
-            <View style={style.topicContainer}>
-                <Text style={[{ color: topic.length == 0 ? "red" : "black" }, style.label]}>
-                    {lang("หัวข้อ  ", "Topic  ")}
-                    <Count current={topic.length} max={50} />
-                </Text>
-                <TextInput style={style.topicInput} value={topic} onChangeText={handleTopicChange} editable={!isLoading} />
-            </View>
-            <View style={style.bodyContainer}>
-                <Text style={[{ color: question.length == 0 ? "red" : "black" }, style.label]}>
-                    {lang("คำถาม  ", "Question  ")}
-                    <Count current={question.length} max={700} />
-                </Text>
-                <TextInput
-                    style={style.bodyInput}
-                    multiline
-                    submitBehavior="blurAndSubmit"
-                    returnKeyType="done"
-                    value={question}
-                    onChangeText={handleQuestionChange}
-                    editable={!isLoading}
-                />
-            </View>
-            <CustomButton
-                normalColor={tint}
-                pressedColor={darkGrey}
-                title={lang("ส่ง", "submit")}
-                onPress={showSubmitAlert}
-                showLoading={isLoading}
-            />
-        </View>
+        <KeyboardAvoidingView style={style.container} behavior="padding">
+            <ScrollView style={{ width: "100%" }}>
+                <View style={style.topicContainer}>
+                    <Text style={[{ color: topic.length == 0 ? "red" : "black" }, style.label]}>
+                        {t("addAsk.topic")}
+                        <Count current={topic.length} max={50} />
+                    </Text>
+                    <TextInput
+                        style={style.topicInput}
+                        value={topic}
+                        onChangeText={handleTopicChange}
+                        editable={!isLoading}
+                    />
+                </View>
+                <View style={style.bodyContainer}>
+                    <Text style={[{ color: question.length == 0 ? "red" : "black" }, style.label]}>
+                        {t("addAsk.question")}
+                        <Count current={question.length} max={700} />
+                    </Text>
+                    <TextInput
+                        style={style.bodyInput}
+                        multiline
+                        submitBehavior="blurAndSubmit"
+                        returnKeyType="done"
+                        value={question}
+                        onChangeText={handleQuestionChange}
+                        editable={!isLoading}
+                    />
+                </View>
+                <View style={{ alignItems: "center" }}>
+                    <CustomButton
+                        normalColor={tint}
+                        pressedColor={darkGrey}
+                        title={t("common.submit")}
+                        onPress={showSubmitAlert}
+                        showLoading={isLoading}
+                    />
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -136,6 +145,7 @@ const style = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: "center",
+        backgroundColor: color.base,
     },
     topicContainer: {
         width: "100%",
@@ -154,6 +164,7 @@ const style = StyleSheet.create({
         marginTop: 5,
         height: 400,
         backgroundColor: "white",
+        filter: "drop-shadow(0px 4px 3px rgba(0,0,0,0.1))",
     },
     bodyInput: {
         marginTop: 20,
