@@ -1,14 +1,22 @@
-import {  useState, useEffect, ReactElement } from "react";
-import { useLanguage, type Language } from "@/hooks/useLanguage";
+import { useState, useEffect, ReactElement } from "react";
+import { useLanguage, type Language as Lang } from "@/hooks/useLanguage";
 import { darkGrey } from "@/constants/Colors";
-import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
-import { Pressable, View, Text, StyleSheet, FlatList } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { Pressable, View, Text, StyleSheet, FlatList, Image } from "react-native";
 
-type LangItemProps = { title: string; value: Language; icon: ReactElement };
+type LangItemProps = { title: string; value: Lang; icon: ReactElement };
 
 const data: LangItemProps[] = [
-    { title: "ไทย", value: "th", icon: <MaterialIcons name="language" size={24} color="black" /> },
-    { title: "English", value: "en", icon: <MaterialIcons name="language" size={24} color="black" /> },
+    {
+        title: "ไทย",
+        value: "th",
+        icon: <Image source={require("@/assets/images/flags/th.png")} style={{ width: 30, height: 30 }} />,
+    },
+    {
+        title: "English",
+        value: "en",
+        icon: <Image source={require("@/assets/images/flags/en.png")} style={{ width: 30, height: 30 }} />,
+    },
 ];
 
 const Item = ({ lang, selected, pressFunc }: { lang: LangItemProps; selected: boolean; pressFunc: Function }) => {
@@ -27,14 +35,14 @@ const Item = ({ lang, selected, pressFunc }: { lang: LangItemProps; selected: bo
 };
 
 export default function Language() {
-    const [selectedId, setSelectedId] = useState<Language | undefined>();
+    const [selectedId, setSelectedId] = useState<Lang | undefined>();
     const { currentLang, changeLang } = useLanguage();
 
     useEffect(() => {
         setSelectedId(currentLang);
     }, []);
 
-    async function handlePress(selectedId: Language) {
+    async function handlePress(selectedId: Lang) {
         setSelectedId(selectedId);
         changeLang(selectedId);
     }
@@ -51,7 +59,6 @@ export default function Language() {
         </>
     );
 }
-
 
 const style = StyleSheet.create({
     itemContainer: {

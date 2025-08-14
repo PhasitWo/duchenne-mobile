@@ -1,9 +1,17 @@
-import { View, Text, StyleSheet, TextInput, Alert, Platform } from "react-native";
-import { useRef, useState } from "react";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TextInput,
+    Alert,
+    Platform,
+    Image,
+    KeyboardAvoidingView,
+    ScrollView,
+} from "react-native";
+import { useRef, useState, useCallback } from "react";
 import CustomButton from "@/components/CustomButton";
-import { darkGrey } from "@/constants/Colors";
-import ChangeLangText from "@/components/ChangeLangText";
-import { useLanguage } from "@/hooks/useLanguage";
+import { color, darkGrey } from "@/constants/Colors";
 import { useAuthContext } from "@/hooks/authContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { useApiContext } from "@/hooks/apiContext";
@@ -11,43 +19,39 @@ import type { ApiLoginResponse } from "@/model/model";
 import type { AppStackParamList } from "@/app";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback } from "react";
-import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import * as Linking from "expo-linking";
 import { startActivityAsync, ActivityAction } from "expo-intent-launcher";
 import * as Application from "expo-application";
 import { getExpoToken } from "@/hooks/useDeviceInfo";
-
-type Warning = {
-    hn: boolean;
-    firstName: boolean;
-    lastName: boolean;
-};
+import { useTranslation } from "react-i18next";
 
 export type LoginData = {
     hn: string;
-    firstName: string;
-    lastName: string;
+    pin: string;
 };
+
+type Warning = Record<keyof LoginData, boolean>;
 
 type Props = NativeStackScreenProps<AppStackParamList, "login">;
 export default function Login({ route, navigation }: Props) {
-    const [data, setData] = useState<LoginData>({ hn: "", firstName: "", lastName: "" });
-    const [warning, setWarning] = useState<Warning>({ hn: false, firstName: false, lastName: false });
+    const [data, setData] = useState<LoginData>({ hn: "", pin: "" });
+    const [warning, setWarning] = useState<Warning>({ hn: false, pin: false });
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const { lang } = useLanguage();
-    const { loginDispatch } = useAuthContext();
+    const { t } = useTranslation();
+    const { loginDispatch, getLastLoginHN } = useAuthContext();
 
-    const firstName_ref = useRef<TextInput>(null);
-    const lastName_ref = useRef<TextInput>(null);
-    const warningText = lang("กรุณากรอกข้อมูล", "This field is required");
+    const pin_ref = useRef<TextInput>(null);
+    const warningText = t("login.warn_require_field");
 
     // route param is used once, when the screen is focused
     useFocusEffect(
         useCallback(() => {
             if (route.params) setData(route.params);
+            getLastLoginHN().then((v) => {
+                if (v) setData({ ...data, hn: v });
+            });
         }, [route.params])
     );
 
@@ -59,13 +63,6 @@ export default function Login({ route, navigation }: Props) {
             finalStatus = status;
         }
         if (finalStatus !== "granted") {
-            if (Platform.OS == "android")
-            Alert.alert(lang("กรุณาเปิดการแจ้งเตือนของแอป", "Require notification permission"), undefined, [
-                {
-                    text: "Ok",
-                    onPress: openNotificationSetting,
-                },
-            ]);
             return false;
         }
         return true;
@@ -73,165 +70,139 @@ export default function Login({ route, navigation }: Props) {
 
     const { apiNoAuth } = useApiContext();
     async function handleLogin() {
-         setIsLoading(true);
-         try {
-             // validate Field
-             let key: keyof LoginData;
-             for (key in data) {
-                 if (data[key].trim().length === 0) {
-                     setWarning({ ...warning, [key]: true });
-                     return;
-                 }
-             }
-             // notification permission
-             if (!(await getNotificationPermission())) return;
-             // EXPO TOKEN
-             let expoToken = await getExpoToken();
-             if (!expoToken) {
-                 Alert.alert(
-                     lang(
-                         "ไม่สามารถเชื่อมต่อ Expo ได้\nกรุณาเช็คการเชื่อมต่อกับอินเทอร์เน็ต",
-                         "Can't get expo token, check your internet connection"
-                     )
-                 );
-                 return;
-             }
-             // POST
-             const response = await apiNoAuth.post<any, AxiosResponse<ApiLoginResponse, any>, any>(
-                 "/auth/login",
-                 {
-                     hn: data.hn.trim(),
-                     firstName: data.firstName.trim(),
-                     lastName: data.lastName.trim(),
-                     deviceName: Device.deviceName ? Device.deviceName : "Unknown Device",
-                     expoToken: expoToken,
-                 },
-                 { timeout: 5000 }
-             );
-             switch (response.status) {
-                 case 200:
-                     loginDispatch(response.data.token);
-                     break;
-                 case 401:
-                     Alert.alert(lang("เกิดข้อผิดพลาด", "Error"), lang("ข้อมูลไม่ถูกต้อง", "Invalid credentials"));
-                     break;
-                 case 403:
-                     Alert.alert(
-                         lang("เกิดข้อผิดพลาด", "Error"),
-                         lang(`HN: ${data.hn} ยังไม่ได้ลงทะเบียน`, `Unverified Account HN: ${data.hn}`)
-                     );
-                     break;
-                 default:
-                     Alert.alert("Something went wrong...", JSON.stringify(response));
-             }
-         } catch (err) {
-             if (err instanceof AxiosError) {
-                 if (err.status == 404) {
-                     Alert.alert(
-                         lang("เกิดข้อผิดพลาด", "Error"),
-                         lang(`ไม่มี HN: ${data.hn} ในฐานข้อมูล`, `HN: ${data.hn} is not found in the database`)
-                     );
-                     return;
-                 }
-                 Alert.alert("Request Error", `${err.message ?? ""} ${err.code}`);
-             } else {
-                 Alert.alert("Fatal Error", `${err as Error}`);
-             }
-         } finally {
-             setIsLoading(false);
-         }
+        setIsLoading(true);
+        try {
+            // validate Field
+            let key: keyof LoginData;
+            for (key in data) {
+                if (data[key].trim().length === 0) {
+                    setWarning({ ...warning, [key]: true });
+                    return;
+                }
+            }
+            // notification permission
+            if (!(await getNotificationPermission()))
+                Alert.alert(t("common.alert.error"), t("login.alert.require_noti_perm"), [
+                    {
+                        text: "Ok",
+                        onPress: openNotificationSetting,
+                    },
+                ]);
+            // EXPO TOKEN
+            let expoToken = await getExpoToken();
+            if (!expoToken) {
+                Alert.alert(t("common.alert.error"), t("login.alert.expo_error"));
+                return;
+            }
+            // POST
+            const hn = data.hn.trim();
+            const response = await apiNoAuth.post<any, AxiosResponse<ApiLoginResponse, any>, any>(
+                "/auth/login",
+                {
+                    hn: hn,
+                    pin: data.pin,
+                    deviceName: Device.deviceName ? Device.deviceName : "Unknown Device",
+                    expoToken: expoToken,
+                },
+                { timeout: 5000 }
+            );
+            switch (response.status) {
+                case 200:
+                    loginDispatch(response.data.token, hn);
+                    break;
+                case 401:
+                    Alert.alert(t("common.alert.error"), t("login.alert.invalid_cred"));
+                    break;
+                case 403:
+                    Alert.alert(t("common.alert.error"), t("login.alert.unverified_account", { hn: data.hn }));
+                    break;
+                default:
+                    Alert.alert("Something went wrong...", JSON.stringify(response));
+            }
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                if (err.status == 404) {
+                    Alert.alert(t("common.alert.error"), t("login.alert.404", { hn: data.hn }));
+                    return;
+                }
+                Alert.alert("Request Error", `${err.message ?? ""} ${err.code}`);
+            } else {
+                Alert.alert("Fatal Error", `${err as Error}`);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     }
     return (
-        <View style={style.formContainer}>
-            <View style={style.inputContainer}>
-                <Text style={[style.label, { color: warning.hn ? "red" : "black" }]}>HN</Text>
-                <TextInput
-                    style={[style.input, { borderColor: warning.hn ? "red" : darkGrey }]}
-                    value={data.hn}
-                    onChangeText={(text) => {
-                        setWarning({ ...warning, hn: false });
-                        setData({ ...data, hn: text });
-                    }}
-                    onSubmitEditing={() => firstName_ref.current?.focus()}
-                    returnKeyType="next"
-                    editable={!isLoading}
-                    placeholder={warning.hn ? warningText : undefined}
-                    placeholderTextColor="red"
-                    submitBehavior="submit"
+        <KeyboardAvoidingView style={style.formContainer} behavior="padding">
+            <ScrollView contentContainerStyle={{ alignItems: "center" }} keyboardShouldPersistTaps="handled">
+                <Image source={require("@/assets/images/logo.png")} style={{ width: 200, height: 200 }}></Image>
+                <View style={style.inputContainer}>
+                    <Text style={[style.label, { color: warning.hn ? "red" : "black" }]}>HN</Text>
+                    <TextInput
+                        style={[style.input, { borderColor: warning.hn ? "red" : darkGrey }]}
+                        value={data.hn}
+                        onChangeText={(text) => {
+                            setWarning({ ...warning, hn: false });
+                            setData({ ...data, hn: text });
+                        }}
+                        onSubmitEditing={() => pin_ref.current?.focus()}
+                        returnKeyType="next"
+                        editable={!isLoading}
+                        placeholder={warning.hn ? warningText : undefined}
+                        placeholderTextColor="red"
+                        submitBehavior="submit"
+                    />
+                </View>
+                <View style={style.inputContainer}>
+                    <Text style={[style.label, { color: warning.pin ? "red" : "black" }]}>{t("login.password")}</Text>
+                    <TextInput
+                        ref={pin_ref}
+                        style={[style.input, { borderColor: warning.pin ? "red" : darkGrey }]}
+                        value={data.pin}
+                        onChangeText={(text) => {
+                            setWarning({ ...warning, pin: false });
+                            setData({ ...data, pin: text });
+                        }}
+                        secureTextEntry
+                        keyboardType="number-pad"
+                        returnKeyType="done"
+                        editable={!isLoading}
+                        placeholder={warning.pin ? warningText : undefined}
+                        placeholderTextColor="red"
+                        maxLength={6}
+                    />
+                </View>
+                <View style={style.forgotPasswordContainer}>
+                    <Text
+                        style={style.forgotPassword}
+                        onPress={() => navigation.navigate("contact" as never)}
+                        disabled={isLoading}
+                    >
+                        {t("login.forgot")}
+                    </Text>
+                </View>
+                <CustomButton
+                    title={t("login.login")}
+                    normalColor={color.tint}
+                    pressedColor={darkGrey}
+                    style={{ height: 60, borderRadius: 10, marginTop: 30 }}
+                    bold
+                    onPress={handleLogin}
+                    showLoading={isLoading}
                 />
-            </View>
-            <View style={style.inputContainer}>
-                <Text style={[style.label, { color: warning.firstName ? "red" : "black" }]}>
-                    {lang("ชื่อจริง", "First Name")}
+                <Text style={style.signup}>
+                    {t("login.no_account") + " "}
+                    <Text
+                        style={style.signupLink}
+                        onPress={() => navigation.navigate("signupStack")}
+                        disabled={isLoading}
+                    >
+                        {t("login.signup")}
+                    </Text>
                 </Text>
-                <TextInput
-                    ref={firstName_ref}
-                    style={[style.input, { borderColor: warning.firstName ? "red" : darkGrey }]}
-                    value={data.firstName}
-                    onChangeText={(text) => {
-                        setWarning({ ...warning, firstName: false });
-                        setData({ ...data, firstName: text });
-                    }}
-                    onSubmitEditing={() => lastName_ref.current?.focus()}
-                    returnKeyType="next"
-                    editable={!isLoading}
-                    placeholder={warning.firstName ? warningText : undefined}
-                    placeholderTextColor="red"
-                    submitBehavior="submit"
-                />
-            </View>
-            <View style={style.inputContainer}>
-                <Text style={[style.label, { color: warning.lastName ? "red" : "black" }]}>
-                    {lang("นามสกุล", "Last Name")}
-                </Text>
-                <TextInput
-                    ref={lastName_ref}
-                    style={[style.input, { borderColor: warning.lastName ? "red" : darkGrey }]}
-                    value={data.lastName}
-                    onChangeText={(text) => {
-                        setWarning({ ...warning, lastName: false });
-                        setData({ ...data, lastName: text });
-                    }}
-                    editable={!isLoading}
-                    placeholder={warning.lastName ? warningText : undefined}
-                    placeholderTextColor="red"
-                />
-            </View>
-            <View style={style.forgotPasswordContainer}>
-                <Text
-                    style={style.forgotPassword}
-                    onPress={() => navigation.navigate("forgotPassword" as never)}
-                    disabled={isLoading}
-                >
-                    {lang("ลืมรหัสผ่าน?", "Forgot password?")}
-                </Text>
-            </View>
-            <CustomButton
-                title={lang("เข้าสู่ระบบ", "Log in")}
-                normalColor="#78ffe6"
-                pressedColor={darkGrey}
-                style={{ height: 60, borderRadius: 10, marginTop: 30 }}
-                onPress={handleLogin}
-                showLoading={isLoading}
-            />
-            <Text style={style.signup}>
-                {lang("ยังไม่มีบัญชี? ", "Don't have an account? ")}
-                <Text
-                    style={style.signupLink}
-                    onPress={() => navigation.navigate("signup" as never)}
-                    disabled={isLoading}
-                >
-                    {lang("ลงทะเบียน", "Sign up")}
-                </Text>
-            </Text>
-            {/* <Text
-                onPress={() => setData({ hn: "test3", firstName: "fn3", lastName: "ln3" })}
-                style={{ bottom: -100, color: "whitesmoke" }}
-            >
-                DEV
-            </Text> */}
-            <ChangeLangText style={style.lang} />
-        </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -241,18 +212,19 @@ const style = StyleSheet.create({
         justifyContent: "flex-start",
         alignItems: "center",
         backgroundColor: "white",
-        paddingTop: 50,
+        paddingTop: 10,
     },
     inputContainer: {
         width: 350,
         height: 70,
         justifyContent: "center",
+        marginTop: 20,
         marginBottom: 15,
     },
     label: {
         flex: 1,
         paddingLeft: 10,
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: "bold",
     },
     input: {
@@ -260,12 +232,12 @@ const style = StyleSheet.create({
         borderBottomWidth: 1,
         margin: 5,
         padding: 5,
+        color: "black",
     },
     signup: { marginTop: 20 },
     signupLink: {
         color: "blue",
-        borderBottomColor: "blue",
-        borderBottomWidth: 5,
+        textDecorationLine: "underline",
     },
     eye: {
         position: "absolute",
@@ -291,7 +263,6 @@ async function openNotificationSetting() {
         startActivityAsync(ActivityAction.APP_NOTIFICATION_SETTINGS, {
             extra: { "android.provider.extra.APP_PACKAGE": Application.applicationId },
         });
-        
     } else {
         Linking.openSettings();
     }

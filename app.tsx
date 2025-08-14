@@ -1,48 +1,61 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Notification from "@/pages/notification";
 import Tabs from "@/pages/tab";
-import { useLanguage } from "@/hooks/useLanguage";
 import SignupStack from "@/pages/auth/signup/_stack";
 import Login from "@/pages/auth/login";
 import Header from "@/components/navigation/Header";
 import * as SplashScreen from "expo-splash-screen";
 import { useAuthContext } from "./hooks/authContext";
 import AddAsk from "./pages/ask/addAsk";
-import ForgotPassword from "./pages/auth/forgotPassword";
+import Contact from "./pages/auth/contact";
 import type { LoginData } from "@/pages/auth/login";
-
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 export type AppStackParamList = {
     tab: undefined;
     login: undefined | LoginData;
-    forgotPassword: undefined;
-    signup: undefined;
+    contact: undefined;
+    signupStack: undefined;
     notification: undefined;
     addAsk: undefined;
 };
 const Stack = createNativeStackNavigator<AppStackParamList>();
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-    const { lang } = useLanguage();
+    const { t } = useTranslation();
     const { authState } = useAuthContext();
-    if (!authState.isLoading) {
-        setTimeout(SplashScreen.hideAsync, 300);
-    }
+
+    useEffect(() => {
+        if (!authState.isLoading) {
+            setTimeout(SplashScreen.hideAsync, 300);
+        }
+    }, [authState]);
+
     return (
         <Stack.Navigator
-            screenOptions={{ header: (props) => <Header {...props} showNotification={false} showBackButton={false} /> }}
+            screenOptions={{
+                header: (props) => <Header {...props} showNotification={false} showBackButton={false} />,
+            }}
         >
             {authState.userToken === null ? (
                 <>
-                    <Stack.Screen name="login" component={Login} options={{ title: lang("ลงชื่อเข้าใช้", "Login") }} />
-                    <Stack.Screen name="signup" component={SignupStack} options={{ headerShown: false }} />
                     <Stack.Screen
-                        name="forgotPassword"
-                        component={ForgotPassword}
+                        name="login"
+                        component={Login}
                         options={{
-                            title: lang("ลืมรหัสผ่าน", "Forgot Password"),
+                            title: t("login.title"),
+                            header: (props) => (
+                                <Header {...props} showNotification={false} showBackButton={false} showLangSwitch />
+                            ),
+                        }}
+                    />
+                    <Stack.Screen name="signupStack" component={SignupStack} options={{ headerShown: false }} />
+                    <Stack.Screen
+                        name="contact"
+                        component={Contact}
+                        options={{
+                            title: t("contact.title"),
                             header: (props) => <Header {...props} showNotification={false} />,
                         }}
                     />
@@ -54,14 +67,17 @@ export default function App() {
                         name="notification"
                         component={Notification}
                         options={{
-                            title: lang("การแจ้งเตือน","Notifications"),
+                            title: t("notification.title"),
                             header: (props) => <Header {...props} showNotification={false} />,
                         }}
                     />
                     <Stack.Screen
                         name="addAsk"
                         component={AddAsk}
-                        options={{ title: lang("ส่งคำถาม", "New Question"), header: (props) => <Header {...props} /> }}
+                        options={{
+                            title: t("addAsk.title"),
+                            header: (props) => <Header {...props} />,
+                        }}
                     />
                 </>
             )}

@@ -1,5 +1,5 @@
 import { Text, FlatList, View, StyleSheet, Dimensions, Alert } from "react-native";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { ApiDeviceModel, ApiJwtClaimModel, ApiLoginResponse } from "@/model/model";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError, AxiosResponse } from "axios";
@@ -14,26 +14,28 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
 import { getDeviceName, getExpoToken } from "@/hooks/useDeviceInfo";
 import useTutorial from "@/hooks/useTutorial";
+import { useTranslation } from "react-i18next";
 
 export default function Notification() {
     const [data, setData] = useState<ApiDeviceModel[]>([]);
     const [deviceId, setDeviceId] = useState(-1);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const { logoutDispatch, authState } = useAuthContext();
     const { api } = useApiContext();
-    const { lang, currentLang } = useLanguage();
+    const { currentLang } = useLanguage();
+    const { t } = useTranslation();
     const { loginDispatch } = useAuthContext();
     const { setShowAppointmentTutorial, setShowAskTutorial } = useTutorial();
     const fetch = async () => {
+        setIsLoading(true);
         try {
-            setIsLoading(true);
             const response = await api.get<any, AxiosResponse<ApiDeviceModel[], any>, any>("/api/device");
             switch (response.status) {
                 case 200:
                     setData(response.data);
                     break;
                 case 401:
-                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    Alert.alert(t("common.alert.error"), t("common.alert.401"));
                     logoutDispatch();
                     break;
                 default:
@@ -49,7 +51,7 @@ export default function Notification() {
             setIsLoading(false);
         }
     };
-    const decodeToken = (token : string) => {
+    const decodeToken = (token: string) => {
         let id = jwtDecode<ApiJwtClaimModel>(token).deviceId;
         setDeviceId(id);
     };
@@ -71,14 +73,14 @@ export default function Notification() {
             });
             switch (response.status) {
                 case 200:
-                    loginDispatch(response.data.token)
-                    fetch()
-                    decodeToken(response.data.token)
+                    loginDispatch(response.data.token);
+                    fetch();
+                    decodeToken(response.data.token);
                     setShowAppointmentTutorial(false);
-                    setShowAskTutorial(false)
+                    setShowAskTutorial(false);
                     break;
                 case 401:
-                    Alert.alert("Error", "Unauthorized, Invalid token");
+                    Alert.alert(t("common.alert.error"), t("common.alert.401"));
                     logoutDispatch();
                     break;
                 default:
@@ -99,12 +101,13 @@ export default function Notification() {
         return ({ device }: { device: ApiDeviceModel }) => {
             return (
                 <View style={style.itemContainer}>
-                    <FontAwesome style={{ flex: 1, textAlign: "right" }} name="circle" size={12} color="green" />
-                    <Text style={{ flex: 11, textAlign: "left", paddingLeft: 20 }}>
+                    <Text style={{ flex: 1, textAlign: "center" }}>
+                        <FontAwesome name="circle" size={12} color="green" />
+                        {"  "}
                         {device.deviceName}
                         {device.id === deviceId && "(Your device)"}
                     </Text>
-                    <Text style={{ flex: 9, textAlign: "left" }}>
+                    <Text style={{ flex: 1, textAlign: "center" }}>
                         {dayjs(device.loginAt * 1000).format("D/MM/YYYY HH:mm ")}
                     </Text>
                 </View>
@@ -119,8 +122,8 @@ export default function Notification() {
     return (
         <View style={style.container}>
             <View style={style.itemContainer}>
-                <Text style={{ flex: 8, textAlign: "center" }}>{lang("ชื่ออุปกรณ์","Device Name")}</Text>
-                <Text style={{ flex: 12, textAlign: "center" }}>{lang("เข้าสู่ระบบเมื่อ","Login at")}</Text>
+                <Text style={{ flex: 1, textAlign: "center" }}>{t("notification.device_name")}</Text>
+                <Text style={{ flex: 1, textAlign: "center" }}>{t("notification.login_at")}</Text>
             </View>
             <View>
                 <FlatList
@@ -131,19 +134,12 @@ export default function Notification() {
             </View>
 
             <View style={{ marginTop: 10, padding: 10 }}>
-                <Text style={{ fontWeight: "bold" }}>
-                    {lang("ทำไมไม่ได้รับการแจ้งเตือน?", "Why I don't receive any notifications?")}
-                </Text>
-                <Text>{lang("อาจมีปัจจัยดังนี้", "These are possible reasons:")}</Text>
-                <Text style={{ marginTop: 10 }}>
-                    {lang(
-                        "1. อุปกรณ์ของคุณไม่ใช่อุปกรณ์ที่เข้าสู่ระบบ 3 เครื่องล่าสุด มีเพียงแค่ 3  เครื่องล่าสุดเท่านั้นที่จะได้รับการแจ้งเตือน",
-                        "1. Your device is not an active device for receiving push notifications. Only '3' devices that recently logged in will receive push notifications."
-                    )}
-                </Text>
+                <Text style={{ fontWeight: "bold" }}>{t("notification.topic1")}</Text>
+                <Text>{t("notification.topic2")}</Text>
+                <Text style={{ marginTop: 10 }}>{t("notification.factor1")}</Text>
                 <View style={{ justifyContent: "center", alignItems: "center", width: "100%" }}>
                     <CustomButton
-                        title={lang("ทำให้อุปกรณ์นี้ได้รับการแจ้งเตือน", "Make this device receive notification")}
+                        title={t("notification.make_active")}
                         normalColor={canPushButton ? tint : darkGrey}
                         pressedColor={darkGrey}
                         style={{ height: 50, marginBottom: 20 }}
@@ -151,24 +147,9 @@ export default function Notification() {
                         onPress={handlePushButton}
                     />
                 </View>
-                <Text>
-                    {lang(
-                        "2. แอปไม่ได้รับอนุญาตการแจ้งเตือน (ต้องเปิดในตั้งค่า)",
-                        "2. App's notification permission is disabled (please enable it in the setting)"
-                    )}
-                </Text>
-                <Text style={{ marginTop: 10 }}>
-                    {lang(
-                        "3. การปรับค่าเพื่อถนอมอายุการใช้งานของแบตเตอรี่ (Battery Optimization) (ในแอนดรอยด์บางเครื่อง)",
-                        "3. Battery Optimization is turn on for this app (in some android device)"
-                    )}
-                </Text>
-                <Text style={{ marginTop: 10 }}>
-                    {lang(
-                        "4. แอปนี้ถูกตั้งค่าให้หลับ (Sleeping App) (ในแอนดรอยด์บางเครื่อง)",
-                        "4. This app is put in the 'sleeping app' list (in some android device)"
-                    )}
-                </Text>
+                <Text>{t("notification.factor2")}</Text>
+                <Text style={{ marginTop: 10 }}>{t("notification.factor3")}</Text>
+                <Text style={{ marginTop: 10 }}>{t("notification.factor4")}</Text>
             </View>
         </View>
     );
@@ -178,7 +159,6 @@ const style = StyleSheet.create({
     container: {
         height: screenHeight * 0.9,
         backgroundColor: "white",
-        marginTop: 10,
         paddingBottom: 50,
     },
     itemContainer: {
@@ -187,5 +167,6 @@ const style = StyleSheet.create({
         alignItems: "center",
         paddingLeft: 10,
         flexDirection: "row",
+        width: "100%",
     },
 });

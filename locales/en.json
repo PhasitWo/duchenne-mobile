@@ -1,0 +1,214 @@
+{
+    "common": {
+        "no_data": "No data",
+        "save": "Save",
+        "submit": "Submit",
+        "alert": {
+            "error": "Error",
+            "cancel": "Cancel",
+            "confirm": "Confirm",
+            "delete": "Delete",
+            "stay": "Stay",
+            "discard": "Discard",
+            "sure": "Are you sure?",
+            "401": "Unauthorized. Please, login"
+        }
+    },
+    "login": {
+        "title": "Login",
+        "password": "Pin Code",
+        "forgot": "Forgot Password?",
+        "no_account": "Don't have an account?",
+        "signup": "Sign Up",
+        "login": "Log in",
+        "warn_require_field": "This field is required",
+        "alert": {
+            "require_noti_perm": "Require notification permission",
+            "expo_error": "Can't get expo token, check your internet connection",
+            "invalid_cred": "Invalid credentials",
+            "unverified_account": "Unverified Account HN: {{hn}}",
+            "404": "HN: {{hn}} is not found in the database"
+        }
+    },
+    "contact": {
+        "title": "Contact"
+    },
+    "notification": {
+        "title": "Notifications",
+        "device_name": "Device Name",
+        "login_at": "Login at",
+        "topic1": "Why I don't receive any notifications?",
+        "topic2": "These are possible reasons:",
+        "factor1": "1. Your device is not an active device for receiving push notifications. Only '3' devices that recently logged in will receive push notifications.",
+        "make_active": "Make this device receive notification",
+        "factor2": "2. App's notification permission is disabled (please enable it in the setting)",
+        "factor3": "3. Battery Optimization is turn on for this app (in some android device)",
+        "factor4": "4. This app is put in the 'sleeping app' list (in some android device)"
+    },
+    "consent": {
+        "title": "Terms and Privacy",
+        "term": "Terms and Condition",
+        "consent_body": "For the personal information you have provided during registration or account creation in this application, it shall be deemed that you have consented to storing of such information in a protected system. The system will safeguard this information to the highest possible standard.",
+        "privacy_intro": "The DMD We Care application collects and processes your data in accordance with the standards for personal data protection outlined in this privacy notice.",
+        "privacy_pointer": "You can read the detailed information at  ",
+        "accept": "Accept"
+    },
+    "privacy": {
+        "title": "Privacy Notice",
+        "privacy_policy_header": "Privacy Notice",
+        "privacy_policy_body": "DMD we care and its affiliated entities (collectively, the “Application”) are committed to safeguarding the privacy of our users (collectively referred to as “you” or “Data Subjects”). This Privacy Notice describes how we collect, use, and/or disclose (collectively, “Process”) your Personal Data in accordance with the Personal Data Protection Act B.E. 2562 (2019) (“PDPA”).\nWe recognize that protecting Personal Data is both a legal obligation and a social responsibility, building trust and confidence between the Application and its users. This Notice explains your rights, our duties, and the applicable terms and conditions regarding the Processing of your Personal Data.",
+        "personal_data_header": "Definitions",
+        "personal_data_body": "- Personal Data: Information relating to an individual that enables the identification of that individual, whether directly or indirectly, excluding data of deceased persons.\n- Sensitive Personal Data: Personal Data relating to race, ethnicity, political opinions, cult, religious or philosophical beliefs, sexual behavior, criminal records, health information, disabilities, trade union membership, genetic data, biometric data (e.g., facial recognition, iris scan, fingerprint), requiring higher levels of protection.",
+        "collect_data_header": "Personal Data We Collect",
+        "collect_data_body": "We collect only the Personal Data necessary for our purposes and by lawful means. This may include:\n1. Personal Information: Name, surname, age, date of birth, gender, national ID number, passport number, signature, hospital number, other identifiable numbers.\n2. Contact Details: Address, telephone number, email address.\n3. Usage & Assessment Data: Test scores, usage duration, activity logs, appointment schedules, requests for additional services, relatives’ Personal Data.\n4. Statistical Data: Patient counts, website visits.\n5. Health Data: Medical reports on physical and mental health, laboratory results, diagnoses.\n6. Medication Data: Allergy history, treatment outcomes.\n7. Other Information: Feedback, survey responses, communications across various channels.\n8. Automatically Collected Data: IP address, cookies, service usage behavior, access logs.",
+        "source_header": "Sources of Personal Data",
+        "source_body": "We may obtain your Personal Data from:\n1. Direct Sources: You, via the Application, our website, in-person interactions, or voluntary surveys.\n2. Indirect Sources: Public information, affiliated hospitals, partner organizations, authorized service providers.",
+        "process_header": "Purposes of Processing",
+        "process_body": "Your Personal Data may be used for:\n- Delivering services (online and offline).\n- Scheduling appointments and sending reminders.\n- Coordinating and referring patients to other healthcare facilities.\n- Verifying patient identity.\n- Providing service reminders or assistance offers.\n- Evaluating and improving the Application and our services.\n- Processing accounting and financial transactions as required by law.\n- Ensuring security and preventing fraud.\n- Enforcing Application rules.\n- Meeting legal compliance and investigation requirements.\n- Responding to inquiries and complaints.\n- Offering benefits and privileges.\n- Conducting surveys, statistical analyses, and research.",
+        "transfer_header": "Data Disclosure and Transfers",
+        "transfer_body": "We will not disclose or transfer your Personal Data to third parties unless:\n- You have provided explicit consent.\n- Disclosure is to affiliated hospitals or entities for purposes outlined in this Notice.\n- Required by law, legal process, or competent authorities.\n- Transferred internationally to countries/organizations with adequate data protection standards.",
+        "overseas_header": "",
+        "overseas_body": "",
+        "protection_header": "Data Security",
+        "protection_body": "We implement technical and organizational measures to protect your Personal Data, including restricting access to authorized personnel only, and preventing unauthorized use, disclosure, destruction, or access.",
+        "duration_header": "Retention Period",
+        "duration_body": "We retain your Personal Data only as long as necessary for the purposes described in this Notice, unless a longer retention period is required by law or for the establishment, exercise, or defense of legal claims. Certain data may be retained for up to 10 years after service termination for research, protection, and legal purposes.",
+        "changes_header": "Changes to This Privacy Notice",
+        "changes_body": "We may update this Privacy Notice from time to time. Updates will be published on the Application, with the date of the latest revision clearly indicated. Continued use of our services after such updates constitutes your acceptance of the revised Notice.",
+        "right_header": "Your Rights under the PDPA",
+        "right_body": "You are entitled to:\n1. Access and obtain a copy of your Personal Data.\n2. Rectify inaccurate or incomplete Personal Data.\n3. Request data portability in a structured, commonly used, machine-readable format.\n4. Request erasure, destruction, or anonymization of Personal Data when it is no longer necessary.\n5. Restrict Processing under certain conditions.\n6. Withdraw consent at any time.\n7. Object to the Processing of your Personal Data.",
+        "contact_header": "Contact Details",
+        "contact_body": "Application Name: DMD we care\nAddress: Maharaj Nakhon Ratchasima Hospital, 49 Chang Phueak Road, Nai Mueang Sub-district, Mueang District, Nakhon Ratchasima 30000, Thailand\nEmail: dmdwecare2025@gmail.com"
+    },
+    "signup": {
+        "title": "Sign Up",
+        "signup": "Sign up",
+        "next": "Next",
+        "missing": "missing",
+        "hn": "HN",
+        "firstName": "First Name (in Thai)",
+        "middleName": "Middle Name (in Thai)",
+        "lastName": "Last Name (in Thai)",
+        "phone": "Phone Number",
+        "email": "Email",
+        "birthDate": "Birthdate",
+        "pin": "6-digit Pin Code",
+        "confirm_pin": "Confirm Pin Code",
+        "alert": {
+            "invalid_email": "Invalid email address",
+            "require_digit_pin": "Require 6 digit pin code",
+            "pin_mismatched": "Confirm Pin Code is mismatched",
+            "200": "Registration completed!",
+            "401": "Invalid credentials",
+            "409": "The account with this HN has already been verified",
+            "404": "No account with HN: {{hn}}"
+        }
+    },
+    "content": {
+        "title": "Learning"
+    },
+    "appointment": {
+        "title": "Appointment",
+        "incoming": "Incoming",
+        "history": "History"
+    },
+    "addAppointment": {
+        "title": "Add Appointment",
+        "select_doctor": "Select Doctor",
+        "alert": {
+            "select_doctor": "Please select a doctor from the list",
+            "invalid_date": "Invalid Time or Date",
+            "select_future": "Please select a future time",
+            "verify": "Please, verify these information",
+            "201": "The appointment has been scheduled",
+            "201_body": "Please, wait for approval"
+        }
+    },
+    "viewAppointment": {
+        "delete": "Delete",
+        "alert": {
+            "204": "Deleted successfully"
+        }
+    },
+    "ask": {
+        "title": "Ask",
+        "submit": "+ New Question"
+    },
+    "addAsk": {
+        "title": "New Question",
+        "topic": "Topic  ",
+        "question": "Question  ",
+        "alert": {
+            "discard": "Discard Question?",
+            "discard_body": "Are you sure to discard them and leave the screen?",
+            "empty_topic": "Topic cannot be empty.",
+            "empty_question": "Question cannot be empty.",
+            "201": "The question has been submitted"
+        }
+    },
+    "viewAsk": {
+        "title": "Your Question",
+        "delete": "You are deleting this question.",
+        "alert": {
+            "204": "Deleted successfully"
+        }
+    },
+    "account": {
+        "title": "Account",
+        "menu": {
+            "profile": "Profile",
+            "medicine": "Prescription Medicine",
+            "vaccine": "Vaccination",
+            "setting": "Setting",
+            "logout": "Logout"
+        },
+        "alert": {
+            "logging_out": "You're trying to log out",
+            "logout": "Log out",
+            "200": "Logout successfully",
+            "401": "Logout without removing this device from the database"
+        }
+    },
+    "profile": {
+        "hn": "HN Number",
+        "firstName": "First Name",
+        "middleName": "Middle Name",
+        "lastName": "Last Name",
+        "phone": "Phone Number",
+        "email": "Email",
+        "birthDate": "Birthdate",
+        "weight": "Weight",
+        "height": "Height"
+    },
+    "setting": {
+        "title": "Setting",
+        "menu": {
+            "language": "Select Language"
+        }
+    },
+    "language": {
+        "title": "Select Language"
+    },
+    "appointmentCard": {
+        "approved": "Approved",
+        "pending": "Pending"
+    },
+    "questionCard": {
+        "replied": "A doctor replied",
+        "no_reply": "No reply"
+    },
+    "medicineCard": {
+        "dose": "Dose",
+        "quantity": "Quantity",
+        "frequency": "Frequency",
+        "instruction": "Instruction"
+    },
+    "vaccineCard": {
+        "location": "Location",
+        "date": "Date",
+        "complication": "Complication"
+    },
+    "swipeHand": {
+        "pull": "Swipe to Refresh"
+    }
+}

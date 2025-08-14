@@ -2,16 +2,14 @@ import { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { registerRootComponent } from "expo";
 import * as Notifications from "expo-notifications";
-import type { NotificationTrigger } from "expo-notifications";
 import { LanguageProvider } from "@/hooks/useLanguage";
 import { AuthProvider } from "./hooks/authContext";
 import { ApiProvider } from "./hooks/apiContext";
 import { Platform } from "react-native";
 import * as Device from "expo-device";
 import App from "./app";
-import Constants from "expo-constants";
-
-type notificationReceiveTrigger = NotificationTrigger & { value: number };
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import * as SplashScreen from "expo-splash-screen";
 
 registerRootComponent(main);
 
@@ -20,23 +18,30 @@ Notifications.setNotificationHandler({
         shouldShowAlert: true,
         shouldPlaySound: true,
         shouldSetBadge: false,
+        shouldShowBanner: true,
+        shouldShowList: false,
     }),
 });
+
+// Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync();
 
 export default function main() {
     useEffect(() => {
         registerForPushNotificationsAsync();
     }, []);
     return (
-        <AuthProvider>
-            <ApiProvider>
-                <LanguageProvider>
-                    <NavigationContainer>
-                        <App />
-                    </NavigationContainer>
-                </LanguageProvider>
-            </ApiProvider>
-        </AuthProvider>
+        <SafeAreaProvider>
+            <AuthProvider>
+                <ApiProvider>
+                    <LanguageProvider>
+                        <NavigationContainer>
+                            <App />
+                        </NavigationContainer>
+                    </LanguageProvider>
+                </ApiProvider>
+            </AuthProvider>
+        </SafeAreaProvider>
     );
 }
 

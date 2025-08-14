@@ -15,7 +15,7 @@ export default function CalendarDate({
         <View style={style.container}>
             <Text>{dayText}</Text>
             <View style={[{ backgroundColor: marked ? "#f85c5c" : "white" }, style.date]}>
-                <Text style={{ color: (now && !marked) ? "red" : "black" }}>{dayNumber}</Text>
+                <Text style={{ color: now && !marked ? "red" : "black" }}>{dayNumber}</Text>
             </View>
         </View>
     );

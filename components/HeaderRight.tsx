@@ -1,10 +1,9 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { View, Text, StyleSheet, Alert, Pressable } from "react-native";
+import { View, StyleSheet, Pressable } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 import type { ViewProps, ViewStyle } from "react-native";
 
-export default function HeaderRight({style, ...rest }: ViewProps & { style?: ViewStyle }) {
+export default function HeaderRight({ style, ...rest }: ViewProps & { style?: ViewStyle }) {
     const navigation = useNavigation();
     return (
         <View style={[stylesheet.container, style]} {...rest}>

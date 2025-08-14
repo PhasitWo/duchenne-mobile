@@ -5,17 +5,16 @@
     },
     "build": {
         "development": {
-            "distribution": "internal"
+            "developmentClient": true,
+            "ios": {
+                "simulator": false
+            }
         },
         "preview": {
+            "developmentClient": false,
+            "distribution": "internal",
             "environment": "preview",
-            "autoIncrement": true,
-            "android": {
-                "buildType": "apk"
-            },
-            "env" : {
-              "EXPO_PUBLIC_API_URL":"https://uat-duchenne-server.onrender.com/mobile"
-            }
+            "autoIncrement": true
         },
         "production": {
             "autoIncrement": true

@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Pressable, PressableProps } from "react-native";
-import { grey, darkGrey } from "@/constants/Colors";
+import { darkGrey } from "@/constants/Colors";
 import { Dayjs } from "dayjs";
-import { useLanguage } from "@/hooks/useLanguage";
+import { useTranslation } from "react-i18next";
 
 export interface appointment {
     id: number | string;
@@ -12,8 +12,8 @@ export interface appointment {
 }
 
 export default function AppointmentCard({ appointment, ...rest }: { appointment: appointment } & PressableProps) {
-    const { currentLang, lang } = useLanguage();
-    const isApprove = appointment.approveAt !== null
+    const { t } = useTranslation();
+    const isApprove = appointment.approveAt !== null;
     return (
         <Pressable
             key={appointment.id}
@@ -21,9 +21,9 @@ export default function AppointmentCard({ appointment, ...rest }: { appointment:
             {...rest}
         >
             <View style={style.statusContainer}>
-                <Text style={style.date}>{appointment.dateTime.locale(currentLang).format("D MMMM YYYY")}</Text>
-                <Text style={[style.status, {backgroundColor: isApprove ? "lightgreen" : "orange"}]}>
-                    {isApprove ? lang("ยืนยันแล้ว", "Approved") : lang("รอยืนยัน", "Pending")}
+                <Text style={style.date}>{appointment.dateTime.format("D MMMM YYYY")}</Text>
+                <Text style={[style.status, { backgroundColor: isApprove ? "lightgreen" : "orange" }]}>
+                    {isApprove ? t("appointmentCard.approved") : t("appointmentCard.pending")}
                 </Text>
             </View>
             <Text style={style.time}>{appointment.dateTime.format("HH:mm")}</Text>
