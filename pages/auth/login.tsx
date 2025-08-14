@@ -224,7 +224,7 @@ const style = StyleSheet.create({
     label: {
         flex: 1,
         paddingLeft: 10,
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: "bold",
     },
     input: {
@@ -237,8 +237,7 @@ const style = StyleSheet.create({
     signup: { marginTop: 20 },
     signupLink: {
         color: "blue",
-        borderBottomColor: "blue",
-        borderBottomWidth: 5,
+        textDecorationLine: "underline",
     },
     eye: {
         position: "absolute",

@@ -31,6 +31,7 @@ export type ApiPatientModel = {
     lastName: string;
     email: string;
     phone: string;
+    birthDate: number;
     verified: boolean;
     weight: number | null;
     height: number | null;

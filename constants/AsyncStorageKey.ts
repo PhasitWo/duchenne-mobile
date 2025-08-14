@@ -3,5 +3,5 @@ export enum AsyncStorageKey {
     language = "language",
     showAppointmentTutorial = "appointmentRefresh",
     showAskTutorial = "askTutorial",
-    lastLoginHN = "lastLoginHN"
+    lastLoginHN = "lastLoginHN",
 }

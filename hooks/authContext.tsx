@@ -6,7 +6,7 @@ import useTutorial from "./useTutorial";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AsyncStorageKey } from "@/constants/AsyncStorageKey";
 
-type LoginDispatch = (userToken: string, hn: string) => Promise<void>;
+type LoginDispatch = (userToken: string, hn?: string) => Promise<void>;
 type LogoutDispatch = () => void;
 type GetLastLoginHN = () => Promise<string>;
 

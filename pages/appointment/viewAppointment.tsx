@@ -7,7 +7,6 @@ import CustomButton from "@/components/CustomButton";
 import { useAppointmentContext } from "@/hooks/appointmentContext";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { type StackParamList } from "./_stack";
-import { useLanguage } from "@/hooks/useLanguage";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError } from "axios";
 import { useAuthContext } from "@/hooks/authContext";
@@ -24,7 +23,6 @@ export default function ViewAppointment({ route, navigation }: Props) {
     const [selected, setSelected] = useState<string>("");
     const [show, setShow] = useState(false);
     const { apmntList, fetch } = useAppointmentContext();
-    const { currentLang } = useLanguage();
     const { t } = useTranslation();
     const { api } = useApiContext();
     const { logoutDispatch } = useAuthContext();
@@ -100,7 +98,7 @@ export default function ViewAppointment({ route, navigation }: Props) {
                 <Text>{selected}</Text>
             </Pressable>
             <Pressable style={style.pressable} onPress={showDatepicker} disabled>
-                <Text>{dayjs(date).locale(currentLang).format("D MMMM YYYY")}</Text>
+                <Text>{dayjs(date).format("D MMMM YYYY")}</Text>
             </Pressable>
             <Pressable style={style.pressable} onPress={showTimepicker} disabled>
                 <Text>{dayjs(date).format("HH:mm")}</Text>
@@ -122,8 +120,6 @@ export default function ViewAppointment({ route, navigation }: Props) {
                 pressedColor={darkGrey}
                 showLoading={isLoading}
             />
-            <Text>selected: {date.toString()}</Text>
-            <Text>{apmntList.length}</Text>
         </View>
     );
 }

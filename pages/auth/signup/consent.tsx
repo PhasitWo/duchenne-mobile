@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { SignupStackParamList } from "./_stack";
 import CustomButton from "@/components/CustomButton";
 import { color, darkGrey } from "@/constants/Colors";
@@ -10,18 +10,16 @@ export default function Consent({ navigation }: Props) {
     const { t } = useTranslation();
     return (
         <View style={{ flex: 1, backgroundColor: "white", padding: 20, alignItems: "center" }}>
-            <Text>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim id est laborum
-            </Text>
-            <Text>
-                ท่านสามารถอ่านข้อมูลอย่างละเอียดได้ที่{" "}
-                <Text style={{ color: "blue" }} onPress={() => navigation.navigate("privacy")}>
-                    ประกาศความเป็นส่วนตัว
-                </Text>
+            <Text style={style.header}>{t("consent.term")}</Text>
+            <Text style={style.body}>{t("consent.consent_body")}</Text>
+            <Text style={[style.header, { marginTop: 30 }]}>{t("privacy.title")}</Text>
+            <Text style={style.body}>{t("consent.privacy_intro")}</Text>
+            <Text style={[style.body, { marginTop: 10, alignSelf: "flex-start" }]}>{t("consent.privacy_pointer")}</Text>
+            <Text
+                style={[style.body, { color: "blue", alignSelf: "flex-start", textDecorationLine: "underline" }]}
+                onPress={() => navigation.navigate("privacy")}
+            >
+                {t("privacy.title")}
             </Text>
             <CustomButton
                 title={t("consent.accept")}
@@ -29,8 +27,20 @@ export default function Consent({ navigation }: Props) {
                 pressedColor={darkGrey}
                 style={{ height: 60, borderRadius: 10, marginTop: 30 }}
                 bold
-                onPress={() => navigation.navigate("signup")}
+                onPress={() => navigation.navigate("signup1")}
             />
         </View>
     );
 }
+
+const style = StyleSheet.create({
+    header: {
+        fontWeight: "bold",
+        alignSelf: "flex-start",
+        marginBottom: 15,
+        fontSize: 16,
+    },
+    body: {
+        fontSize: 14,
+    },
+});

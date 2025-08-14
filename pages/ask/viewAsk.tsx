@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet, Alert, Pressable } from "react-native";
 import { color, darkGrey } from "@/constants/Colors";
-import { useLanguage } from "@/hooks/useLanguage";
 import { useState, useEffect } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { Dayjs } from "dayjs";
@@ -29,7 +28,6 @@ type Answer = {
 
 type props = NativeStackScreenProps<AskStackParamList, "viewAsk">;
 export default function ViewAsk({ navigation, route }: props) {
-    const { currentLang } = useLanguage();
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [question, setQuestion] = useState<Question>({
@@ -125,7 +123,7 @@ export default function ViewAsk({ navigation, route }: props) {
         <View style={style.container}>
             <View style={style.questionContainer}>
                 <Text style={style.boldText}>{question.topic} </Text>
-                <Text style={style.date}>{question.createAt?.locale(currentLang).format("D MMMM YYYY  HH:mm")}</Text>
+                <Text style={style.date}>{question.createAt?.format("D MMMM YYYY  HH:mm")}</Text>
                 <Text style={style.body}>{question.question}</Text>
                 <Pressable style={style.bin} onPress={showDeleteAlert}>
                     <FontAwesome name="trash-o" size={20} color="red" style={{}} />
@@ -139,9 +137,7 @@ export default function ViewAsk({ navigation, route }: props) {
                         </View>
                         <View style={style.doctorNameContainer}>
                             <Text style={style.doctorName}>{answer.doctor}</Text>
-                            <Text style={style.date}>
-                                {answer.answerAt?.locale(currentLang).format("D MMMM YYYY  HH:mm")}
-                            </Text>
+                            <Text style={style.date}>{answer.answerAt?.format("D MMMM YYYY  HH:mm")}</Text>
                         </View>
                     </View>
                     <Text style={style.body}>{answer.answer}</Text>

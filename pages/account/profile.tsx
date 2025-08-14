@@ -8,6 +8,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { useAuthContext } from "@/hooks/authContext";
 import LoadingView from "@/components/LoadingView";
 import { useTranslation } from "react-i18next";
+import dayjs from "dayjs";
 
 type Info = { title: string; value: string | number | undefined; border?: boolean };
 
@@ -40,8 +41,12 @@ export default function Profile() {
             { title: t("profile.middleName"), value: userInfo?.middleName ?? "-" },
             { title: t("profile.lastName"), value: userInfo?.lastName },
             { title: t("profile.hn"), value: userInfo?.hn },
-            { title: t("profile.email"), value: userInfo?.email ?? "-" },
             { title: t("profile.phone"), value: userInfo?.phone ?? "-" },
+            { title: t("profile.email"), value: userInfo?.email ?? "-" },
+            {
+                title: t("profile.birthDate"),
+                value: userInfo ? dayjs(userInfo.birthDate * 1000).format("D MMMM YYYY") : "-",
+            },
             { title: t("profile.weight"), value: userInfo?.weight ?? "-" },
             { title: t("profile.height"), value: userInfo?.height ?? "-" },
         ];
