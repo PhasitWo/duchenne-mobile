@@ -4,4 +4,7 @@ export enum AsyncStorageKey {
     showAppointmentTutorial = "appointmentRefresh",
     showAskTutorial = "askTutorial",
     lastLoginHN = "lastLoginHN",
+    lastLockDuration = "lastLockDuration",
+    resetLockDurationAt = "",
+    lockUntil = "lockUntil",
 }

@@ -9,7 +9,7 @@ import {
     KeyboardAvoidingView,
     ScrollView,
 } from "react-native";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import CustomButton from "@/components/CustomButton";
 import { color, darkGrey } from "@/constants/Colors";
 import { useAuthContext } from "@/hooks/authContext";
@@ -26,6 +26,7 @@ import { startActivityAsync, ActivityAction } from "expo-intent-launcher";
 import * as Application from "expo-application";
 import { getExpoToken } from "@/hooks/useDeviceInfo";
 import { useTranslation } from "react-i18next";
+import dayjs from "dayjs";
 
 export type LoginData = {
     hn: string;
@@ -40,7 +41,8 @@ export default function Login({ route, navigation }: Props) {
     const [warning, setWarning] = useState<Warning>({ hn: false, pin: false });
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { t } = useTranslation();
-    const { loginDispatch, getLastLoginHN } = useAuthContext();
+    const { loginDispatch, getLastLoginHN, increaseFailedLoginAttempts, lockedUntil, setLockedUntil } =
+        useAuthContext();
 
     const pin_ref = useRef<TextInput>(null);
     const warningText = t("login.warn_require_field");
@@ -80,6 +82,10 @@ export default function Login({ route, navigation }: Props) {
                     return;
                 }
             }
+            if (data.pin.length < 6) {
+                setWarning({ ...warning, pin: true });
+                return;
+            }
             // notification permission
             if (!(await getNotificationPermission()))
                 Alert.alert(t("common.alert.error"), t("login.alert.require_noti_perm"), [
@@ -111,9 +117,11 @@ export default function Login({ route, navigation }: Props) {
                     loginDispatch(response.data.token, hn);
                     break;
                 case 401:
+                    increaseFailedLoginAttempts();
                     Alert.alert(t("common.alert.error"), t("login.alert.invalid_cred"));
                     break;
                 case 403:
+                    increaseFailedLoginAttempts();
                     Alert.alert(t("common.alert.error"), t("login.alert.unverified_account", { hn: data.hn }));
                     break;
                 default:
@@ -122,6 +130,7 @@ export default function Login({ route, navigation }: Props) {
         } catch (err) {
             if (err instanceof AxiosError) {
                 if (err.status == 404) {
+                    increaseFailedLoginAttempts();
                     Alert.alert(t("common.alert.error"), t("login.alert.404", { hn: data.hn }));
                     return;
                 }
@@ -133,6 +142,33 @@ export default function Login({ route, navigation }: Props) {
             setIsLoading(false);
         }
     }
+
+    // lock logic
+    const [isLocked, setIsLocked] = useState(false);
+    const [remainingSec, setRemainingSec] = useState(0);
+    const [trigger, setTrigger] = useState(0);
+
+    useEffect(() => {
+        const id = setInterval(() => {
+            setTrigger((prev) => prev + 1);
+        }, 1000);
+        return () => clearInterval(id);
+    }, []);
+
+    useEffect(() => {
+        if (lockedUntil) {
+            if (dayjs().isAfter(lockedUntil)) {
+                setLockedUntil(null);
+                setIsLocked(false);
+            } else {
+                setRemainingSec(Math.max(lockedUntil.diff(dayjs(), "second"), 0));
+                setIsLocked(true);
+            }
+        } else {
+            setIsLocked(false);
+        }
+    }, [trigger]);
+
     return (
         <KeyboardAvoidingView style={style.formContainer} behavior="padding">
             <ScrollView contentContainerStyle={{ alignItems: "center" }} keyboardShouldPersistTaps="handled">
@@ -183,8 +219,9 @@ export default function Login({ route, navigation }: Props) {
                     </Text>
                 </View>
                 <CustomButton
-                    title={t("login.login")}
-                    normalColor={color.tint}
+                    title={isLocked ? t("login.lock", { second: remainingSec }) : t("login.login")}
+                    disabled={isLocked}
+                    normalColor={isLocked ? darkGrey : color.tint}
                     pressedColor={darkGrey}
                     style={{ height: 60, borderRadius: 10, marginTop: 30 }}
                     bold
