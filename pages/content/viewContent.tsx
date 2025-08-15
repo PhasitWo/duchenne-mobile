@@ -8,11 +8,13 @@ import LoadingView from "@/components/LoadingView";
 import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { useTranslation } from "react-i18next";
+import { useAuthContext } from "@/hooks/authContext";
 
 type props = NativeStackScreenProps<ContentStackParamList, "viewContent">;
 export default function ViewContent({ navigation, route }: props) {
     const [content, setContent] = useState<ApiContentModel | null>(null);
     const { api } = useApiContext();
+    const { logoutDispatch } = useAuthContext();
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -48,7 +50,7 @@ export default function ViewContent({ navigation, route }: props) {
         <View style={style.container}>
             <View style={style.contentContainer}>
                 {content ? (
-                    <WebView originWhitelist={["*"]} source={{ html: header + content.body }} />
+                    <WebView originWhitelist={["*"]} source={{ html: header + content.body }} allowsFullscreenVideo />
                 ) : (
                     <LoadingView />
                 )}
@@ -100,6 +102,3 @@ const header = `
 </style>
 </head>
 `;
-function logoutDispatch() {
-    throw new Error("Function not implemented.");
-}

@@ -58,9 +58,6 @@ export default function Signup3({ navigation }: Props) {
                         pin: "",
                     });
                     break;
-                case 401:
-                    Alert.alert(t("common.alert.error"), t("signup.alert.401"));
-                    break;
                 case 409:
                     Alert.alert(t("common.alert.error"), t("signup.alert.409"));
                     break;
