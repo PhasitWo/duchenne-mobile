@@ -169,23 +169,6 @@ export default function Login({ route, navigation }: Props) {
         }
     }, [trigger]);
 
-    // const checkLock = useCallback(() => {
-    //     if (lockedUntil) {
-    //         if (dayjs().isAfter(lockedUntil)) {
-    //             console.log("RUN")
-    //             setLockedUntil(null);
-    //             setIsLocked(false);
-    //         } else {
-    //             setRemainingSec(Math.max(lockedUntil.diff(dayjs(), "second"), 0));
-    //             setIsLocked(true);
-    //         }
-    //     }
-    // }, [lockedUntil]);
-
-    // setInterval(() => {
-    //     checkLock();
-    // }, 1000);
-
     return (
         <KeyboardAvoidingView style={style.formContainer} behavior="padding">
             <ScrollView contentContainerStyle={{ alignItems: "center" }} keyboardShouldPersistTaps="handled">
@@ -244,12 +227,6 @@ export default function Login({ route, navigation }: Props) {
                     bold
                     onPress={handleLogin}
                     showLoading={isLoading}
-                />
-                <CustomButton
-                    title="test"
-                    normalColor={"red"}
-                    pressedColor={"white"}
-                    onPress={() => increaseFailedLoginAttempts()}
                 />
                 <Text style={style.signup}>
                     {t("login.no_account") + " "}
