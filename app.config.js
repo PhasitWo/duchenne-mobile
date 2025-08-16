@@ -17,6 +17,9 @@ module.exports = {
         config: {
             usesNonExemptEncryption: false,
         },
+        // infoPlist: {
+        //     NSCalendarsUsageDescription: "This app may uses the calendar to add appointment event.",
+        // },
     },
     android: {
         adaptiveIcon: {
