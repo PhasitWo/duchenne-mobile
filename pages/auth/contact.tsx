@@ -1,4 +1,5 @@
-import { View, Text } from "react-native";
+import CustomText from "@/components/CustomText";
+import { View } from "react-native";
 
 export default function Contact() {
     return (
@@ -10,7 +11,7 @@ export default function Contact() {
                 alignItems: "center",
             }}
         >
-            <Text>dmdwecare2025@gmail.com</Text>
+            <CustomText>dmdwecare2025@gmail.com</CustomText>
         </View>
     );
 }

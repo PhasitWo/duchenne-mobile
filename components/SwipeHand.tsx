@@ -1,7 +1,7 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "react-i18next";
-import { Text } from "react-native";
 import Animated, { withTiming, useAnimatedStyle, Easing, withSequence, withRepeat } from "react-native-reanimated";
+import CustomText from "./CustomText";
 const config = {
     duration: 1100,
     easing: Easing.bezier(0.5, 0.01, 0, 1),
@@ -33,9 +33,9 @@ export default function SwipeHand({ from, to }: { from: number; to: number }) {
             ]}
         >
             <MaterialCommunityIcons name="gesture-swipe-down" size={60} color="black" />
-            <Text style={{ marginTop: 10, backgroundColor: "white", borderRadius: 40, padding: 10 }}>
+            <CustomText style={{ marginTop: 10, backgroundColor: "white", borderRadius: 40, padding: 10 }}>
                 {t("swipeHand.pull")}
-            </Text>
+            </CustomText>
         </Animated.View>
     );
 }

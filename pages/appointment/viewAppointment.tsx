@@ -1,4 +1,4 @@
-import { View, Text, Pressable, StyleSheet, Alert } from "react-native";
+import { View, Pressable, StyleSheet, Alert } from "react-native";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
@@ -11,6 +11,7 @@ import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError } from "axios";
 import { useAuthContext } from "@/hooks/authContext";
 import { useTranslation } from "react-i18next";
+import CustomText from "@/components/CustomText";
 
 type mode = "date" | "time";
 
@@ -95,13 +96,13 @@ export default function ViewAppointment({ route, navigation }: Props) {
     return (
         <View style={style.container}>
             <Pressable style={style.pressable} disabled>
-                <Text>{selected}</Text>
+                <CustomText>{selected}</CustomText>
             </Pressable>
             <Pressable style={style.pressable} onPress={showDatepicker} disabled>
-                <Text>{dayjs(date).format("D MMMM YYYY")}</Text>
+                <CustomText>{dayjs(date).format("D MMMM YYYY")}</CustomText>
             </Pressable>
             <Pressable style={style.pressable} onPress={showTimepicker} disabled>
-                <Text>{dayjs(date).format("HH:mm")}</Text>
+                <CustomText>{dayjs(date).format("HH:mm")}</CustomText>
             </Pressable>
             {show && (
                 <DateTimePicker

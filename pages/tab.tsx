@@ -11,6 +11,7 @@ import { Platform, Pressable, View } from "react-native";
 import ContentStack from "./content/_stack";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
+import { smFontSize } from "@/constants/Style";
 
 const Tab = createBottomTabNavigator();
 
@@ -23,7 +24,8 @@ export default function Tabs() {
                 tabBarActiveTintColor: color.tint,
                 tabBarStyle: { height: Platform.OS == "ios" ? 120 : insets.bottom + 80 },
                 tabBarLabelPosition: "below-icon",
-                tabBarLabelStyle: { fontSize: 12, marginTop: 5, width: 100 },
+                tabBarAllowFontScaling: false,
+                tabBarLabelStyle: { fontSize: smFontSize, marginTop: 5, width: 100 },
                 tabBarButton: ({ ref, ...props }) => (
                     <Pressable ref={ref as React.RefObject<View>} {...props} android_ripple={null} />
                 ),

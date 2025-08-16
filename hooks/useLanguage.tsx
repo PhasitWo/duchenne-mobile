@@ -33,6 +33,7 @@ export function LanguageProvider({ children }: PropsWithChildren) {
                 await AsyncStorage.setItem(AsyncStorageKey.language, "th");
                 setCurrentLang("th");
                 i18n.changeLanguage("th");
+                dayjs.locale("th");
                 return;
             }
             setCurrentLang(res as Language);

@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
+import CustomText from "./CustomText";
 
 export default function CalendarDate({
     dayText,
@@ -13,9 +14,9 @@ export default function CalendarDate({
 }) {
     return (
         <View style={style.container}>
-            <Text>{dayText}</Text>
+            <CustomText>{dayText}</CustomText>
             <View style={[{ backgroundColor: marked ? "#f85c5c" : "white" }, style.date]}>
-                <Text style={{ color: now && !marked ? "red" : "black" }}>{dayNumber}</Text>
+                <CustomText style={{ color: now && !marked ? "red" : "black" }}>{dayNumber}</CustomText>
             </View>
         </View>
     );

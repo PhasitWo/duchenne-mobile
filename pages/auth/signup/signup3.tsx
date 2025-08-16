@@ -1,6 +1,5 @@
 import {
     View,
-    Text,
     TextInput,
     KeyboardAvoidingView,
     ScrollView,
@@ -20,6 +19,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSignupContext } from "@/hooks/signupContext";
 import { AxiosError } from "axios";
 import { useApiContext } from "@/hooks/apiContext";
+import CustomText from "@/components/CustomText";
+import CustomTextInput from "@/components/CustomTextInput";
 
 type Props = NativeStackScreenProps<SignupStackParamList, "signup3">;
 export default function Signup3({ navigation }: Props) {
@@ -83,11 +84,11 @@ export default function Signup3({ navigation }: Props) {
                 keyboardShouldPersistTaps="handled"
             >
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>
+                    <CustomText style={style.label}>
                         {t("signup.pin")}
                         <Asterisk />
-                    </Text>
-                    <TextInput
+                    </CustomText>
+                    <CustomTextInput
                         inputAccessoryViewID="pin"
                         maxLength={6}
                         style={style.input}
@@ -108,11 +109,11 @@ export default function Signup3({ navigation }: Props) {
                     )}
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>
+                    <CustomText style={style.label}>
                         {t("signup.confirm_pin")}
                         <Asterisk />
-                    </Text>
-                    <TextInput
+                    </CustomText>
+                    <CustomTextInput
                         ref={cf_pin_ref}
                         maxLength={6}
                         style={style.input}

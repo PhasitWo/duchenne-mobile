@@ -2,7 +2,9 @@ import { VaccineHistory } from "@/model/model";
 import { stringToHslColor } from "@/utility/convert";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
-import { Text, StyleSheet, Pressable, PressableProps, View } from "react-native";
+import { StyleSheet, Pressable, PressableProps, View } from "react-native";
+import CustomText from "./CustomText";
+import { lFontSize } from "@/constants/Style";
 
 export type VaccineCardProps = { data: VaccineHistory };
 
@@ -19,13 +21,13 @@ export default function VaccineCard({ data, ...rest }: VaccineCardProps & Pressa
                 }}
             />
             <View style={style.content}>
-                <Text style={style.title}>{data.vaccineName ?? "-"}</Text>
-                <Text style={style.head}>{t("vaccineCard.location")}</Text>
-                <Text style={style.body}>{data.vaccineLocation ?? "-"}</Text>
-                <Text style={style.head}>{t("vaccineCard.date")}</Text>
-                <Text style={style.body}>{dayjs(data.vaccineAt * 1000).format("D MMMM YYYY")}</Text>
-                <Text style={style.head}>{t("vaccineCard.complication")}</Text>
-                <Text style={style.body}>{data.complication ?? "-"}</Text>
+                <CustomText style={style.title}>{data.vaccineName ?? "-"}</CustomText>
+                <CustomText style={style.head}>{t("vaccineCard.location")}</CustomText>
+                <CustomText style={style.body}>{data.vaccineLocation ?? "-"}</CustomText>
+                <CustomText style={style.head}>{t("vaccineCard.date")}</CustomText>
+                <CustomText style={style.body}>{dayjs(data.vaccineAt * 1000).format("D MMMM YYYY")}</CustomText>
+                <CustomText style={style.head}>{t("vaccineCard.complication")}</CustomText>
+                <CustomText style={style.body}>{data.complication ?? "-"}</CustomText>
             </View>
         </Pressable>
     );
@@ -56,7 +58,7 @@ const style = StyleSheet.create({
     title: {
         fontWeight: "bold",
         marginBottom: 10,
-        fontSize: 18,
+        fontSize: lFontSize,
     },
     head: {
         fontWeight: "bold",
