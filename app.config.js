@@ -1,7 +1,7 @@
 module.exports = {
     name: "DMD We Care",
     slug: "duchenne-mobile",
-    version: "1.0.0",
+    version: "1.0.1",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "myapp",

@@ -1,4 +1,6 @@
-import { ImageBackground, Text, StyleSheet, Pressable, PressableProps } from "react-native";
+import { ImageBackground, StyleSheet, Pressable, PressableProps } from "react-native";
+import CustomText from "./CustomText";
+import { isTablet } from "@/constants/Style";
 
 export type CardParam = { id?: number; title: string; bodyText?: string; imageURL?: string };
 
@@ -10,8 +12,8 @@ export default function Card({ title, bodyText, imageURL, ...rest }: CardParam &
                 resizeMode="cover"
                 style={{ padding: 25, flex: 1, paddingRight: 80 }}
             >
-                <Text style={style.title}>{title}</Text>
-                {bodyText && <Text>{bodyText}</Text>}
+                <CustomText style={style.title}>{title}</CustomText>
+                {bodyText && <CustomText>{bodyText}</CustomText>}
             </ImageBackground>
         </Pressable>
     );
@@ -20,8 +22,8 @@ export default function Card({ title, bodyText, imageURL, ...rest }: CardParam &
 const style = StyleSheet.create({
     container: {
         borderRadius: 15,
-        width: 350,
-        height: 120,
+        width: 350 * (isTablet ? 1.15 : 1),
+        height: 120 * (isTablet ? 1.15 : 1),
         marginTop: 20,
         backgroundColor: "white",
         overflow: "hidden",

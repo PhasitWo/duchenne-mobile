@@ -1,8 +1,9 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet } from "react-native";
 import CalendarDate from "./Calendar.date";
 import dayjs from "dayjs";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useMemo } from "react";
+import CustomText from "./CustomText";
 
 export default function Calendar({ markedDateKey }: { markedDateKey: number[] }) {
     const { currentLang } = useLanguage();
@@ -13,7 +14,7 @@ export default function Calendar({ markedDateKey }: { markedDateKey: number[] })
     const currentMonth = useMemo(() => dayjs().format("MMMM YYYY"), [currentLang]);
     return (
         <View style={style.container}>
-            <Text>{currentMonth}</Text>
+            <CustomText>{currentMonth}</CustomText>
             <View style={{ flexDirection: "row" }}>
                 {days.map((v, k) => (
                     <CalendarDate

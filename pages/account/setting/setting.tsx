@@ -1,4 +1,4 @@
-import { Text, View, FlatList, StyleSheet, Pressable } from "react-native";
+import { View, FlatList, StyleSheet, Pressable } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { darkGrey } from "@/constants/Colors";
 import { type ReactElement } from "react";
@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import CustomText from "@/components/CustomText";
 
 type SettingItem = { title: string; icon: ReactElement; href: string | undefined };
 
@@ -18,7 +19,7 @@ const Item = ({ setting }: { setting: SettingItem }) => {
         >
             <View style={style.item}>
                 <View>{setting.icon}</View>
-                <Text style={style.itemText}>{setting.title}</Text>
+                <CustomText style={style.itemText}>{setting.title}</CustomText>
             </View>
         </Pressable>
     );

@@ -1,4 +1,4 @@
-import { Text, FlatList, View, StyleSheet, Dimensions, Alert } from "react-native";
+import { FlatList, View, StyleSheet, Dimensions, Alert } from "react-native";
 import { useState, useMemo, useCallback } from "react";
 import { ApiDeviceModel, ApiJwtClaimModel, ApiLoginResponse } from "@/model/model";
 import { useApiContext } from "@/hooks/apiContext";
@@ -15,6 +15,8 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { getDeviceName, getExpoToken } from "@/hooks/useDeviceInfo";
 import useTutorial from "@/hooks/useTutorial";
 import { useTranslation } from "react-i18next";
+import CustomText from "@/components/CustomText";
+import { smFontSize } from "@/constants/Style";
 
 export default function Notification() {
     const [data, setData] = useState<ApiDeviceModel[]>([]);
@@ -101,15 +103,15 @@ export default function Notification() {
         return ({ device }: { device: ApiDeviceModel }) => {
             return (
                 <View style={style.itemContainer}>
-                    <Text style={{ flex: 1, textAlign: "center" }}>
+                    <CustomText style={{ flex: 1, textAlign: "center", fontSize: smFontSize }}>
                         <FontAwesome name="circle" size={12} color="green" />
                         {"  "}
                         {device.deviceName}
                         {device.id === deviceId && "(Your device)"}
-                    </Text>
-                    <Text style={{ flex: 1, textAlign: "center" }}>
+                    </CustomText>
+                    <CustomText style={{ flex: 1, textAlign: "center", fontSize: smFontSize }}>
                         {dayjs(device.loginAt * 1000).format("D/MM/YYYY HH:mm ")}
-                    </Text>
+                    </CustomText>
                 </View>
             );
         };
@@ -122,8 +124,8 @@ export default function Notification() {
     return (
         <View style={style.container}>
             <View style={style.itemContainer}>
-                <Text style={{ flex: 1, textAlign: "center" }}>{t("notification.device_name")}</Text>
-                <Text style={{ flex: 1, textAlign: "center" }}>{t("notification.login_at")}</Text>
+                <CustomText style={{ flex: 1, textAlign: "center" }}>{t("notification.device_name")}</CustomText>
+                <CustomText style={{ flex: 1, textAlign: "center" }}>{t("notification.login_at")}</CustomText>
             </View>
             <View>
                 <FlatList
@@ -134,9 +136,9 @@ export default function Notification() {
             </View>
 
             <View style={{ marginTop: 10, padding: 10 }}>
-                <Text style={{ fontWeight: "bold" }}>{t("notification.topic1")}</Text>
-                <Text>{t("notification.topic2")}</Text>
-                <Text style={{ marginTop: 10 }}>{t("notification.factor1")}</Text>
+                <CustomText style={{ fontWeight: "bold" }}>{t("notification.topic1")}</CustomText>
+                <CustomText>{t("notification.topic2")}</CustomText>
+                <CustomText style={{ marginTop: 10 }}>{t("notification.factor1")}</CustomText>
                 <View style={{ justifyContent: "center", alignItems: "center", width: "100%" }}>
                     <CustomButton
                         title={t("notification.make_active")}
@@ -147,9 +149,9 @@ export default function Notification() {
                         onPress={handlePushButton}
                     />
                 </View>
-                <Text>{t("notification.factor2")}</Text>
-                <Text style={{ marginTop: 10 }}>{t("notification.factor3")}</Text>
-                <Text style={{ marginTop: 10 }}>{t("notification.factor4")}</Text>
+                <CustomText>{t("notification.factor2")}</CustomText>
+                <CustomText style={{ marginTop: 10 }}>{t("notification.factor3")}</CustomText>
+                <CustomText style={{ marginTop: 10 }}>{t("notification.factor4")}</CustomText>
             </View>
         </View>
     );
@@ -160,6 +162,7 @@ const style = StyleSheet.create({
         height: screenHeight * 0.9,
         backgroundColor: "white",
         paddingBottom: 50,
+        padding: 10,
     },
     itemContainer: {
         height: 60,

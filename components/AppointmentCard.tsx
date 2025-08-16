@@ -1,7 +1,8 @@
-import { View, Text, StyleSheet, Pressable, PressableProps } from "react-native";
+import { View, StyleSheet, Pressable, PressableProps } from "react-native";
 import { darkGrey } from "@/constants/Colors";
 import { Dayjs } from "dayjs";
 import { useTranslation } from "react-i18next";
+import CustomText from "./CustomText";
 
 export interface appointment {
     id: number | string;
@@ -21,14 +22,14 @@ export default function AppointmentCard({ appointment, ...rest }: { appointment:
             {...rest}
         >
             <View style={style.statusContainer}>
-                <Text style={style.date}>{appointment.dateTime.format("D MMMM YYYY")}</Text>
-                <Text style={[style.status, { backgroundColor: isApprove ? "lightgreen" : "orange" }]}>
+                <CustomText style={style.date}>{appointment.dateTime.format("D MMMM YYYY")}</CustomText>
+                <CustomText style={[style.status, { backgroundColor: isApprove ? "lightgreen" : "orange" }]}>
                     {isApprove ? t("appointmentCard.approved") : t("appointmentCard.pending")}
-                </Text>
+                </CustomText>
             </View>
-            <Text style={style.time}>{appointment.dateTime.format("HH:mm")}</Text>
-            <Text style={style.time}>{appointment.doctor}</Text>
-            {appointment.specialist && <Text style={style.time}>{appointment.specialist}</Text>}
+            <CustomText style={style.time}>{appointment.dateTime.format("HH:mm")}</CustomText>
+            <CustomText style={style.time}>{appointment.doctor}</CustomText>
+            {appointment.specialist && <CustomText style={style.time}>{appointment.specialist}</CustomText>}
         </Pressable>
     );
 }

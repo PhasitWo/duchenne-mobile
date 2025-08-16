@@ -1,4 +1,4 @@
-import { Text, View, FlatList, StyleSheet, Pressable, Alert } from "react-native";
+import { View, FlatList, StyleSheet, Pressable, Alert } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { color, darkGrey } from "@/constants/Colors";
@@ -11,6 +11,7 @@ import { useApiContext } from "@/hooks/apiContext";
 import { AxiosError } from "axios";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import { useTranslation } from "react-i18next";
+import CustomText from "@/components/CustomText";
 
 type Menu = { title: string; icon: ReactElement; href?: string | undefined; customOnPress?: Function };
 
@@ -29,7 +30,7 @@ const Item = ({ menu }: { menu: Menu }) => {
         >
             <View style={style.item}>
                 <View style={style.itemIcon}>{menu.icon}</View>
-                <Text style={style.itemText}>{menu.title}</Text>
+                <CustomText style={style.itemText}>{menu.title}</CustomText>
             </View>
             <FontAwesome name="chevron-right" size={15} color="black" />
         </Pressable>

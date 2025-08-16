@@ -1,4 +1,5 @@
-import { Text, Pressable, PressableProps, StyleSheet, ViewStyle, ColorValue, ActivityIndicator } from "react-native";
+import { Pressable, PressableProps, StyleSheet, ViewStyle, ColorValue, ActivityIndicator } from "react-native";
+import CustomText from "./CustomText";
 
 export default function CustomButton({
     title,
@@ -29,7 +30,7 @@ export default function CustomButton({
             {showLoading ? (
                 <ActivityIndicator size={40} color="white" />
             ) : (
-                <Text style={{ fontWeight: bold ? "bold" : "normal" }}>{title}</Text>
+                <CustomText style={{ fontWeight: bold ? "bold" : "normal" }}>{title}</CustomText>
             )}
         </Pressable>
     );

@@ -1,4 +1,4 @@
-import { View, Alert, StyleSheet, Pressable, Text, RefreshControl, ScrollView } from "react-native";
+import { View, Alert, StyleSheet, Pressable, RefreshControl, ScrollView, FlatList } from "react-native";
 import QuestionCard, { QuestionTopic } from "@/components/QuestionCard";
 import { useLanguage } from "@/hooks/useLanguage";
 import { color, darkGrey } from "@/constants/Colors";
@@ -12,6 +12,8 @@ import { ApiQuestionTopicModel } from "@/model/model";
 import { useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import Tutorial from "@/components/Tutorial";
+import CustomText from "@/components/CustomText";
+import { isTablet } from "@/constants/Style";
 
 type props = NativeStackScreenProps<AskStackParamList, "index">;
 export default function Ask({ navigation }: props) {
@@ -68,30 +70,31 @@ export default function Ask({ navigation }: props) {
     return (
         <View style={style.container}>
             <Tutorial from={50} to={350} />
-            {topicList.length === 0 && <Text style={{ marginTop: 10 }}>{t("common.no_data")}</Text>}
-            <ScrollView
-                ref={scrollViewRef}
-                contentContainerStyle={{ alignItems: "center", paddingBottom: 20 }}
+            {topicList.length === 0 && <CustomText style={{ marginTop: 10 }}>{t("common.no_data")}</CustomText>}
+            <FlatList
+                contentContainerStyle={{ paddingBottom: 200 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetch} />}
-            >
-                {topicList.map((v, k) => (
+                numColumns={isTablet ? 2 : 1}
+                columnWrapperStyle={isTablet && { gap: 50 }}
+                data={topicList}
+                renderItem={({ index, item }) => (
                     <QuestionCard
-                        key={k}
-                        questionTopic={v}
+                        key={index}
+                        questionTopic={item}
                         onPress={() =>
                             navigation.navigate("viewAsk", {
-                                id: v.id as number,
+                                id: item.id as number,
                             })
                         }
                     />
-                ))}
-            </ScrollView>
+                )}
+            ></FlatList>
             <Pressable
                 style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.button]}
                 onPress={() => navigation.navigate("addAsk" as never)}
             >
-                <Text>{t("ask.submit")}</Text>
+                <CustomText>{t("ask.submit")}</CustomText>
             </Pressable>
         </View>
     );
@@ -108,9 +111,9 @@ const style = StyleSheet.create({
         position: "absolute",
         bottom: 40,
         right: 20,
-        shadowRadius: 4,
+        shadowRadius: 2,
         shadowColor: color.tint,
-        shadowOpacity: 1,
+        shadowOpacity: 0.5,
         elevation: 5,
         alignItems: "center",
         justifyContent: "center",

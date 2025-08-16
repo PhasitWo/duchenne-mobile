@@ -1,7 +1,9 @@
 import { Medicine } from "@/model/model";
 import { stringToHslColor } from "@/utility/convert";
 import { useTranslation } from "react-i18next";
-import { Text, StyleSheet, Pressable, PressableProps, View } from "react-native";
+import { StyleSheet, Pressable, PressableProps, View } from "react-native";
+import CustomText from "./CustomText";
+import { lFontSize } from "@/constants/Style";
 
 export type MedicineCardProps = { data: Medicine };
 
@@ -18,15 +20,15 @@ export default function MedicineCard({ data, ...rest }: MedicineCardProps & Pres
                 }}
             />
             <View style={style.content}>
-                <Text style={style.title}>{data.medicineName ?? "-"}</Text>
-                <Text style={style.head}>{t("medicineCard.dose")}</Text>
-                <Text style={style.body}>{data.dose ?? "-"}</Text>
-                <Text style={style.head}>{t("medicineCard.quantity")}</Text>
-                <Text style={style.body}>{data.quantity ?? "-"}</Text>
-                <Text style={style.head}>{t("medicineCard.frequency")}</Text>
-                <Text style={style.body}>{data.frequencyPerDay ?? "-"}</Text>
-                <Text style={style.head}>{t("medicineCard.instruction")}</Text>
-                <Text style={style.body}>{data.instruction ?? "-"}</Text>
+                <CustomText style={style.title}>{data.medicineName ?? "-"}</CustomText>
+                <CustomText style={style.head}>{t("medicineCard.dose")}</CustomText>
+                <CustomText style={style.body}>{data.dose ?? "-"}</CustomText>
+                <CustomText style={style.head}>{t("medicineCard.quantity")}</CustomText>
+                <CustomText style={style.body}>{data.quantity ?? "-"}</CustomText>
+                <CustomText style={style.head}>{t("medicineCard.frequency")}</CustomText>
+                <CustomText style={style.body}>{data.frequencyPerDay ?? "-"}</CustomText>
+                <CustomText style={style.head}>{t("medicineCard.instruction")}</CustomText>
+                <CustomText style={style.body}>{data.instruction ?? "-"}</CustomText>
             </View>
         </Pressable>
     );
@@ -57,7 +59,7 @@ const style = StyleSheet.create({
     title: {
         fontWeight: "bold",
         marginBottom: 10,
-        fontSize: 18,
+        fontSize: lFontSize,
     },
     head: {
         fontWeight: "bold",

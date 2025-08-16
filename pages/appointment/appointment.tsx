@@ -1,4 +1,4 @@
-import { Text, View, ScrollView, StyleSheet, Pressable, RefreshControl } from "react-native";
+import { View, ScrollView, StyleSheet, Pressable, RefreshControl } from "react-native";
 import { useState, useMemo, useCallback, useRef } from "react";
 import Calendar from "@/components/Calendar";
 import AppointmentCard from "@/components/AppointmentCard";
@@ -11,6 +11,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/hooks/useLanguage";
 import Tutorial from "@/components/Tutorial";
+import CustomText from "@/components/CustomText";
 
 type props = NativeStackScreenProps<StackParamList, "index">;
 
@@ -69,7 +70,7 @@ export default function Appointment({ navigation }: props) {
                     onPress={() => setIncomingSelected(true)}
                 >
                     <View>
-                        <Text>{t("appointment.incoming")}</Text>
+                        <CustomText>{t("appointment.incoming")}</CustomText>
                     </View>
                 </Pressable>
                 <Pressable
@@ -77,7 +78,7 @@ export default function Appointment({ navigation }: props) {
                     onPress={() => setIncomingSelected(false)}
                 >
                     <View>
-                        <Text>{t("appointment.history")}</Text>
+                        <CustomText>{t("appointment.history")}</CustomText>
                     </View>
                 </Pressable>
             </View>
@@ -89,7 +90,7 @@ export default function Appointment({ navigation }: props) {
                     showsVerticalScrollIndicator={false}
                     refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetch} />}
                 >
-                    {display.length > 0 ? display : <Text>{t("common.no_data")}</Text>}
+                    {display.length > 0 ? display : <CustomText>{t("common.no_data")}</CustomText>}
                 </ScrollView>
             </View>
         </View>

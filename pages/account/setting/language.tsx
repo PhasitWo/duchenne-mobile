@@ -2,7 +2,8 @@ import { useState, useEffect, ReactElement } from "react";
 import { useLanguage, type Language as Lang } from "@/hooks/useLanguage";
 import { darkGrey } from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
-import { Pressable, View, Text, StyleSheet, FlatList, Image } from "react-native";
+import { Pressable, View, StyleSheet, FlatList, Image } from "react-native";
+import CustomText from "@/components/CustomText";
 
 type LangItemProps = { title: string; value: Lang; icon: ReactElement };
 
@@ -27,7 +28,7 @@ const Item = ({ lang, selected, pressFunc }: { lang: LangItemProps; selected: bo
         >
             <View style={style.item}>
                 <View>{lang.icon}</View>
-                <Text style={style.itemText}>{lang.title}</Text>
+                <CustomText style={style.itemText}>{lang.title}</CustomText>
             </View>
             {selected && <FontAwesome name="check" size={24} color="green" />}
         </Pressable>

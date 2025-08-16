@@ -1,4 +1,4 @@
-import { View, ScrollView, Alert, RefreshControl, Text } from "react-native";
+import { View, ScrollView, Alert, RefreshControl, FlatList } from "react-native";
 import Card from "@/components/Card";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useApiContext } from "@/hooks/apiContext";
@@ -10,6 +10,8 @@ import { ContentStackParamList } from "./_stack";
 import { color } from "@/constants/Colors";
 import { useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
+import CustomText from "@/components/CustomText";
+import { isTablet } from "@/constants/Style";
 
 type props = NativeStackScreenProps<ContentStackParamList, "index">;
 export default function Content({ navigation }: props) {
@@ -62,35 +64,32 @@ export default function Content({ navigation }: props) {
     return (
         <View
             style={{
-                justifyContent: "center",
                 alignItems: "center",
                 flex: 1,
                 backgroundColor: color.base,
             }}
         >
-            <ScrollView
-                ref={scrollViewRef}
-                contentContainerStyle={{ alignItems: "center", paddingBottom: 20 }}
+            {contents.length === 0 && <CustomText style={{ marginTop: 10 }}>{t("common.no_data")}</CustomText>}
+            <FlatList
+                contentContainerStyle={{ paddingBottom: 200 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetch} />}
-            >
-                {contents.length === 0 && <Text style={{ marginTop: 10 }}>{t("common.no_data")}</Text>}
-                {contents.map((v, k) => (
+                data={contents.concat(contents).concat(contents)}
+                numColumns={isTablet ? 2 : 1}
+                columnWrapperStyle={isTablet && { gap: 50 }}
+                renderItem={({ index, item }) => (
                     <Card
-                        key={k}
-                        title={v.title}
-                        imageURL={v.coverImageURL || undefined}
-                        // bodyText={dayjs(1000 * v.createAt)
-                        //     .locale(currentLang)
-                        //     .format("D MMMM YYYY")}
+                        key={index}
+                        title={item.title}
+                        imageURL={item.coverImageURL || undefined}
                         onPress={() =>
                             navigation.navigate("viewContent", {
-                                id: String(v.id),
+                                id: String(item.id),
                             })
                         }
                     />
-                ))}
-            </ScrollView>
+                )}
+            />
         </View>
     );
 }
