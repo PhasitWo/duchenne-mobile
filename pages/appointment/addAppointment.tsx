@@ -1,4 +1,4 @@
-import { View, Text, Pressable, StyleSheet, Alert, Platform } from "react-native";
+import { View, Pressable, StyleSheet, Alert, Platform } from "react-native";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { useCallback, useState } from "react";
 import dayjs from "dayjs";
@@ -12,6 +12,8 @@ import { AxiosError, AxiosResponse } from "axios";
 import { ApiDoctorModel } from "@/model/model";
 import LoadingView from "@/components/LoadingView";
 import { useTranslation } from "react-i18next";
+import CustomText from "@/components/CustomText";
+import { mdFontSize } from "@/constants/Style";
 
 type mode = "date" | "time";
 type DropdownList = {
@@ -166,6 +168,16 @@ export default function AddAppointment() {
                     borderBottomColor: darkGrey,
                     borderBottomWidth: 1,
                 }}
+                itemTextStyle={{ fontSize: mdFontSize }}
+                inputSearchStyle={{ fontSize: mdFontSize }}
+                selectedTextStyle={{ fontSize: mdFontSize }}
+                placeholderStyle={{ fontSize: mdFontSize }}
+                renderItem={(item) => (
+                    <View style={{ padding: 20 }}>
+                        <CustomText>{item.label}</CustomText>
+                    </View>
+                )}
+                selectedTextProps={{ allowFontScaling: false }}
                 data={doctorList}
                 labelField="label"
                 valueField="value"
@@ -180,14 +192,14 @@ export default function AddAppointment() {
                 onPress={showDatepicker}
                 disabled={isLoading}
             >
-                <Text>{dayjs(date).format("D MMMM YYYY")}</Text>
+                <CustomText>{dayjs(date).format("D MMMM YYYY")}</CustomText>
             </Pressable>
             <Pressable
                 style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.dateTime]}
                 onPress={showTimepicker}
                 disabled={isLoading}
             >
-                <Text>{dayjs(date).format("HH:mm")}</Text>
+                <CustomText>{dayjs(date).format("HH:mm")}</CustomText>
             </Pressable>
             {show && (
                 <DateTimePicker

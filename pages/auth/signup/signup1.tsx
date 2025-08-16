@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, ScrollView, Alert } from "react-native";
+import { View, StyleSheet, TextInput, KeyboardAvoidingView, ScrollView, Alert } from "react-native";
 import { useRef } from "react";
 import CustomButton from "@/components/CustomButton";
 import { color, darkGrey } from "@/constants/Colors";
@@ -7,6 +7,9 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSignupContext } from "@/hooks/signupContext";
+import { mdFontSize } from "@/constants/Style";
+import CustomText from "@/components/CustomText";
+import CustomTextInput from "@/components/CustomTextInput";
 
 type Props = NativeStackScreenProps<SignupStackParamList, "signup1">;
 export default function Signup({ navigation }: Props) {
@@ -33,11 +36,11 @@ export default function Signup({ navigation }: Props) {
                 keyboardShouldPersistTaps="handled"
             >
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>
+                    <CustomText style={style.label}>
                         HN
                         <Asterisk />
-                    </Text>
-                    <TextInput
+                    </CustomText>
+                    <CustomTextInput
                         style={style.input}
                         placeholderTextColor={placeholderColor}
                         value={signupData.hn}
@@ -48,11 +51,11 @@ export default function Signup({ navigation }: Props) {
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>
+                    <CustomText style={style.label}>
                         {t("signup.firstName")}
                         <Asterisk />
-                    </Text>
-                    <TextInput
+                    </CustomText>
+                    <CustomTextInput
                         ref={firstName_ref}
                         style={style.input}
                         placeholderTextColor={placeholderColor}
@@ -64,8 +67,8 @@ export default function Signup({ navigation }: Props) {
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>{t("signup.middleName")}</Text>
-                    <TextInput
+                    <CustomText style={style.label}>{t("signup.middleName")}</CustomText>
+                    <CustomTextInput
                         ref={middleName_ref}
                         style={style.input}
                         placeholderTextColor={placeholderColor}
@@ -77,11 +80,11 @@ export default function Signup({ navigation }: Props) {
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>
+                    <CustomText style={style.label}>
                         {t("signup.lastName")}
                         <Asterisk />
-                    </Text>
-                    <TextInput
+                    </CustomText>
+                    <CustomTextInput
                         ref={lastName_ref}
                         style={style.input}
                         placeholderTextColor={placeholderColor}
@@ -91,7 +94,6 @@ export default function Signup({ navigation }: Props) {
                         returnKeyType="done"
                     />
                 </View>
-
                 <CustomButton
                     title={t("signup.next")}
                     normalColor={color.tint}
@@ -120,7 +122,7 @@ export const style = StyleSheet.create({
     label: {
         flex: 1,
         paddingLeft: 10,
-        fontSize: 14,
+        fontSize: mdFontSize,
         fontWeight: "bold",
     },
     input: {
@@ -140,4 +142,4 @@ export const style = StyleSheet.create({
     },
 });
 
-export const Asterisk = () => <Text style={style.asterisk}>*</Text>;
+export const Asterisk = () => <CustomText style={style.asterisk}>*</CustomText>;

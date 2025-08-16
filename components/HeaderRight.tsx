@@ -9,17 +9,7 @@ export default function HeaderRight({ style, ...rest }: ViewProps & { style?: Vi
         <View style={[stylesheet.container, style]} {...rest}>
             <Pressable onPress={() => navigation.navigate("notification" as never)}>
                 <FontAwesome style={stylesheet.bell} name="bell" size={30} color="black" />
-                {/* <Text style={stylesheet.notification}>2</Text> */}
             </Pressable>
-            {/* <Pressable>
-                <Ionicons
-                    style={style.profile}
-                    name="person-circle"
-                    onPress={() => test()}
-                    size={40}
-                    color="black"
-                />
-            </Pressable> */}
         </View>
     );
 }

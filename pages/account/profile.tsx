@@ -1,4 +1,4 @@
-import { Text, View, FlatList, StyleSheet, Pressable, Alert } from "react-native";
+import { View, FlatList, StyleSheet, Pressable, Alert } from "react-native";
 import { darkGrey } from "@/constants/Colors";
 import { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -9,6 +9,7 @@ import { useAuthContext } from "@/hooks/authContext";
 import LoadingView from "@/components/LoadingView";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
+import CustomText from "@/components/CustomText";
 
 type Info = { title: string; value: string | number | undefined; border?: boolean };
 
@@ -24,8 +25,8 @@ const Item = ({ info }: { info: Info }) => {
             ]}
         >
             <View style={style.item}>
-                <Text style={style.itemTitle}>{info.title}</Text>
-                <Text style={style.itemValue}>{info.value}</Text>
+                <CustomText style={style.itemTitle}>{info.title}</CustomText>
+                <CustomText style={style.itemValue}>{info.value}</CustomText>
             </View>
         </Pressable>
     );

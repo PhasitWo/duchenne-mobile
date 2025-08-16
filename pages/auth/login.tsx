@@ -1,14 +1,4 @@
-import {
-    View,
-    Text,
-    StyleSheet,
-    TextInput,
-    Alert,
-    Platform,
-    Image,
-    KeyboardAvoidingView,
-    ScrollView,
-} from "react-native";
+import { View, StyleSheet, TextInput, Alert, Platform, Image, KeyboardAvoidingView, ScrollView } from "react-native";
 import { useRef, useState, useCallback, useEffect } from "react";
 import CustomButton from "@/components/CustomButton";
 import { color, darkGrey } from "@/constants/Colors";
@@ -27,6 +17,9 @@ import * as Application from "expo-application";
 import { getExpoToken } from "@/hooks/useDeviceInfo";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
+import { lFontSize } from "@/constants/Style";
+import CustomText from "@/components/CustomText";
+import CustomTextInput from "@/components/CustomTextInput";
 
 export type LoginData = {
     hn: string;
@@ -174,8 +167,8 @@ export default function Login({ route, navigation }: Props) {
             <ScrollView contentContainerStyle={{ alignItems: "center" }} keyboardShouldPersistTaps="handled">
                 <Image source={require("@/assets/images/logo.png")} style={{ width: 200, height: 200 }}></Image>
                 <View style={style.inputContainer}>
-                    <Text style={[style.label, { color: warning.hn ? "red" : "black" }]}>HN</Text>
-                    <TextInput
+                    <CustomText style={[style.label, { color: warning.hn ? "red" : "black" }]}>HN</CustomText>
+                    <CustomTextInput
                         style={[style.input, { borderColor: warning.hn ? "red" : darkGrey }]}
                         value={data.hn}
                         onChangeText={(text) => {
@@ -191,8 +184,10 @@ export default function Login({ route, navigation }: Props) {
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={[style.label, { color: warning.pin ? "red" : "black" }]}>{t("login.password")}</Text>
-                    <TextInput
+                    <CustomText style={[style.label, { color: warning.pin ? "red" : "black" }]}>
+                        {t("login.password")}
+                    </CustomText>
+                    <CustomTextInput
                         ref={pin_ref}
                         style={[style.input, { borderColor: warning.pin ? "red" : darkGrey }]}
                         value={data.pin}
@@ -210,13 +205,13 @@ export default function Login({ route, navigation }: Props) {
                     />
                 </View>
                 <View style={style.forgotPasswordContainer}>
-                    <Text
+                    <CustomText
                         style={style.forgotPassword}
                         onPress={() => navigation.navigate("contact" as never)}
                         disabled={isLoading}
                     >
                         {t("login.forgot")}
-                    </Text>
+                    </CustomText>
                 </View>
                 <CustomButton
                     title={isLocked ? t("login.lock", { second: remainingSec }) : t("login.login")}
@@ -228,16 +223,16 @@ export default function Login({ route, navigation }: Props) {
                     onPress={handleLogin}
                     showLoading={isLoading}
                 />
-                <Text style={style.signup}>
+                <CustomText style={style.signup}>
                     {t("login.no_account") + " "}
-                    <Text
+                    <CustomText
                         style={style.signupLink}
                         onPress={() => navigation.navigate("signupStack")}
                         disabled={isLoading}
                     >
                         {t("login.signup")}
-                    </Text>
-                </Text>
+                    </CustomText>
+                </CustomText>
             </ScrollView>
         </KeyboardAvoidingView>
     );
@@ -261,7 +256,7 @@ const style = StyleSheet.create({
     label: {
         flex: 1,
         paddingLeft: 10,
-        fontSize: 16,
+        fontSize: lFontSize,
         fontWeight: "bold",
     },
     input: {

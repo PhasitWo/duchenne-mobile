@@ -1,6 +1,5 @@
 import {
     View,
-    Text,
     TextInput,
     KeyboardAvoidingView,
     ScrollView,
@@ -21,6 +20,8 @@ import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSignupContext } from "@/hooks/signupContext";
 import dayjs from "dayjs";
+import CustomText from "@/components/CustomText";
+import CustomTextInput from "@/components/CustomTextInput";
 
 type Props = NativeStackScreenProps<SignupStackParamList, "signup2">;
 export default function Signup2({ navigation }: Props) {
@@ -59,11 +60,11 @@ export default function Signup2({ navigation }: Props) {
                 keyboardShouldPersistTaps="handled"
             >
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>
+                    <CustomText style={style.label}>
                         {t("signup.phone")}
                         <Asterisk />
-                    </Text>
-                    <TextInput
+                    </CustomText>
+                    <CustomTextInput
                         inputAccessoryViewID="phone"
                         style={style.input}
                         placeholderTextColor={placeholderColor}
@@ -81,8 +82,8 @@ export default function Signup2({ navigation }: Props) {
                     )}
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>{t("signup.email")}</Text>
-                    <TextInput
+                    <CustomText style={style.label}>{t("signup.email")}</CustomText>
+                    <CustomTextInput
                         ref={email_ref}
                         style={style.input}
                         value={signupData.email}
@@ -93,12 +94,12 @@ export default function Signup2({ navigation }: Props) {
                     />
                 </View>
                 <View style={style.inputContainer}>
-                    <Text style={style.label}>{t("signup.birthDate")}</Text>
+                    <CustomText style={style.label}>{t("signup.birthDate")}</CustomText>
                     <Pressable
                         style={({ pressed }) => [{ backgroundColor: pressed ? darkGrey : "white" }, style.input]}
                         onPress={() => setShowDate(true)}
                     >
-                        <Text>{dayjs(signupData.birthDate * 1000).format("DD/MM/YYYY")}</Text>
+                        <CustomText>{dayjs(signupData.birthDate * 1000).format("DD/MM/YYYY")}</CustomText>
                     </Pressable>
                 </View>
                 {showDate && (

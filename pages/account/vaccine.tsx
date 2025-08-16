@@ -1,4 +1,4 @@
-import { View, FlatList, Alert, Text } from "react-native";
+import { View, FlatList, Alert } from "react-native";
 import { useEffect, useState } from "react";
 import type { ApiPatientModel, VaccineHistory } from "@/model/model";
 import { useApiContext } from "@/hooks/apiContext";
@@ -7,6 +7,8 @@ import { useAuthContext } from "@/hooks/authContext";
 import LoadingView from "@/components/LoadingView";
 import VaccineCard from "@/components/VaccineCard";
 import { useTranslation } from "react-i18next";
+import CustomText from "@/components/CustomText";
+import { isTablet } from "@/constants/Style";
 
 export default function Vaccine() {
     const [data, setData] = useState<VaccineHistory[] | null>([]);
@@ -48,15 +50,17 @@ export default function Vaccine() {
     if (isLoading) return <LoadingView />;
 
     return (
-        <View>
+        <View style={{ alignItems: "center" }}>
             {(data === null || data?.length === 0) && (
-                <Text style={{ marginTop: 10, alignSelf: "center" }}>{t("common.no_data")}</Text>
+                <CustomText style={{ marginTop: 10, alignSelf: "center" }}>{t("common.no_data")}</CustomText>
             )}
             <FlatList
-                contentContainerStyle={{ alignItems: "center" }}
+                contentContainerStyle={{ paddingBottom: 300 }}
                 data={data}
                 renderItem={({ item }) => <VaccineCard data={item} />}
                 showsVerticalScrollIndicator={false}
+                numColumns={isTablet ? 2 : 1}
+                columnWrapperStyle={isTablet && { gap: 50 }}
             />
         </View>
     );

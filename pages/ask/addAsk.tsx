@@ -1,4 +1,4 @@
-import { View, TextInput, Text, StyleSheet, Alert, KeyboardAvoidingView, ScrollView } from "react-native";
+import { View, StyleSheet, Alert, KeyboardAvoidingView, ScrollView } from "react-native";
 import CustomButton from "@/components/CustomButton";
 import { color, darkGrey, tint } from "@/constants/Colors";
 import { useState, useEffect } from "react";
@@ -7,6 +7,8 @@ import { useApiContext } from "@/hooks/apiContext";
 import { useAuthContext } from "@/hooks/authContext";
 import { AxiosError } from "axios";
 import { useTranslation } from "react-i18next";
+import CustomText from "@/components/CustomText";
+import CustomTextInput from "@/components/CustomTextInput";
 
 type props = NativeStackScreenProps<any, "addAsk">;
 export default function AddAsk({ navigation }: props) {
@@ -98,11 +100,11 @@ export default function AddAsk({ navigation }: props) {
         <KeyboardAvoidingView style={style.container} behavior="padding">
             <ScrollView style={{ width: "100%" }}>
                 <View style={style.topicContainer}>
-                    <Text style={[{ color: topic.length == 0 ? "red" : "black" }, style.label]}>
+                    <CustomText style={[{ color: topic.length == 0 ? "red" : "black" }, style.label]}>
                         {t("addAsk.topic")}
                         <Count current={topic.length} max={50} />
-                    </Text>
-                    <TextInput
+                    </CustomText>
+                    <CustomTextInput
                         style={style.topicInput}
                         value={topic}
                         onChangeText={handleTopicChange}
@@ -110,11 +112,11 @@ export default function AddAsk({ navigation }: props) {
                     />
                 </View>
                 <View style={style.bodyContainer}>
-                    <Text style={[{ color: question.length == 0 ? "red" : "black" }, style.label]}>
+                    <CustomText style={[{ color: question.length == 0 ? "red" : "black" }, style.label]}>
                         {t("addAsk.question")}
                         <Count current={question.length} max={700} />
-                    </Text>
-                    <TextInput
+                    </CustomText>
+                    <CustomTextInput
                         style={style.bodyInput}
                         multiline
                         submitBehavior="blurAndSubmit"
@@ -139,7 +141,7 @@ export default function AddAsk({ navigation }: props) {
 }
 
 type CountParam = { max: number; current: number };
-const Count = ({ max, current }: CountParam) => <Text style={style.count}>{`(${current}/${max})`}</Text>;
+const Count = ({ max, current }: CountParam) => <CustomText style={style.count}>{`(${current}/${max})`}</CustomText>;
 
 const style = StyleSheet.create({
     container: {

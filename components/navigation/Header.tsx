@@ -1,8 +1,10 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import HeaderRight from "@/components/HeaderRight";
 import HeaderLeft from "../HeaderLeft";
 import { StatusBar } from "expo-status-bar";
 import ChangeLangText from "../ChangeLangText";
+import CustomText from "../CustomText";
+import { xlFontSize } from "@/constants/Style";
 
 const headerHeight = 100;
 type props = {
@@ -26,7 +28,7 @@ export default function Header({
     return (
         <View style={style.container}>
             <StatusBar translucent={true} style="dark" />
-            <Text style={style.title}>{options.title ?? route.name}</Text>
+            <CustomText style={style.title}>{options.title ?? route.name}</CustomText>
             {showNotification && <HeaderRight style={style.headerRight} />}
             {showBackButton && <HeaderLeft navigation={navigation} style={style.headerLeft} />}
             {showLangSwitch && <ChangeLangText style={[style.headerRight, { marginRight: 20 }]} />}
@@ -43,7 +45,7 @@ const style = StyleSheet.create({
     },
     title: {
         fontWeight: "bold",
-        fontSize: 20,
+        fontSize: xlFontSize,
         marginBottom: headerHeight * 0.15,
     },
     headerRight: {

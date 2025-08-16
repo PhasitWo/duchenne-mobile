@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Alert, Pressable } from "react-native";
+import { View, StyleSheet, Alert, Pressable } from "react-native";
 import { color, darkGrey } from "@/constants/Colors";
 import { useState, useEffect } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -13,6 +13,8 @@ import { AxiosError, AxiosResponse } from "axios";
 import { ApiQuestionModel } from "@/model/model";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useTranslation } from "react-i18next";
+import { smFontSize } from "@/constants/Style";
+import CustomText from "@/components/CustomText";
 
 type Question = {
     createAt: Dayjs | null;
@@ -122,9 +124,9 @@ export default function ViewAsk({ navigation, route }: props) {
     return (
         <View style={style.container}>
             <View style={style.questionContainer}>
-                <Text style={style.boldText}>{question.topic} </Text>
-                <Text style={style.date}>{question.createAt?.format("D MMMM YYYY  HH:mm")}</Text>
-                <Text style={style.body}>{question.question}</Text>
+                <CustomText style={style.boldText}>{question.topic} </CustomText>
+                <CustomText style={style.date}>{question.createAt?.format("D MMMM YYYY  HH:mm")}</CustomText>
+                <CustomText style={style.body}>{question.question}</CustomText>
                 <Pressable style={style.bin} onPress={showDeleteAlert}>
                     <FontAwesome name="trash-o" size={20} color="red" style={{}} />
                 </Pressable>
@@ -136,14 +138,14 @@ export default function ViewAsk({ navigation, route }: props) {
                             <Fontisto name="doctor" size={24} color="black" />
                         </View>
                         <View style={style.doctorNameContainer}>
-                            <Text style={style.doctorName}>{answer.doctor}</Text>
-                            <Text style={style.date}>{answer.answerAt?.format("D MMMM YYYY  HH:mm")}</Text>
+                            <CustomText style={style.doctorName}>{answer.doctor}</CustomText>
+                            <CustomText style={style.date}>{answer.answerAt?.format("D MMMM YYYY  HH:mm")}</CustomText>
                         </View>
                     </View>
-                    <Text style={style.body}>{answer.answer}</Text>
+                    <CustomText style={style.body}>{answer.answer}</CustomText>
                 </View>
             ) : (
-                <Text style={{ marginTop: 10 }}>No Reply</Text>
+                <CustomText style={{ marginTop: 10 }}>No Reply</CustomText>
             )}
         </View>
     );
@@ -193,7 +195,7 @@ const style = StyleSheet.create({
     },
     date: {
         fontWeight: "normal",
-        fontSize: 12,
+        fontSize: smFontSize,
         color: "grey",
     },
     bin: {
